@@ -98,17 +98,17 @@
       <div class="sub">En atención ahora</div>
     </div>
     <div class="kpi kpi-cerrados" title="Total de tickets atendidos (DONE) histórico">
-      <div class="num" id="kpi-cerrados">1,515</div>
+      <div class="num" id="kpi-cerrados">1,527</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">185 en Junio 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">194 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion" title="Tickets listos, en espera de validación del cliente">
-      <div class="num" id="kpi-aprobacion">32</div>
+      <div class="num" id="kpi-aprobacion">35</div>
       <div class="lbl">Aprobación Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog" title="Incidentes registrados pendientes de iniciar atención">
-      <div class="num" id="kpi-backlog">145</div>
+      <div class="num" id="kpi-backlog">142</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -382,7 +382,7 @@
 const BITACORA = [
   { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
   { fecha:'15 – 30 Jun 2026', activos:42, cerrados:1515, aprobacion:33, backlog:144 },
-  { fecha:'15 Jun 2026', activos:42, cerrados:1515, aprobacion:32, desplegar:5, backlog:145 },
+  { fecha:'15 Jun 2026', activos:42, cerrados:1527, aprobacion:35, desplegar:5, backlog:133 },
 ];
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -399,28 +399,28 @@ const SOPORTES = [
 
 // TD_Aprobacion_Cliente — Localidad | # Tickets
 const APROBACION = [
-  {loc:'Colima',           n:9},
-  {loc:'Jalisco',          n:8},
+  {loc:'Colima',           n:10},
+  {loc:'Jalisco',          n:9},
   {loc:'Guanajuato',       n:4},
   {loc:'Baja California',  n:3},
   {loc:'Sonora',           n:3},
   {loc:'Hidalgo',          n:2},
   {loc:'CDMX',             n:1},
   {loc:'Coahuila',         n:1},
-  {loc:'Chiapas',          n:1},
   {loc:'Zacatecas',        n:1},
+  {loc:'Chiapas',          n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 
 // TD_DONE — Persona asignada | # tickets atendidos (filtro pivot TD_DONE)
 const RESPONSABLES = [
-  {nom:'Yoshio Adán Villegas Guevara',      n:78},
+  {nom:'Yoshio Adán Villegas Guevara',      n:83},
   {nom:'Omar Villalpando',                  n:56},
   {nom:'Manuel A. Domínguez Enríquez',      n:54},
-  {nom:'Leonardo Lucio Perez',              n:38},
-  {nom:'Silvestre Cerrato',                 n:34},
+  {nom:'Leonardo Lucio Perez',              n:39},
+  {nom:'Silvestre Cerrato',                 n:35},
+  {nom:'Ivan Perez Felipe',                 n:29},
   {nom:'Jonathan Aristeo Lozano Hernandez', n:28},
-  {nom:'Ivan Perez Felipe',                 n:28},
   {nom:'Aníbal Argüelles García',           n:25},
   {nom:'Jesus Feria Ortiz',                 n:15},
   {nom:'Rodrigo Gabriel Gras',              n:7},
@@ -437,63 +437,62 @@ const CERRADOS = [
   {loc:'2026-02 · Febrero',   n:200},
   {loc:'2026-03 · Marzo',     n:387},
   {loc:'2026-04 · Abril',     n:204},
-  {loc:'2026-05 · Mayo',      n:267},
-  {loc:'2026-06 · Junio',     n:185},
+  {loc:'2026-05 · Mayo',      n:270},
+  {loc:'2026-06 · Junio',     n:194},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 
-// Product Backlog Soportes — Persona asignada | # tickets pendientes (144 total)
+// Product Backlog Soportes — Persona asignada | # tickets pendientes (133 total)
 const BACKLOG_RESP = [
   {nom:'Eunice Anais Arevalo Avalos',           n:14},
-  {nom:'Edgar Elias Cuero de la Cruz',          n:12},
   {nom:'Leonardo Lucio Perez',                  n:11},
   {nom:'Gibran Esaú Solís Valenzuela',          n:11},
   {nom:'Yoshio Adán Villegas Guevara',          n:11},
+  {nom:'Edgar Elias Cuero de la Cruz',          n:11},
   {nom:'Manuel A. Domínguez Enríquez',          n:9},
+  {nom:'Ivan Perez Felipe',                     n:6},
   {nom:'Silvestre Cerrato',                     n:5},
-  {nom:'Ivan Perez Felipe',                     n:5},
   {nom:'Roberto Alonso Cota Gómez',             n:5},
-  {nom:'Jorge Octavio Paz Hernandez',           n:4},
   {nom:'Jonathan Aristeo Lozano Hernandez',     n:4},
   {nom:'Mariano Conte',                         n:4},
   {nom:'Omar Villalpando',                      n:3},
   {nom:'Luz Adriana Zamora Rodriguez',          n:3},
-  {nom:'Israel Gutiérrez Mata',                 n:3},
   {nom:'Bruno Antonio González Uribe',          n:3},
   {nom:'Jesus Feria Ortiz',                     n:3},
+  {nom:'Jorge Octavio Paz Hernandez',           n:3},
   {nom:'Pedro Emanuel Jimenez Oscoy',           n:2},
+  {nom:'Israel Gutiérrez Mata',                 n:2},
+  {nom:'Juan Manuel Olguin Colin',              n:2},
   {nom:'Juan Pablo Sandoval Cruz',              n:2},
   {nom:'Carlos Eduardo Chavez Ordaz',           n:2},
   {nom:'Angel Ulises Velasquez Hernandez',      n:2},
   {nom:'Juan Jaime Soni Larios',                n:2},
   {nom:'Eliel Velazquez Zenil',                 n:2},
-  {nom:'Alejandra Magaña Lopez',                n:2},
   {nom:'Francisco Javier Bañuelos Esquivel',    n:1},
   {nom:'Estif Fabian Arenas Pamplona',          n:1},
   {nom:'Aníbal Argüelles García',               n:1},
   {nom:'Susana Jacqueline Arroyo Juarez',       n:1},
-  {nom:'Juan Manuel Olguin Colin',              n:1},
   {nom:'Rodrigo Gabriel Gras',                  n:1},
   {nom:'Joaquin Di Santo',                      n:1},
-  {nom:'Juan Manuel Salazar Castro',            n:1},
+  {nom:'Juan Manuel Ce/Acatl Salazar Castro',   n:1},
   {nom:'Luis Antonio Hernández Martínez',       n:1},
   {nom:'Sandra Estrada Lopez',                  n:1},
   {nom:'Gabriel Alejandro Ramos Salazar',       n:1},
-  {nom:'Pablo Iván Ramírez Mendoza',            n:1},
+  {nom:'Alejandra Magaña Lopez',                n:1},
 ];
 const TOTAL_BACKLOG_RESP = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
 
 // TD_Product backlog
 const BACKLOG = [
-  {loc:'Jalisco',          n:35},
+  {loc:'Jalisco',          n:33},
   {loc:'Quintana Roo',     n:26},
-  {loc:'Guanajuato',       n:18},
-  {loc:'Colima',           n:16},
-  {loc:'Hidalgo',          n:14},
+  {loc:'Guanajuato',       n:17},
+  {loc:'Colima',           n:15},
+  {loc:'Hidalgo',          n:15},
   {loc:'Baja California',  n:9},
   {loc:'Sonora',           n:9},
   {loc:'Zacatecas',        n:7},
-  {loc:'Seguritech',       n:5},
+  {loc:'Seguritech',       n:6},
   {loc:'Chiapas',          n:5},
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
