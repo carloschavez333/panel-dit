@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Operativo — Seguimiento de Soporte y Mantenimiento</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#eef2f7;color:#2d3748}
+  .header{background:linear-gradient(135deg,#0d3340 0%,#1a5e75 60%,#2c7a8c 100%);color:#fff;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+  .header-left h1{font-size:1.65rem;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:14px;}
+  .header-left p{font-size:.85rem;opacity:.75;margin-top:5px}
+  .header-right{text-align:right}
+  .header-date{font-size:.78rem;opacity:.65}
+  .container{max-width:1380px;margin:0 auto;padding:28px 32px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}
+  .kpi{background:#fff;border-radius:14px;padding:22px 18px;box-shadow:0 2px 10px rgba(0,0,0,.07);border-top:4px solid;text-align:center;transition:transform .2s,box-shadow .2s;cursor:default}
+  .kpi:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+  .kpi .num{font-size:2.8rem;font-weight:800;line-height:1;margin-bottom:6px}
+  .kpi .lbl{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:#718096;font-weight:600}
+  .kpi .sub{font-size:.72rem;color:#a0aec0;margin-top:4px}
+  .kpi-activos{border-color:#3182ce}.kpi-activos .num{color:#3182ce}
+  .kpi-cerrados{border-color:#38a169}.kpi-cerrados .num{color:#38a169}
+  .kpi-aprobacion{border-color:#dd6b20}.kpi-aprobacion .num{color:#dd6b20}
+  .kpi-backlog{border-color:#4a5568}.kpi-backlog .num{color:#4a5568}
+  .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-radius:10px;padding:14px 20px;margin-bottom:24px;box-shadow:0 1px 6px rgba(0,0,0,.06);align-items:center}
+  .legend-bar span{font-size:.72rem;font-weight:600;color:#4a5568;margin-right:4px}
+  .pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:600;white-space:nowrap}
+  .pill-progreso{background:#bee3f8;color:#1a4a7a}
+  .pill-aprobacion{background:#feebc8;color:#7b341e}
+  .pill-qa{background:#c6f6d5;color:#1c4532}
+  .pill-bloqueado{background:#fed7d7;color:#742a2a}
+  .pill-reabierto{background:#fefcbf;color:#744210}
+  .pill-backlog{background:#e2e8f0;color:#4a5568}
+  .pill-cerrado{background:#c6f6d5;color:#1c4532}
+  .tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+  .tab{padding:10px 22px;border-radius:8px;cursor:pointer;font-size:.875rem;font-weight:500;border:2px solid #e2e8f0;background:#fff;color:#718096;transition:all .2s}
+  .tab:hover{border-color:#3182ce;color:#3182ce}
+  .tab.active{background:#3182ce;color:#fff;border-color:#3182ce;box-shadow:0 2px 8px rgba(49,130,206,.35)}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  .panel{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:22px}
+  .panel h3{font-size:1rem;font-weight:700;color:#4a5568;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+  .info-box{background:#ebf8ff;border-left:4px solid #3182ce;border-radius:6px;padding:12px 16px;font-size:.83rem;color:#2c5282;margin-bottom:16px;line-height:1.5}
+  .warn-box{background:#fffbeb;border-left:4px solid #d69e2e;border-radius:6px;padding:12px 16px;font-size:.83rem;color:#744210;margin-bottom:16px;line-height:1.5}
+  .table-wrap{overflow-x:auto}
+  .t-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .search-box{padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.83rem;width:240px;outline:none;transition:border .2s}
+  .search-box:focus{border-color:#3182ce}
+  table{width:100%;border-collapse:collapse}
+  th{background:#f7fafc;padding:10px 14px;text-align:left;font-size:.76rem;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+  td{padding:10px 14px;font-size:.85rem;border-bottom:1px solid #f0f4f8;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f7fafc}
+  .tr-total td{background:#f0f4f8!important;font-weight:700;font-size:.87rem}
+  .pbar-wrap{display:flex;align-items:center;gap:10px}
+  .pbar-track{flex:1;background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden;min-width:80px}
+  .pbar-fill{height:100%;border-radius:6px;transition:width .6s ease}
+  .pct-lbl{font-size:.78rem;color:#718096;min-width:36px}
+  .loc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+  .loc-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+  .loc-card h4{font-weight:700;font-size:.93rem;margin-bottom:12px;color:#2d3748;border-bottom:2px solid #f0f4f8;padding-bottom:8px}
+  .loc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .loc-row .lc-label{font-size:.78rem;color:#718096}
+  .footer{text-align:center;padding:20px;color:#a0aec0;font-size:.76rem;margin-top:8px}
+  .footer strong{color:#718096}
+  @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.loc-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.loc-grid{grid-template-columns:1fr}.header{flex-direction:column;gap:14px;text-align:center}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.95;" aria-hidden="true">
+        <path d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+        <path d="M8 21h8M12 17v4"/>
+        <path d="M7 10l3 3 4-4 3 2"/>
+      </svg>
+      Panel Operativo — Soporte y Mantenimiento DIT
+    </h1>
+    <p>Seguimiento de tickets activos, cerrados, en aprobación y backlog</p>
+  </div>
+  <div class="header-right">
+    <div class="header-date" id="badge-fecha"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="kpi-grid">
+    <div class="kpi kpi-activos" title="Tickets en atención activa actualmente">
+      <div class="num" id="kpi-activos">42</div>
+      <div class="lbl">Tickets Activos</div>
+      <div class="sub">En atención ahora</div>
+    </div>
+    <div class="kpi kpi-cerrados" title="Total de tickets atendidos (DONE) histórico">
+      <div class="num" id="kpi-cerrados">1,515</div>
+      <div class="lbl">Atendidos (DONE)</div>
+      <div class="sub" id="kpi-cerrados-sub">185 en Junio 2026</div>
+    </div>
+    <div class="kpi kpi-aprobacion" title="Tickets listos, en espera de validación del cliente">
+      <div class="num" id="kpi-aprobacion">32</div>
+      <div class="lbl">Aprobación Cliente</div>
+      <div class="sub">Pendientes de validar</div>
+    </div>
+    <div class="kpi kpi-backlog" title="Incidentes registrados pendientes de iniciar atención">
+      <div class="num" id="kpi-backlog">145</div>
+      <div class="lbl">Backlog</div>
+      <div class="sub">Pendientes de inicio</div>
+    </div>
+  </div>
+
+  <div class="legend-bar">
+    <span>¿Qué significa cada color?</span>
+    <span class="pill pill-progreso">🔵 En Progreso</span>
+    <span class="pill pill-aprobacion">🟠 Aprobación Cliente</span>
+    <span class="pill pill-qa">🟢 En QA / Validación Técnica</span>
+    <span class="pill pill-bloqueado">🔴 Bloqueado</span>
+    <span class="pill pill-reabierto">🟡 Reabierto</span>
+    <span class="pill pill-backlog">⚫ Backlog Dev</span>
+    <span class="pill pill-cerrado">✅ Cerrado</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-btn-activos-resumen" onclick="showTab('resumen',this)">🔧 Tickets Activos</div>
+    <div class="tab" id="tab-btn-aprobacion" onclick="showTab('aprobacion',this)">🟠 Aprobación Cliente</div>
+    <div class="tab" id="tab-btn-backlog"    onclick="showTab('backlog',this)">📌 Backlog</div>
+    <div class="tab" id="tab-btn-cerrados"   onclick="showTab('cerrados',this)">✅ Atendidos (DONE)</div>
+    <div class="tab" onclick="showTab('bitacora',this)">📈 Bitácora Histórica</div>
+  </div>
+
+  <!-- TAB: RESUMEN -->
+  <div id="tab-resumen" class="tab-content active">
+    <div class="grid-2">
+      <div class="panel">
+        <h3>🔄 Distribución de Tickets Activos por Estado</h3>
+        <div style="position:relative;height:260px;">
+          <canvas id="chartEstado"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>📍 Tickets Activos por Localidad</h3>
+        <div style="position:relative;height:260px;">
+          <canvas id="chartLocalidad"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>📊 Tabla de Resumen — Todos los Estados por Localidad</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Localidad</th>
+              <th><span class="pill pill-progreso">En Progreso</span></th>
+              <th><span class="pill pill-aprobacion">Aprobación</span></th>
+              <th><span class="pill pill-qa">En QA</span></th>
+              <th><span class="pill pill-bloqueado">Bloqueado</span></th>
+              <th><span class="pill pill-reabierto">Reabierto</span></th>
+              <th><span class="pill pill-backlog">Backlog Dev</span></th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="resumen-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ACTIVOS -->
+  <div id="tab-activos" class="tab-content">
+    <div class="info-box"><strong>¿Qué son los tickets activos?</strong> Son solicitudes que el equipo está atendiendo ahora mismo.</div>
+    <div class="warn-box">⚠ Los tickets <strong>BLOQUEADOS</strong> dependen de una acción externa. Los <strong>EN APROBACIÓN</strong> ya tienen solución y esperan confirmación del cliente.</div>
+    <div class="panel">
+      <div class="t-header">
+        <h3 style="margin:0">🔧 Desglose por Localidad y Estado</h3>
+        <input class="search-box" type="text" placeholder="Buscar localidad..." onkeyup="filtrarTabla('activos-tbody',this.value)">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Localidad</th>
+              <th>En Progreso</th>
+              <th>Aprobación Cliente</th>
+              <th>En QA</th>
+              <th>Bloqueado</th>
+              <th>Reabierto</th>
+              <th>Backlog Dev</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="activos-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: APROBACIÓN CLIENTE -->
+  <div id="tab-aprobacion" class="tab-content">
+
+    <!-- Header card -->
+    <div style="background:#1a3a4a;border-radius:12px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:12px;height:12px;background:#dd6b20;border-radius:2px;display:inline-block;"></span>
+        <span style="color:#fff;font-weight:700;font-size:1.05rem;">Aprobación por Cliente — Soporte por Localidad</span>
+      </div>
+      <span style="color:#90cdf4;font-size:.82rem;" id="aprobacion-corte"></span>
+    </div>
+
+    <!-- KPI mini-cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;" id="aprobacion-kpis"></div>
+
+    <!-- Tabla -->
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:180px;">Localidad</th>
+              <th>Distribución</th>
+              <th style="width:50px;text-align:right;">#</th>
+            </tr>
+          </thead>
+          <tbody id="aprobacion-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: BACKLOG -->
+  <div id="tab-backlog" class="tab-content">
+    <div class="info-box"><strong>¿Qué es el Backlog?</strong> Incidentes registrados que aún no han comenzado su atención formal.</div>
+    <div class="panel">
+      <div class="t-header">
+        <h3 style="margin:0" id="backlog-title">📌 Backlog por Localidad</h3>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Localidad</th><th>Incidentes Pendientes</th><th>Distribución</th></tr></thead>
+          <tbody id="backlog-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REZAGO POR RESPONSABLE -->
+    <div class="panel">
+      <h3>⚠️ Rezago de Tickets por Responsable</h3>
+      <div class="warn-box" style="margin-bottom:18px;">Mayor número = mayor acumulación pendiente. Fuente: hoja <strong>Product Backlog Soportes</strong>. Total: <strong id="backlog-resp-total"></strong> tickets distribuidos en <strong id="backlog-resp-personas"></strong> personas.</div>
+
+      <!-- Alerta top 3 con más rezago -->
+      <div id="backlog-resp-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;"></div>
+
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th>Responsable</th>
+                <th style="width:70px;text-align:right;">Pendientes</th>
+                <th>Rezago</th>
+              </tr>
+            </thead>
+            <tbody id="backlog-resp-tbody"></tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:320px;">
+          <canvas id="chartBacklogResp"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CERRADOS / DONE -->
+  <div id="tab-cerrados" class="tab-content">
+    <div class="info-box"><strong>Tickets Atendidos (DONE):</strong> Histórico mensual de tickets resueltos. Fuente: hoja <strong>TD_DONE</strong>.</div>
+
+    <div class="panel" style="margin-bottom:22px;">
+      <h3>📅 Historial de Cierres por Día</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fecha</th><th>Total acumulado</th><th>Cerrados ese día</th><th>Tendencia</th></tr></thead>
+          <tbody id="historial-cerrados-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>✅ Tickets Atendidos (DONE) por Mes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mes</th><th>Atendidos</th><th>% del Total</th></tr></thead>
+            <tbody id="cerrados-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;justify-content:center;">
+        <h3>📈 Tendencia de Cierres por Mes</h3>
+        <div style="position:relative;flex:1;min-height:280px;">
+          <canvas id="chartCerrados"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP RESPONSABLES -->
+    <div class="panel">
+      <h3>🏆 Top Responsables — Tickets Atendidos por Persona</h3>
+      <div class="info-box" style="margin-bottom:18px;">Muestra quién ha atendido más tickets en el histórico total. Fuente: tabla dinámica en hoja <strong>TD_DONE</strong>.</div>
+
+      <!-- Medallas top 3 -->
+      <div id="responsables-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;"></div>
+
+      <div class="grid-2">
+        <!-- Tabla ranking completo -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th>Responsable</th>
+                <th style="width:70px;text-align:right;">Tickets</th>
+                <th>Participación</th>
+              </tr>
+            </thead>
+            <tbody id="responsables-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Gráfica horizontal -->
+        <div style="position:relative;min-height:380px;">
+          <canvas id="chartResponsables"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: BITÁCORA -->
+  <div id="tab-bitacora" class="tab-content">
+    <div class="info-box"><strong>¿Qué es la Bitácora?</strong> Registro diario de cómo evolucionan los indicadores. Se actualiza automáticamente cada 6pm de lunes a viernes.</div>
+    <div class="panel">
+      <h3>📅 Registro Diario de Indicadores</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tickets Activos</th>
+              <th>Atendidos</th>
+              <th>Aprobación Cliente</th>
+              <th>Backlog</th>
+            </tr>
+          </thead>
+          <tbody id="bitacora-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>📊 Evolución de Indicadores</h3>
+      <div style="position:relative;height:280px;">
+        <canvas id="chartBitacora"></canvas>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>📉 Variación vs día anterior</h3>
+      <div id="variacion-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Reporte generado automáticamente · <strong>Seguritech — Área de Mantenimiento DIT</strong> · Datos provenientes del sistema de seguimiento JIRA
+</div>
+
+<script>
+// ─── BITÁCORA ────────────────────────────────────────────────────────────────
+const BITACORA = [
+  { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
+  { fecha:'15 – 30 Jun 2026', activos:42, cerrados:1515, aprobacion:33, backlog:144 },
+  { fecha:'15 Jun 2026', activos:42, cerrados:1515, aprobacion:32, desplegar:5, backlog:145 },
+];
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const SOPORTES = [
+  {loc:'Baja California', prog:2, aprob:1, qa:0, bloq:0, reabierto:2, bkdev:3, total:8},
+  {loc:'Chiapas',         prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
+  {loc:'Colima',          prog:2, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:2, total:6},
+  {loc:'Guanajuato',      prog:2, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:1, total:5},
+  {loc:'Hidalgo',         prog:1, aprob:1, qa:0, bloq:1, reabierto:0, bkdev:0, total:3},
+  {loc:'Jalisco',         prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:3},
+  {loc:'Quintana Roo',    prog:3, aprob:1, qa:0, bloq:2, reabierto:1, bkdev:0, total:7},
+  {loc:'Sonora',          prog:2, aprob:0, qa:7, bloq:0, reabierto:0, bkdev:0, total:9},
+];
+
+// TD_Aprobacion_Cliente — Localidad | # Tickets
+const APROBACION = [
+  {loc:'Colima',           n:9},
+  {loc:'Jalisco',          n:8},
+  {loc:'Guanajuato',       n:4},
+  {loc:'Baja California',  n:3},
+  {loc:'Sonora',           n:3},
+  {loc:'Hidalgo',          n:2},
+  {loc:'CDMX',             n:1},
+  {loc:'Coahuila',         n:1},
+  {loc:'Chiapas',          n:1},
+  {loc:'Zacatecas',        n:1},
+];
+const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
+
+// TD_DONE — Persona asignada | # tickets atendidos (filtro pivot TD_DONE)
+const RESPONSABLES = [
+  {nom:'Yoshio Adán Villegas Guevara',      n:78},
+  {nom:'Omar Villalpando',                  n:56},
+  {nom:'Manuel A. Domínguez Enríquez',      n:54},
+  {nom:'Leonardo Lucio Perez',              n:38},
+  {nom:'Silvestre Cerrato',                 n:34},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:28},
+  {nom:'Ivan Perez Felipe',                 n:28},
+  {nom:'Aníbal Argüelles García',           n:25},
+  {nom:'Jesus Feria Ortiz',                 n:15},
+  {nom:'Rodrigo Gabriel Gras',              n:7},
+  {nom:'Gibran Esaú Solís Valenzuela',      n:3},
+];
+const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
+
+// TD_DONE — Mes | # de Atendidos
+const CERRADOS = [
+  {loc:'2025-01 · Enero',     n:1},
+  {loc:'2025-11 · Noviembre', n:2},
+  {loc:'2025-12 · Diciembre', n:106},
+  {loc:'2026-01 · Enero',     n:163},
+  {loc:'2026-02 · Febrero',   n:200},
+  {loc:'2026-03 · Marzo',     n:387},
+  {loc:'2026-04 · Abril',     n:204},
+  {loc:'2026-05 · Mayo',      n:267},
+  {loc:'2026-06 · Junio',     n:185},
+];
+const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
+
+// Product Backlog Soportes — Persona asignada | # tickets pendientes (144 total)
+const BACKLOG_RESP = [
+  {nom:'Eunice Anais Arevalo Avalos',           n:14},
+  {nom:'Edgar Elias Cuero de la Cruz',          n:12},
+  {nom:'Leonardo Lucio Perez',                  n:11},
+  {nom:'Gibran Esaú Solís Valenzuela',          n:11},
+  {nom:'Yoshio Adán Villegas Guevara',          n:11},
+  {nom:'Manuel A. Domínguez Enríquez',          n:9},
+  {nom:'Silvestre Cerrato',                     n:5},
+  {nom:'Ivan Perez Felipe',                     n:5},
+  {nom:'Roberto Alonso Cota Gómez',             n:5},
+  {nom:'Jorge Octavio Paz Hernandez',           n:4},
+  {nom:'Jonathan Aristeo Lozano Hernandez',     n:4},
+  {nom:'Mariano Conte',                         n:4},
+  {nom:'Omar Villalpando',                      n:3},
+  {nom:'Luz Adriana Zamora Rodriguez',          n:3},
+  {nom:'Israel Gutiérrez Mata',                 n:3},
+  {nom:'Bruno Antonio González Uribe',          n:3},
+  {nom:'Jesus Feria Ortiz',                     n:3},
+  {nom:'Pedro Emanuel Jimenez Oscoy',           n:2},
+  {nom:'Juan Pablo Sandoval Cruz',              n:2},
+  {nom:'Carlos Eduardo Chavez Ordaz',           n:2},
+  {nom:'Angel Ulises Velasquez Hernandez',      n:2},
+  {nom:'Juan Jaime Soni Larios',                n:2},
+  {nom:'Eliel Velazquez Zenil',                 n:2},
+  {nom:'Alejandra Magaña Lopez',                n:2},
+  {nom:'Francisco Javier Bañuelos Esquivel',    n:1},
+  {nom:'Estif Fabian Arenas Pamplona',          n:1},
+  {nom:'Aníbal Argüelles García',               n:1},
+  {nom:'Susana Jacqueline Arroyo Juarez',       n:1},
+  {nom:'Juan Manuel Olguin Colin',              n:1},
+  {nom:'Rodrigo Gabriel Gras',                  n:1},
+  {nom:'Joaquin Di Santo',                      n:1},
+  {nom:'Juan Manuel Salazar Castro',            n:1},
+  {nom:'Luis Antonio Hernández Martínez',       n:1},
+  {nom:'Sandra Estrada Lopez',                  n:1},
+  {nom:'Gabriel Alejandro Ramos Salazar',       n:1},
+  {nom:'Pablo Iván Ramírez Mendoza',            n:1},
+];
+const TOTAL_BACKLOG_RESP = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
+
+// TD_Product backlog
+const BACKLOG = [
+  {loc:'Jalisco',          n:35},
+  {loc:'Quintana Roo',     n:26},
+  {loc:'Guanajuato',       n:18},
+  {loc:'Colima',           n:16},
+  {loc:'Hidalgo',          n:14},
+  {loc:'Baja California',  n:9},
+  {loc:'Sonora',           n:9},
+  {loc:'Zacatecas',        n:7},
+  {loc:'Seguritech',       n:5},
+  {loc:'Chiapas',          n:5},
+];
+const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
+
+const COLORS_LOC = ['#3182ce','#38a169','#dd6b20','#805ad5','#e53e3e','#d69e2e','#319795','#e53e3e','#718096','#2b6cb0'];
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function showTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function pill(n, css){
+  return n > 0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#cbd5e0">—</span>`;
+}
+function pbar(n, total, color='#3182ce'){
+  const pct = total > 0 ? ((n/total)*100).toFixed(1) : 0;
+  return `<div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div><span class="pct-lbl">${pct}%</span></div>`;
+}
+
+// ─── RENDER: RESUMEN ──────────────────────────────────────────────────────────
+function renderResumen(){
+  const tb = document.getElementById('resumen-tbody');
+  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totT=0;
+  let html='';
+  SOPORTES.forEach(r=>{
+    totP+=r.prog; totA+=r.aprob; totQ+=r.qa;
+    totB+=r.bloq; totR+=r.reabierto; totBK+=r.bkdev; totT+=r.total;
+    html+=`<tr>
+      <td><strong>${r.loc}</strong></td>
+      <td>${pill(r.prog,'pill-progreso')}</td>
+      <td>${pill(r.aprob,'pill-aprobacion')}</td>
+      <td>${pill(r.qa,'pill-qa')}</td>
+      <td>${pill(r.bloq,'pill-bloqueado')}</td>
+      <td>${pill(r.reabierto,'pill-reabierto')}</td>
+      <td>${pill(r.bkdev,'pill-backlog')}</td>
+      <td><strong>${r.total}</strong></td>
+    </tr>`;
+  });
+  html+=`<tr class="tr-total">
+    <td>TOTAL ACTIVOS</td>
+    <td>${pill(totP,'pill-progreso')}</td>
+    <td>${pill(totA,'pill-aprobacion')}</td>
+    <td>${pill(totQ,'pill-qa')}</td>
+    <td>${pill(totB,'pill-bloqueado')}</td>
+    <td>${pill(totR,'pill-reabierto')}</td>
+    <td>${pill(totBK,'pill-backlog')}</td>
+    <td><strong>${totT}</strong></td>
+  </tr>`;
+  tb.innerHTML = html;
+}
+
+// ─── RENDER: LOC CARDS ───────────────────────────────────────────────────────
+function renderLocCards(){
+  const wrap = document.getElementById('loc-cards');
+  const defs = [
+    {key:'prog',     label:'En Progreso',    css:'pill-progreso'},
+    {key:'aprob',    label:'Aprob. Cliente', css:'pill-aprobacion'},
+    {key:'qa',       label:'En QA',          css:'pill-qa'},
+    {key:'bloq',     label:'Bloqueado',      css:'pill-bloqueado'},
+    {key:'reabierto',label:'Reabierto',      css:'pill-reabierto'},
+    {key:'bkdev',    label:'Backlog Dev',    css:'pill-backlog'},
+  ];
+  let html='';
+  SOPORTES.forEach(r=>{
+    let rows = defs.filter(s=>r[s.key]>0)
+      .map(s=>`<div class="loc-row"><span class="lc-label">${s.label}</span><span class="pill ${s.css}">${r[s.key]}</span></div>`).join('');
+    if(!rows) rows=`<div style="font-size:.78rem;color:#a0aec0">Sin tickets activos</div>`;
+    html+=`<div class="loc-card"><h4>📍 ${r.loc} <span style="color:#a0aec0;font-weight:400;font-size:.8rem">(${r.total})</span></h4>${rows}</div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+// ─── RENDER: ACTIVOS ──────────────────────────────────────────────────────────
+function renderActivos(){
+  const tb = document.getElementById('activos-tbody');
+  let html='';
+  SOPORTES.forEach(r=>{
+    html+=`<tr>
+      <td><strong>${r.loc}</strong></td>
+      <td>${pill(r.prog,'pill-progreso')}</td>
+      <td>${pill(r.aprob,'pill-aprobacion')}</td>
+      <td>${pill(r.qa,'pill-qa')}</td>
+      <td>${pill(r.bloq,'pill-bloqueado')}</td>
+      <td>${pill(r.reabierto,'pill-reabierto')}</td>
+      <td>${pill(r.bkdev,'pill-backlog')}</td>
+      <td><strong>${r.total}</strong></td>
+    </tr>`;
+  });
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: APROBACIÓN CLIENTE ──────────────────────────────────────────────
+function renderAprobacion(){
+  // Corte date
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const h=new Date();
+  document.getElementById('aprobacion-corte').textContent=`Corte: ${h.getDate()} ${meses[h.getMonth()].substring(0,3)} ${h.getFullYear()}`;
+
+  const sorted=[...APROBACION].sort((a,b)=>b.n-a.n);
+  const MAX=sorted[0].n;
+  const prom=(TOTAL_APROBACION/APROBACION.length).toFixed(1);
+  const maxLocs=sorted.filter(r=>r.n===MAX).map(r=>r.loc).join('/');
+
+  // KPI cards
+  const kpis=[
+    {num:TOTAL_APROBACION, lbl:'Total incidentes',   col:'#dd6b20'},
+    {num:APROBACION.length,lbl:'Localidades',         col:'#2d3748'},
+    {num:prom,             lbl:'Promedio por loc.',   col:'#2d3748'},
+    {num:MAX,              lbl:`Máximo\n(${maxLocs})`,col:'#e53e3e'},
+  ];
+  document.getElementById('aprobacion-kpis').innerHTML=kpis.map(k=>`
+    <div style="background:#f7fafc;border-radius:10px;padding:16px;text-align:center;border:1px solid #e2e8f0;">
+      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
+      <div style="font-size:.75rem;color:#718096;margin-top:6px;white-space:pre-line;">${k.lbl}</div>
+    </div>`).join('');
+
+  // Tabla
+  const tb=document.getElementById('aprobacion-tbody');
+  let html='';
+  sorted.forEach(r=>{
+    const pct=((r.n/TOTAL_APROBACION)*100).toFixed(0);
+    const barW=Math.round((r.n/MAX)*100);
+    const col=r.n>=10?'#e53e3e':r.n>=5?'#dd6b20':'#f6ad55';
+    html+=`<tr>
+      <td style="font-weight:500;">${r.loc}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:10px;overflow:hidden;">
+            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
+          </div>
+          <span style="font-size:.8rem;color:#718096;min-width:32px;">${pct}%</span>
+        </div>
+      </td>
+      <td style="text-align:right;font-weight:700;color:${col};font-size:1rem;">${r.n}</td>
+    </tr>`;
+  });
+  html+=`<tr class="tr-total"><td>TOTAL</td><td></td><td style="text-align:right;">${TOTAL_APROBACION}</td></tr>`;
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: BACKLOG ──────────────────────────────────────────────────────────
+function renderBacklog(){
+  const tb = document.getElementById('backlog-tbody');
+  document.getElementById('backlog-title').textContent = `📌 Backlog por Localidad (${TOTAL_BACKLOG} incidentes totales)`;
+  let html='';
+  BACKLOG.sort((a,b)=>b.n-a.n).forEach(r=>{
+    const color = r.n>=40?'#e53e3e':r.n>=25?'#dd6b20':r.n>=15?'#d69e2e':'#718096';
+    html+=`<tr><td><strong>${r.loc}</strong></td><td><strong style="font-size:1rem;color:${color}">${r.n}</strong></td><td>${pbar(r.n,TOTAL_BACKLOG,color)}</td></tr>`;
+  });
+  html+=`<tr class="tr-total"><td>TOTAL</td><td>${TOTAL_BACKLOG}</td><td></td></tr>`;
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: CERRADOS ─────────────────────────────────────────────────────────
+function renderCerrados(){
+  const tb = document.getElementById('cerrados-tbody');
+  let html='';
+  CERRADOS.forEach(r=>{
+    html+=`<tr><td><strong>${r.loc}</strong></td><td><span class="pill pill-cerrado">${r.n}</span></td><td>${pbar(r.n,TOTAL_CERRADOS,'#38a169')}</td></tr>`;
+  });
+  html+=`<tr class="tr-total"><td>TOTAL</td><td><span class="pill pill-cerrado">${TOTAL_CERRADOS.toLocaleString()}</span></td><td></td></tr>`;
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: HISTORIAL CERRADOS ───────────────────────────────────────────────
+function renderHistorialCerrados(){
+  const tb = document.getElementById('historial-cerrados-tbody');
+  let html='';
+  BITACORA.forEach((r,i)=>{
+    const prev = BITACORA[i-1];
+    const delta = prev ? r.cerrados - prev.cerrados : r.cerrados;
+    const isLast = i===BITACORA.length-1;
+    const rowBg = isLast?'#f0fff4':(i%2===0?'#fff':'#f7fafc');
+    let tend='';
+    if(i===0) tend=`<span style="color:#a0aec0;font-size:.8rem;">— base</span>`;
+    else if(delta>0) tend=`<span style="color:#38a169;font-weight:600;">▲ ${delta}</span>`;
+    else if(delta<0) tend=`<span style="color:#e53e3e;font-weight:600;">▼ ${Math.abs(delta)}</span>`;
+    else tend=`<span style="color:#a0aec0;">= sin cambio</span>`;
+    html+=`<tr style="background:${rowBg}${isLast?';font-weight:700':''}">
+      <td>${r.fecha}</td>
+      <td>${r.cerrados.toLocaleString()}</td>
+      <td style="text-align:center">${i===0?'—':(delta>0?'+'+delta:delta)}</td>
+      <td>${tend}</td>
+    </tr>`;
+  });
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
+function renderBitacora(){
+  // Tabla
+  const tb=document.getElementById('bitacora-tbody');
+  let html='';
+  [...BITACORA].reverse().forEach((r,i)=>{
+    const isLast=(i===0);
+    html+=`<tr${isLast?' style="background:#f0fff4;font-weight:700"':''}>
+      <td>${r.fecha}</td>
+      <td>${r.activos}</td>
+      <td>${r.cerrados.toLocaleString()}</td>
+      <td>${r.aprobacion}</td>
+      <td>${r.backlog}</td>
+    </tr>`;
+  });
+  tb.innerHTML=html;
+
+  // Variación vs día anterior
+  const last=BITACORA[BITACORA.length-1];
+  const prev=BITACORA.length>1?BITACORA[BITACORA.length-2]:last;
+  const defs=[
+    {lbl:'Tickets Activos', val:last.activos,    delta:last.activos-prev.activos,       col:'#3182ce'},
+    {lbl:'Atendidos',       val:last.cerrados,   delta:last.cerrados-prev.cerrados,     col:'#38a169'},
+    {lbl:'Aprobación',      val:last.aprobacion, delta:last.aprobacion-prev.aprobacion, col:'#dd6b20'},
+    {lbl:'Backlog',         val:last.backlog,     delta:last.backlog-prev.backlog,       col:'#718096'},
+  ];
+  document.getElementById('variacion-grid').innerHTML=defs.map(d=>{
+    const sign=d.delta>0?'+':'';
+    const dCol=d.lbl==='Tickets Activos'||d.lbl==='Backlog'
+      ?(d.delta<0?'#38a169':d.delta>0?'#e53e3e':'#a0aec0')
+      :(d.delta>0?'#38a169':d.delta<0?'#e53e3e':'#a0aec0');
+    return `<div style="background:#f7fafc;border-radius:10px;padding:18px;text-align:center;border:1px solid #e2e8f0;">
+      <div style="font-size:1.8rem;font-weight:800;color:${d.col}">${d.val.toLocaleString()}</div>
+      <div style="font-size:.75rem;color:#718096;margin:4px 0">${d.lbl}</div>
+      <div style="font-size:.9rem;font-weight:600;color:${dCol}">${sign}${d.delta} vs día anterior</div>
+    </div>`;
+  }).join('');
+
+  // Chart Bitácora
+  const ctx=document.getElementById('chartBitacora').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:BITACORA.map(r=>r.fecha),
+      datasets:[
+        {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#3182ce',backgroundColor:'rgba(49,130,206,.1)',tension:.3,fill:true,pointRadius:4},
+        {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#dd6b20',backgroundColor:'rgba(221,107,32,.05)',tension:.3,pointRadius:4},
+        {label:'Backlog',    data:BITACORA.map(r=>r.backlog),     borderColor:'#718096',backgroundColor:'rgba(113,128,150,.05)',tension:.3,pointRadius:4},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:false,ticks:{stepSize:5}}}}
+  });
+}
+
+// ─── CHARTS: ESTADO Y LOCALIDAD ───────────────────────────────────────────────
+function initCharts(){
+  const estados=['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'];
+  const vals=[
+    SOPORTES.reduce((s,r)=>s+r.prog,0),
+    SOPORTES.reduce((s,r)=>s+r.aprob,0),
+    SOPORTES.reduce((s,r)=>s+r.qa,0),
+    SOPORTES.reduce((s,r)=>s+r.bloq,0),
+    SOPORTES.reduce((s,r)=>s+r.reabierto,0),
+    SOPORTES.reduce((s,r)=>s+r.bkdev,0),
+  ];
+  const colores=['#3182ce','#dd6b20','#38a169','#e53e3e','#d69e2e','#718096'];
+
+  new Chart(document.getElementById('chartEstado').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:estados,datasets:[{data:vals,backgroundColor:colores,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+  });
+
+  new Chart(document.getElementById('chartLocalidad').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:SOPORTES.map(r=>r.loc),
+      datasets:[{label:'Total tickets',data:SOPORTES.map(r=>r.total),backgroundColor:COLORS_LOC,borderRadius:5}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1}}}}
+  });
+
+  new Chart(document.getElementById('chartCerrados').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:CERRADOS.map(r=>r.loc),
+      datasets:[{label:'Atendidos',data:CERRADOS.map(r=>r.n),backgroundColor:'#38a169',borderRadius:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
+}
+
+// ─── RENDER: REZAGO POR RESPONSABLE ──────────────────────────────────────────
+function renderBacklogResp(){
+  const sorted = [...BACKLOG_RESP].sort((a,b)=>b.n-a.n);
+  const MAX = sorted[0].n;
+
+  document.getElementById('backlog-resp-total').textContent   = TOTAL_BACKLOG_RESP;
+  document.getElementById('backlog-resp-personas').textContent = sorted.length;
+
+  // Alerta top 3 con mayor rezago
+  const alertaIcons = ['🔴','🟠','🟡'];
+  const alertaLabels = ['Rezago crítico','Rezago alto','Rezago medio'];
+  const alertaColors = ['#e53e3e','#dd6b20','#d69e2e'];
+  document.getElementById('backlog-resp-podio').innerHTML = sorted.slice(0,3).map((r,i)=>`
+    <div style="background:#fffaf0;border-radius:12px;padding:18px;text-align:center;border:2px solid ${alertaColors[i]}55;">
+      <div style="font-size:1.4rem;margin-bottom:4px;">${alertaIcons[i]}</div>
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:${alertaColors[i]};font-weight:700;margin-bottom:6px;">${alertaLabels[i]}</div>
+      <div style="font-size:2rem;font-weight:800;color:${alertaColors[i]};line-height:1;">${r.n}</div>
+      <div style="font-size:.8rem;color:#4a5568;margin-top:8px;font-weight:600;">${r.nom}</div>
+      <div style="font-size:.72rem;color:#a0aec0;margin-top:4px;">${((r.n/TOTAL_BACKLOG_RESP)*100).toFixed(1)}% del total pendiente</div>
+    </div>`).join('');
+
+  // Tabla completa
+  const tb = document.getElementById('backlog-resp-tbody');
+  let html = '';
+  sorted.forEach((r,i)=>{
+    const pct  = ((r.n/TOTAL_BACKLOG_RESP)*100).toFixed(1);
+    const barW = Math.round((r.n/MAX)*100);
+    const col  = r.n>=10?'#e53e3e':r.n>=7?'#dd6b20':r.n>=4?'#d69e2e':'#718096';
+    const badge = r.n>=10
+      ? `<span style="background:#fed7d7;color:#742a2a;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;">CRÍTICO</span>`
+      : r.n>=7
+      ? `<span style="background:#feebc8;color:#7b341e;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;">ALTO</span>`
+      : '';
+    html+=`<tr>
+      <td style="text-align:center;color:#a0aec0;font-weight:600;">${i+1}</td>
+      <td>${r.nom} ${badge}</td>
+      <td style="text-align:right;font-weight:700;color:${col};font-size:.95rem;">${r.n}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;min-width:60px;">
+            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
+          </div>
+          <span style="font-size:.75rem;color:#718096;min-width:34px;">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html+=`<tr class="tr-total"><td></td><td>TOTAL PENDIENTE</td><td style="text-align:right;">${TOTAL_BACKLOG_RESP}</td><td></td></tr>`;
+  tb.innerHTML = html;
+
+  // Gráfica top 10 — colores por nivel de rezago
+  const top10 = sorted.slice(0,10);
+  new Chart(document.getElementById('chartBacklogResp').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels: top10.map(r=>r.nom.length>22?r.nom.substring(0,22)+'…':r.nom),
+      datasets:[{
+        label:'Tickets pendientes',
+        data: top10.map(r=>r.n),
+        backgroundColor: top10.map(r=>r.n>=10?'#e53e3e':r.n>=7?'#dd6b20':r.n>=4?'#d69e2e':'#718096'),
+        borderRadius:5
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      indexAxis:'y',
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.raw} tickets pendientes (${((c.raw/TOTAL_BACKLOG_RESP)*100).toFixed(1)}%)`}}
+      },
+      scales:{x:{beginAtZero:true,ticks:{stepSize:2}}}
+    }
+  });
+}
+
+// ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
+function renderResponsables(){
+  const sorted = [...RESPONSABLES].sort((a,b)=>b.n-a.n);
+  const MAX = sorted[0].n;
+  const medallas = ['🥇','🥈','🥉'];
+  const coloresMedalla = ['#d69e2e','#718096','#c05621'];
+
+  // Podio top 3
+  const podio = document.getElementById('responsables-podio');
+  podio.innerHTML = sorted.slice(0,3).map((r,i)=>`
+    <div style="background:#f7fafc;border-radius:12px;padding:18px;text-align:center;border:2px solid ${coloresMedalla[i]}22;">
+      <div style="font-size:2.2rem;margin-bottom:6px;">${medallas[i]}</div>
+      <div style="font-size:1.9rem;font-weight:800;color:${coloresMedalla[i]};line-height:1;">${r.n}</div>
+      <div style="font-size:.8rem;color:#4a5568;margin-top:8px;font-weight:600;">${r.nom}</div>
+      <div style="font-size:.72rem;color:#a0aec0;margin-top:4px;">${((r.n/TOTAL_RESPONSABLES)*100).toFixed(1)}% del total registrado</div>
+    </div>`).join('');
+
+  // Tabla ranking completo
+  const tb = document.getElementById('responsables-tbody');
+  let html = '';
+  sorted.forEach((r,i)=>{
+    const pct = ((r.n/TOTAL_RESPONSABLES)*100).toFixed(1);
+    const barW = Math.round((r.n/MAX)*100);
+    const col = i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':i<10?'#3182ce':'#a0aec0';
+    const rank = i<3 ? medallas[i] : `<span style="color:#a0aec0;font-weight:600;">${i+1}</span>`;
+    html+=`<tr>
+      <td style="text-align:center;">${rank}</td>
+      <td style="font-weight:${i<3?700:400}">${r.nom}</td>
+      <td style="text-align:right;font-weight:700;color:${col};font-size:.95rem;">${r.n}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;min-width:60px;">
+            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
+          </div>
+          <span style="font-size:.75rem;color:#718096;min-width:34px;">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html+=`<tr class="tr-total"><td></td><td>TOTAL REGISTRADO</td><td style="text-align:right;">${TOTAL_RESPONSABLES}</td><td></td></tr>`;
+  tb.innerHTML = html;
+
+  // Gráfica: top 10
+  const top10 = sorted.slice(0,10);
+  const ctxR = document.getElementById('chartResponsables').getContext('2d');
+  new Chart(ctxR,{
+    type:'bar',
+    data:{
+      labels: top10.map(r=>r.nom.length>22?r.nom.substring(0,22)+'…':r.nom),
+      datasets:[{
+        label:'Tickets atendidos',
+        data: top10.map(r=>r.n),
+        backgroundColor: top10.map((_,i)=>i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce'),
+        borderRadius:5
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} tickets (${((c.raw/TOTAL_RESPONSABLES)*100).toFixed(1)}%)`}}},
+      scales:{x:{beginAtZero:true,ticks:{stepSize:20}}}
+    }
+  });
+}
+
+// ─── BUSCAR EN TABLA ──────────────────────────────────────────────────────────
+function filtrarTabla(tbodyId,q){
+  document.getElementById(tbodyId).querySelectorAll('tr').forEach(tr=>{
+    tr.style.display=tr.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const hoy=new Date();
+  document.getElementById('badge-fecha').textContent=
+    `Actualizado: ${hoy.getDate()} ${meses[hoy.getMonth()]} ${hoy.getFullYear()} — ${hoy.getHours().toString().padStart(2,'0')}:${hoy.getMinutes().toString().padStart(2,'0')}`;
+  renderResumen();
+  renderActivos();
+  renderAprobacion();
+  renderBacklog();
+  renderBacklogResp();
+  renderCerrados();
+  renderResponsables();
+  renderHistorialCerrados();
+  renderBitacora();
+  initCharts();
+});
+</script>
+</body>
+</html>
