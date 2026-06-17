@@ -93,22 +93,22 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos" title="Tickets en atención activa actualmente">
-      <div class="num" id="kpi-activos">42</div>
+      <div class="num" id="kpi-activos">36</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atención ahora</div>
     </div>
     <div class="kpi kpi-cerrados" title="Total de tickets atendidos (DONE) histórico">
-      <div class="num" id="kpi-cerrados">1,527</div>
+      <div class="num" id="kpi-cerrados">1,539</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">194 en Junio 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">206 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion" title="Tickets listos, en espera de validación del cliente">
-      <div class="num" id="kpi-aprobacion">35</div>
+      <div class="num" id="kpi-aprobacion">31</div>
       <div class="lbl">Aprobación Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog" title="Incidentes registrados pendientes de iniciar atención">
-      <div class="num" id="kpi-backlog">142</div>
+      <div class="num" id="kpi-backlog">145</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -381,50 +381,50 @@
 // ─── BITÁCORA ────────────────────────────────────────────────────────────────
 const BITACORA = [
   { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
-  { fecha:'15 – 30 Jun 2026', activos:42, cerrados:1515, aprobacion:33, backlog:144 },
-  { fecha:'15 Jun 2026', activos:42, cerrados:1527, aprobacion:35, desplegar:5, backlog:133 },
+  { fecha:'16 – 30 Jun 2026', activos:36, cerrados:1539, aprobacion:32, backlog:143 },
+  { fecha:'17 Jun 2026', activos:36, cerrados:1539, aprobacion:31, desplegar:7, backlog:145 },
 ];
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 const SOPORTES = [
-  {loc:'Baja California', prog:2, aprob:1, qa:0, bloq:0, reabierto:2, bkdev:3, total:8},
-  {loc:'Chiapas',         prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
-  {loc:'Colima',          prog:2, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:2, total:6},
-  {loc:'Guanajuato',      prog:2, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:1, total:5},
-  {loc:'Hidalgo',         prog:1, aprob:1, qa:0, bloq:1, reabierto:0, bkdev:0, total:3},
+  {loc:'Baja California', prog:3, aprob:1, qa:1, bloq:0, reabierto:1, bkdev:1, total:7},
+  {loc:'Chiapas',         prog:0, aprob:0, qa:0, bloq:1, reabierto:0, bkdev:0, total:1},
+  {loc:'Colima',          prog:1, aprob:3, qa:0, bloq:0, reabierto:0, bkdev:1, total:5},
+  {loc:'Guanajuato',      prog:3, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:1, total:6},
+  {loc:'Hidalgo',         prog:2, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:0, total:2},
   {loc:'Jalisco',         prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:3},
-  {loc:'Quintana Roo',    prog:3, aprob:1, qa:0, bloq:2, reabierto:1, bkdev:0, total:7},
-  {loc:'Sonora',          prog:2, aprob:0, qa:7, bloq:0, reabierto:0, bkdev:0, total:9},
+  {loc:'Quintana Roo',    prog:0, aprob:0, qa:0, bloq:2, reabierto:1, bkdev:4, total:7},
+  {loc:'Sonora',          prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
 ];
 
 // TD_Aprobacion_Cliente — Localidad | # Tickets
 const APROBACION = [
-  {loc:'Colima',           n:10},
-  {loc:'Jalisco',          n:9},
-  {loc:'Guanajuato',       n:4},
-  {loc:'Baja California',  n:3},
-  {loc:'Sonora',           n:3},
-  {loc:'Hidalgo',          n:2},
-  {loc:'CDMX',             n:1},
-  {loc:'Coahuila',         n:1},
-  {loc:'Zacatecas',        n:1},
-  {loc:'Chiapas',          n:1},
+  {loc:'Jalisco', n:9},
+  {loc:'Colima', n:8},
+  {loc:'Sonora', n:4},
+  {loc:'Guanajuato', n:3},
+  {loc:'Baja California', n:2},
+  {loc:'CDMX', n:1},
+  {loc:'Coahuila', n:1},
+  {loc:'Hidalgo', n:1},
+  {loc:'Zacatecas', n:1},
+  {loc:'Chiapas', n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 
 // TD_DONE — Persona asignada | # tickets atendidos (filtro pivot TD_DONE)
 const RESPONSABLES = [
-  {nom:'Yoshio Adán Villegas Guevara',      n:83},
-  {nom:'Omar Villalpando',                  n:56},
-  {nom:'Manuel A. Domínguez Enríquez',      n:54},
-  {nom:'Leonardo Lucio Perez',              n:39},
-  {nom:'Silvestre Cerrato',                 n:35},
-  {nom:'Ivan Perez Felipe',                 n:29},
-  {nom:'Jonathan Aristeo Lozano Hernandez', n:28},
-  {nom:'Aníbal Argüelles García',           n:25},
-  {nom:'Jesus Feria Ortiz',                 n:15},
-  {nom:'Rodrigo Gabriel Gras',              n:7},
-  {nom:'Gibran Esaú Solís Valenzuela',      n:3},
+  {nom:'Jonathan A. Lozano Hernández', n:174},
+  {nom:'Manuel A. Domínguez Enríquez', n:140},
+  {nom:'Yoshio A. Villegas Guevara', n:83},
+  {nom:'Leonardo Lucio Perez', n:62},
+  {nom:'Omar Villalpando', n:58},
+  {nom:'Silvestre Cerrato', n:35},
+  {nom:'Ivan Perez Felipe', n:29},
+  {nom:'Aníbal Argüelles García', n:25},
+  {nom:'Jesus Feria Ortiz', n:16},
+  {nom:'Rodrigo Gabriel Gras', n:7},
+  {nom:'Gibrán E. Solís Valenzuela', n:3},
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 
@@ -438,47 +438,48 @@ const CERRADOS = [
   {loc:'2026-03 · Marzo',     n:387},
   {loc:'2026-04 · Abril',     n:204},
   {loc:'2026-05 · Mayo',      n:270},
-  {loc:'2026-06 · Junio',     n:194},
+  {loc:'2026-06 · Junio',     n:206},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 
 // Product Backlog Soportes — Persona asignada | # tickets pendientes (133 total)
 const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos',           n:14},
-  {nom:'Leonardo Lucio Perez',                  n:11},
-  {nom:'Gibran Esaú Solís Valenzuela',          n:11},
-  {nom:'Yoshio Adán Villegas Guevara',          n:11},
-  {nom:'Edgar Elias Cuero de la Cruz',          n:11},
-  {nom:'Manuel A. Domínguez Enríquez',          n:9},
-  {nom:'Ivan Perez Felipe',                     n:6},
-  {nom:'Silvestre Cerrato',                     n:5},
-  {nom:'Roberto Alonso Cota Gómez',             n:5},
-  {nom:'Jonathan Aristeo Lozano Hernandez',     n:4},
-  {nom:'Mariano Conte',                         n:4},
-  {nom:'Omar Villalpando',                      n:3},
-  {nom:'Luz Adriana Zamora Rodriguez',          n:3},
-  {nom:'Bruno Antonio González Uribe',          n:3},
-  {nom:'Jesus Feria Ortiz',                     n:3},
-  {nom:'Jorge Octavio Paz Hernandez',           n:3},
-  {nom:'Pedro Emanuel Jimenez Oscoy',           n:2},
-  {nom:'Israel Gutiérrez Mata',                 n:2},
-  {nom:'Juan Manuel Olguin Colin',              n:2},
-  {nom:'Juan Pablo Sandoval Cruz',              n:2},
-  {nom:'Carlos Eduardo Chavez Ordaz',           n:2},
-  {nom:'Angel Ulises Velasquez Hernandez',      n:2},
-  {nom:'Juan Jaime Soni Larios',                n:2},
-  {nom:'Eliel Velazquez Zenil',                 n:2},
-  {nom:'Francisco Javier Bañuelos Esquivel',    n:1},
-  {nom:'Estif Fabian Arenas Pamplona',          n:1},
-  {nom:'Aníbal Argüelles García',               n:1},
-  {nom:'Susana Jacqueline Arroyo Juarez',       n:1},
-  {nom:'Rodrigo Gabriel Gras',                  n:1},
-  {nom:'Joaquin Di Santo',                      n:1},
-  {nom:'Juan Manuel Ce/Acatl Salazar Castro',   n:1},
-  {nom:'Luis Antonio Hernández Martínez',       n:1},
-  {nom:'Sandra Estrada Lopez',                  n:1},
-  {nom:'Gabriel Alejandro Ramos Salazar',       n:1},
-  {nom:'Alejandra Magaña Lopez',                n:1},
+  {nom:'Eunice Anais Arevalo Avalos', n:14},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:13},
+  {nom:'Gibran Esaú Solís Valenzuela', n:11},
+  {nom:'Leonardo Lucio Perez', n:10},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:10},
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:8},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:7},
+  {nom:'Silvestre Cerrato', n:6},
+  {nom:'Omar Villalpando', n:5},
+  {nom:'Jesus Feria Ortiz', n:5},
+  {nom:'Roberto Alonso Cota Gómez', n:5},
+  {nom:'Ivan Perez Felipe', n:4},
+  {nom:'Angel Ulises Velasquez Hernandez', n:4},
+  {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:4},
+  {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:3},
+  {nom:'Pedro Emanuel Jimenez Oscoy', n:2},
+  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:2},
+  {nom:'Juan Pablo Sandoval Cruz', n:2},
+  {nom:'GRAS RODRIGO GABRIEL', n:2},
+  {nom:'Jorge Octavio Paz Hernandez', n:2},
+  {nom:'Carlos Eduardo Chavez Ordaz', n:2},
+  {nom:'Juan Jaime Soni Larios', n:2},
+  {nom:'VELAZQUEZ ZENIL ELIEL', n:2},
+  {nom:'Mariano Conte', n:2},
+  {nom:'Francisco Javier Bañuelos Esquivel', n:1},
+  {nom:'Estif Fabian Arenas Pamplona', n:1},
+  {nom:'Anibal Arguelles García', n:1},
+  {nom:'Susana Jacqueline Arroyo Juarez', n:1},
+  {nom:'Juan Manuel Olguin Colin', n:1},
+  {nom:'Joaquin Di Santo', n:1},
+  {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:1},
+  {nom:'Luis Antonio Hernández Martínez', n:1},
+  {nom:'Gabriel Alejandro Ramos Salazar', n:1},
+  {nom:'Alejandra Magaña Lopez', n:1},
+  {nom:'Dayamar Martinez', n:1},
+  {nom:'SALDIVAR ACEVEDO EMILIO CESAR', n:1},
 ];
 const TOTAL_BACKLOG_RESP = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
 
@@ -486,14 +487,14 @@ const TOTAL_BACKLOG_RESP = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
 const BACKLOG = [
   {loc:'Jalisco',          n:33},
   {loc:'Quintana Roo',     n:26},
-  {loc:'Guanajuato',       n:17},
-  {loc:'Colima',           n:15},
+  {loc:'Guanajuato',       n:21},
+  {loc:'Colima',           n:16},
   {loc:'Hidalgo',          n:15},
-  {loc:'Baja California',  n:9},
-  {loc:'Sonora',           n:9},
+  {loc:'Baja California',  n:10},
+  {loc:'Sonora',           n:8},
   {loc:'Zacatecas',        n:7},
-  {loc:'Seguritech',       n:6},
   {loc:'Chiapas',          n:5},
+  {loc:'Seguritech',       n:4},
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
 
@@ -704,245 +705,66 @@ function renderBitacora(){
 
   // Variación vs día anterior
   const last=BITACORA[BITACORA.length-1];
-  const prev=BITACORA.length>1?BITACORA[BITACORA.length-2]:last;
-  const defs=[
-    {lbl:'Tickets Activos', val:last.activos,    delta:last.activos-prev.activos,       col:'#3182ce'},
-    {lbl:'Atendidos',       val:last.cerrados,   delta:last.cerrados-prev.cerrados,     col:'#38a169'},
-    {lbl:'Aprobación',      val:last.aprobacion, delta:last.aprobacion-prev.aprobacion, col:'#dd6b20'},
-    {lbl:'Backlog',         val:last.backlog,     delta:last.backlog-prev.backlog,       col:'#718096'},
-  ];
-  document.getElementById('variacion-grid').innerHTML=defs.map(d=>{
-    const sign=d.delta>0?'+':'';
-    const dCol=d.lbl==='Tickets Activos'||d.lbl==='Backlog'
-      ?(d.delta<0?'#38a169':d.delta>0?'#e53e3e':'#a0aec0')
-      :(d.delta>0?'#38a169':d.delta<0?'#e53e3e':'#a0aec0');
-    return `<div style="background:#f7fafc;border-radius:10px;padding:18px;text-align:center;border:1px solid #e2e8f0;">
-      <div style="font-size:1.8rem;font-weight:800;color:${d.col}">${d.val.toLocaleString()}</div>
-      <div style="font-size:.75rem;color:#718096;margin:4px 0">${d.lbl}</div>
-      <div style="font-size:.9rem;font-weight:600;color:${dCol}">${sign}${d.delta} vs día anterior</div>
-    </div>`;
-  }).join('');
+  const prev = BITACORA[BITACORA.length-2];
+  const vg = document.getElementById('variacion-grid');
+  if(vg){
+    const fields=[
+      {key:'activos',    label:'Tickets Activos',   icon:'🔧', downGood:true},
+      {key:'cerrados',   label:'Atendidos (DONE)',   icon:'✅', downGood:false},
+      {key:'aprobacion', label:'Aprobación Cliente', icon:'🟠', downGood:false},
+      {key:'backlog',    label:'Backlog',             icon:'📌', downGood:true},
+    ];
+    let vhtml='';
+    fields.forEach(f=>{
+      const val=(last[f.key]||0), old=prev?(prev[f.key]||0):val, delta=val-old;
+      let color='#718096';
+      if(delta!==0){ const good=f.downGood?delta<0:delta>0; color=good?'#38a169':'#e53e3e'; }
+      const arrow=delta>0?'▲':delta<0?'▼':'=';
+      vhtml+=`<div style="background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+        <div style="font-size:1.5rem;margin-bottom:4px">${f.icon}</div>
+        <div style="font-size:1.4rem;font-weight:700;color:${color}">${arrow} ${Math.abs(delta)}</div>
+        <div style="font-size:.8rem;color:#4a5568;margin-top:4px">${f.label}</div>
+        <div style="font-size:.75rem;color:#a0aec0">${old.toLocaleString()} → ${val.toLocaleString()}</div>
+      </div>`;
+    });
+    vg.innerHTML=vhtml;
+  }
 
-  // Chart Bitácora
-  const ctx=document.getElementById('chartBitacora').getContext('2d');
-  new Chart(ctx,{
+  // Gráfica de evolución
+  const labels2=BITACORA.map(r=>r.fecha);
+  const ctx2=document.getElementById('chartBitacora').getContext('2d');
+  if(window._chartBit) window._chartBit.destroy();
+  window._chartBit=new Chart(ctx2,{
     type:'line',
     data:{
-      labels:BITACORA.map(r=>r.fecha),
+      labels:labels2,
       datasets:[
-        {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#3182ce',backgroundColor:'rgba(49,130,206,.1)',tension:.3,fill:true,pointRadius:4},
-        {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#dd6b20',backgroundColor:'rgba(221,107,32,.05)',tension:.3,pointRadius:4},
-        {label:'Backlog',    data:BITACORA.map(r=>r.backlog),     borderColor:'#718096',backgroundColor:'rgba(113,128,150,.05)',tension:.3,pointRadius:4},
+        {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#4299e1',backgroundColor:'rgba(66,153,225,.08)',fill:true,tension:.3,pointRadius:4},
+        {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#ed8936',backgroundColor:'rgba(237,137,54,.08)',fill:true,tension:.3,pointRadius:4},
+        {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    borderColor:'#9f7aea',backgroundColor:'rgba(159,122,234,.08)',fill:true,tension:.3,pointRadius:4},
       ]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:false,ticks:{stepSize:5}}}}
-  });
-}
-
-// ─── CHARTS: ESTADO Y LOCALIDAD ───────────────────────────────────────────────
-function initCharts(){
-  const estados=['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'];
-  const vals=[
-    SOPORTES.reduce((s,r)=>s+r.prog,0),
-    SOPORTES.reduce((s,r)=>s+r.aprob,0),
-    SOPORTES.reduce((s,r)=>s+r.qa,0),
-    SOPORTES.reduce((s,r)=>s+r.bloq,0),
-    SOPORTES.reduce((s,r)=>s+r.reabierto,0),
-    SOPORTES.reduce((s,r)=>s+r.bkdev,0),
-  ];
-  const colores=['#3182ce','#dd6b20','#38a169','#e53e3e','#d69e2e','#718096'];
-
-  new Chart(document.getElementById('chartEstado').getContext('2d'),{
-    type:'doughnut',
-    data:{labels:estados,datasets:[{data:vals,backgroundColor:colores,borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
-  });
-
-  new Chart(document.getElementById('chartLocalidad').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels:SOPORTES.map(r=>r.loc),
-      datasets:[{label:'Total tickets',data:SOPORTES.map(r=>r.total),backgroundColor:COLORS_LOC,borderRadius:5}]
-    },
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{stepSize:1}}}}
-  });
-
-  new Chart(document.getElementById('chartCerrados').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels:CERRADOS.map(r=>r.loc),
-      datasets:[{label:'Atendidos',data:CERRADOS.map(r=>r.n),backgroundColor:'#38a169',borderRadius:4}]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-  });
-}
-
-// ─── RENDER: REZAGO POR RESPONSABLE ──────────────────────────────────────────
-function renderBacklogResp(){
-  const sorted = [...BACKLOG_RESP].sort((a,b)=>b.n-a.n);
-  const MAX = sorted[0].n;
-
-  document.getElementById('backlog-resp-total').textContent   = TOTAL_BACKLOG_RESP;
-  document.getElementById('backlog-resp-personas').textContent = sorted.length;
-
-  // Alerta top 3 con mayor rezago
-  const alertaIcons = ['🔴','🟠','🟡'];
-  const alertaLabels = ['Rezago crítico','Rezago alto','Rezago medio'];
-  const alertaColors = ['#e53e3e','#dd6b20','#d69e2e'];
-  document.getElementById('backlog-resp-podio').innerHTML = sorted.slice(0,3).map((r,i)=>`
-    <div style="background:#fffaf0;border-radius:12px;padding:18px;text-align:center;border:2px solid ${alertaColors[i]}55;">
-      <div style="font-size:1.4rem;margin-bottom:4px;">${alertaIcons[i]}</div>
-      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:${alertaColors[i]};font-weight:700;margin-bottom:6px;">${alertaLabels[i]}</div>
-      <div style="font-size:2rem;font-weight:800;color:${alertaColors[i]};line-height:1;">${r.n}</div>
-      <div style="font-size:.8rem;color:#4a5568;margin-top:8px;font-weight:600;">${r.nom}</div>
-      <div style="font-size:.72rem;color:#a0aec0;margin-top:4px;">${((r.n/TOTAL_BACKLOG_RESP)*100).toFixed(1)}% del total pendiente</div>
-    </div>`).join('');
-
-  // Tabla completa
-  const tb = document.getElementById('backlog-resp-tbody');
-  let html = '';
-  sorted.forEach((r,i)=>{
-    const pct  = ((r.n/TOTAL_BACKLOG_RESP)*100).toFixed(1);
-    const barW = Math.round((r.n/MAX)*100);
-    const col  = r.n>=10?'#e53e3e':r.n>=7?'#dd6b20':r.n>=4?'#d69e2e':'#718096';
-    const badge = r.n>=10
-      ? `<span style="background:#fed7d7;color:#742a2a;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;">CRÍTICO</span>`
-      : r.n>=7
-      ? `<span style="background:#feebc8;color:#7b341e;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;">ALTO</span>`
-      : '';
-    html+=`<tr>
-      <td style="text-align:center;color:#a0aec0;font-weight:600;">${i+1}</td>
-      <td>${r.nom} ${badge}</td>
-      <td style="text-align:right;font-weight:700;color:${col};font-size:.95rem;">${r.n}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;min-width:60px;">
-            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
-          </div>
-          <span style="font-size:.75rem;color:#718096;min-width:34px;">${pct}%</span>
-        </div>
-      </td>
-    </tr>`;
-  });
-  html+=`<tr class="tr-total"><td></td><td>TOTAL PENDIENTE</td><td style="text-align:right;">${TOTAL_BACKLOG_RESP}</td><td></td></tr>`;
-  tb.innerHTML = html;
-
-  // Gráfica top 10 — colores por nivel de rezago
-  const top10 = sorted.slice(0,10);
-  new Chart(document.getElementById('chartBacklogResp').getContext('2d'),{
-    type:'bar',
-    data:{
-      labels: top10.map(r=>r.nom.length>22?r.nom.substring(0,22)+'…':r.nom),
-      datasets:[{
-        label:'Tickets pendientes',
-        data: top10.map(r=>r.n),
-        backgroundColor: top10.map(r=>r.n>=10?'#e53e3e':r.n>=7?'#dd6b20':r.n>=4?'#d69e2e':'#718096'),
-        borderRadius:5
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      indexAxis:'y',
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:c=>`${c.raw} tickets pendientes (${((c.raw/TOTAL_BACKLOG_RESP)*100).toFixed(1)}%)`}}
-      },
-      scales:{x:{beginAtZero:true,ticks:{stepSize:2}}}
-    }
-  });
-}
-
-// ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
-function renderResponsables(){
-  const sorted = [...RESPONSABLES].sort((a,b)=>b.n-a.n);
-  const MAX = sorted[0].n;
-  const medallas = ['🥇','🥈','🥉'];
-  const coloresMedalla = ['#d69e2e','#718096','#c05621'];
-
-  // Podio top 3
-  const podio = document.getElementById('responsables-podio');
-  podio.innerHTML = sorted.slice(0,3).map((r,i)=>`
-    <div style="background:#f7fafc;border-radius:12px;padding:18px;text-align:center;border:2px solid ${coloresMedalla[i]}22;">
-      <div style="font-size:2.2rem;margin-bottom:6px;">${medallas[i]}</div>
-      <div style="font-size:1.9rem;font-weight:800;color:${coloresMedalla[i]};line-height:1;">${r.n}</div>
-      <div style="font-size:.8rem;color:#4a5568;margin-top:8px;font-weight:600;">${r.nom}</div>
-      <div style="font-size:.72rem;color:#a0aec0;margin-top:4px;">${((r.n/TOTAL_RESPONSABLES)*100).toFixed(1)}% del total registrado</div>
-    </div>`).join('');
-
-  // Tabla ranking completo
-  const tb = document.getElementById('responsables-tbody');
-  let html = '';
-  sorted.forEach((r,i)=>{
-    const pct = ((r.n/TOTAL_RESPONSABLES)*100).toFixed(1);
-    const barW = Math.round((r.n/MAX)*100);
-    const col = i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':i<10?'#3182ce':'#a0aec0';
-    const rank = i<3 ? medallas[i] : `<span style="color:#a0aec0;font-weight:600;">${i+1}</span>`;
-    html+=`<tr>
-      <td style="text-align:center;">${rank}</td>
-      <td style="font-weight:${i<3?700:400}">${r.nom}</td>
-      <td style="text-align:right;font-weight:700;color:${col};font-size:.95rem;">${r.n}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;min-width:60px;">
-            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
-          </div>
-          <span style="font-size:.75rem;color:#718096;min-width:34px;">${pct}%</span>
-        </div>
-      </td>
-    </tr>`;
-  });
-  html+=`<tr class="tr-total"><td></td><td>TOTAL REGISTRADO</td><td style="text-align:right;">${TOTAL_RESPONSABLES}</td><td></td></tr>`;
-  tb.innerHTML = html;
-
-  // Gráfica: top 10
-  const top10 = sorted.slice(0,10);
-  const ctxR = document.getElementById('chartResponsables').getContext('2d');
-  new Chart(ctxR,{
-    type:'bar',
-    data:{
-      labels: top10.map(r=>r.nom.length>22?r.nom.substring(0,22)+'…':r.nom),
-      datasets:[{
-        label:'Tickets atendidos',
-        data: top10.map(r=>r.n),
-        backgroundColor: top10.map((_,i)=>i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce'),
-        borderRadius:5
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} tickets (${((c.raw/TOTAL_RESPONSABLES)*100).toFixed(1)}%)`}}},
-      scales:{x:{beginAtZero:true,ticks:{stepSize:20}}}
-    }
-  });
-}
-
-// ─── BUSCAR EN TABLA ──────────────────────────────────────────────────────────
-function filtrarTabla(tbodyId,q){
-  document.getElementById(tbodyId).querySelectorAll('tr').forEach(tr=>{
-    tr.style.display=tr.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}
   });
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const hoy=new Date();
-  document.getElementById('badge-fecha').textContent=
-    `Actualizado: ${hoy.getDate()} ${meses[hoy.getMonth()]} ${hoy.getFullYear()} — ${hoy.getHours().toString().padStart(2,'0')}:${hoy.getMinutes().toString().padStart(2,'0')}`;
+  const now=new Date();
+  const opts={day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'};
+  const el=document.getElementById('badge-fecha');
+  if(el) el.textContent=now.toLocaleDateString('es-MX',opts);
+
   renderResumen();
+  renderLocCards();
   renderActivos();
   renderAprobacion();
   renderBacklog();
-  renderBacklogResp();
   renderCerrados();
-  renderResponsables();
   renderHistorialCerrados();
   renderBitacora();
-  initCharts();
 });
 </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                              
