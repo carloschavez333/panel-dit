@@ -9,10 +9,10 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#eef2f7;color:#2d3748}
   .header{background:linear-gradient(135deg,#0d3340 0%,#1a5e75 60%,#2c7a8c 100%);color:#fff;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,.25)}
-  .header-left h1{font-size:1.65rem;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:14px;}
+  .header-left h1{font-size:1.65rem;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:14px}
   .header-left p{font-size:.85rem;opacity:.75;margin-top:5px}
   .header-right{text-align:right}
-  .header-date{font-size:.78rem;opacity:.65}
+  .header-date{font-size:.85rem;opacity:.8}
   .container{max-width:1380px;margin:0 auto;padding:28px 32px}
   .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}
   .kpi{background:#fff;border-radius:14px;padding:22px 18px;box-shadow:0 2px 10px rgba(0,0,0,.07);border-top:4px solid;text-align:center;transition:transform .2s,box-shadow .2s;cursor:default}
@@ -80,9 +80,9 @@
         <path d="M8 21h8M12 17v4"/>
         <path d="M7 10l3 3 4-4 3 2"/>
       </svg>
-      Panel Operativo — Soportes DIT Mtto
+      Panel Operativo &mdash; Soportes DIT Mtto
     </h1>
-    <p>Seguimiento de tickets activos, cerrados, en aprobación y backlog</p>
+    <p>Seguimiento de tickets activos, cerrados, en aprobaci&oacute;n y backlog</p>
   </div>
   <div class="header-right">
     <div class="header-date" id="badge-fecha"></div>
@@ -92,22 +92,22 @@
 <div class="container">
 
   <div class="kpi-grid">
-    <div class="kpi kpi-activos" title="Tickets en atención activa actualmente">
+    <div class="kpi kpi-activos">
       <div class="num" id="kpi-activos">36</div>
       <div class="lbl">Tickets Activos</div>
-      <div class="sub">En atención ahora</div>
+      <div class="sub">En atenci&oacute;n ahora</div>
     </div>
-    <div class="kpi kpi-cerrados" title="Total de tickets atendidos (DONE) histórico">
+    <div class="kpi kpi-cerrados">
       <div class="num" id="kpi-cerrados">1,539</div>
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-sub">206 en Junio 2026</div>
     </div>
-    <div class="kpi kpi-aprobacion" title="Tickets listos, en espera de validación del cliente">
+    <div class="kpi kpi-aprobacion">
       <div class="num" id="kpi-aprobacion">31</div>
-      <div class="lbl">Aprobación Cliente</div>
+      <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
-    <div class="kpi kpi-backlog" title="Incidentes registrados pendientes de iniciar atención">
+    <div class="kpi kpi-backlog">
       <div class="num" id="kpi-backlog">145</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
@@ -115,117 +115,77 @@
   </div>
 
   <div class="legend-bar">
-    <span>¿Qué significa cada color?</span>
-    <span class="pill pill-progreso">🔵 En Progreso</span>
-    <span class="pill pill-aprobacion">🟠 Aprobación Cliente</span>
-    <span class="pill pill-qa">🟢 En QA / Validación Técnica</span>
-    <span class="pill pill-bloqueado">🔴 Bloqueado</span>
-    <span class="pill pill-reabierto">🟡 Reabierto</span>
-    <span class="pill pill-backlog">⚫ Backlog Dev</span>
-    <span class="pill pill-cerrado">✅ Cerrado</span>
+    <span>&iquest;Qu&eacute; significa cada color?</span>
+    <span class="pill pill-progreso">&#x1F535; En Progreso</span>
+    <span class="pill pill-aprobacion">&#x1F7E0; Aprobaci&oacute;n Cliente</span>
+    <span class="pill pill-qa">&#x1F7E2; En QA / Validaci&oacute;n T&eacute;cnica</span>
+    <span class="pill pill-bloqueado">&#x1F534; Bloqueado</span>
+    <span class="pill pill-reabierto">&#x1F7E1; Reabierto</span>
+    <span class="pill pill-backlog">&#x26AB; Backlog Dev</span>
+    <span class="pill pill-cerrado">&#x2705; Cerrado</span>
   </div>
 
   <div class="tabs">
-    <div class="tab active" id="tab-btn-activos-resumen" onclick="showTab('resumen',this)">🔧 Tickets Activos</div>
-    <div class="tab" id="tab-btn-aprobacion" onclick="showTab('aprobacion',this)">🟠 Aprobación Cliente</div>
-    <div class="tab" id="tab-btn-backlog"    onclick="showTab('backlog',this)">📌 Backlog</div>
-    <div class="tab" id="tab-btn-cerrados"   onclick="showTab('cerrados',this)">✅ Atendidos (DONE)</div>
-    <div class="tab" onclick="showTab('bitacora',this)">📈 Bitácora Histórica</div>
+    <div class="tab active" onclick="showTab('resumen',this)">&#x1F527; Tickets Activos</div>
+    <div class="tab" onclick="showTab('aprobacion',this)">&#x1F7E0; Aprobaci&oacute;n Cliente</div>
+    <div class="tab" onclick="showTab('backlog',this)">&#x1F4CC; Backlog</div>
+    <div class="tab" onclick="showTab('cerrados',this)">&#x2705; Atendidos (DONE)</div>
+    <div class="tab" onclick="showTab('bitacora',this)">&#x1F4C8; Bit&aacute;cora Hist&oacute;rica</div>
   </div>
 
-  <!-- TAB: RESUMEN -->
+  <!-- TAB: TICKETS ACTIVOS (RESUMEN) -->
   <div id="tab-resumen" class="tab-content active">
     <div class="grid-2">
       <div class="panel">
-        <h3>🔄 Distribución de Tickets Activos por Estado</h3>
+        <h3>&#x1F504; Distribuci&oacute;n de Tickets Activos por Estado</h3>
+        <div style="font-size:.78rem;color:#718096;margin-bottom:10px;">Total activos: <strong id="total-dona" style="color:#3182ce;font-size:1rem;"></strong></div>
         <div style="position:relative;height:260px;">
           <canvas id="chartEstado"></canvas>
         </div>
       </div>
       <div class="panel">
-        <h3>📍 Tickets Activos por Localidad</h3>
+        <h3>&#x1F4CD; Tickets Activos por Localidad</h3>
+        <div style="font-size:.78rem;color:#718096;margin-bottom:10px;">Total localidades: <strong id="total-loc" style="color:#3182ce;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc" style="color:#e53e3e;font-size:1rem;"></strong></div>
         <div style="position:relative;height:260px;">
           <canvas id="chartLocalidad"></canvas>
         </div>
       </div>
     </div>
     <div class="panel">
-      <h3>📊 Tabla de Resumen — Todos los Estados por Localidad</h3>
+      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Localidad</th>
-              <th><span class="pill pill-progreso">En Progreso</span></th>
-              <th><span class="pill pill-aprobacion">Aprobación</span></th>
-              <th><span class="pill pill-qa">En QA</span></th>
-              <th><span class="pill pill-bloqueado">Bloqueado</span></th>
-              <th><span class="pill pill-reabierto">Reabierto</span></th>
-              <th><span class="pill pill-backlog">Backlog Dev</span></th>
-              <th>Total</th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th>Localidad</th>
+            <th><span class="pill pill-progreso">En Progreso</span></th>
+            <th><span class="pill pill-aprobacion">Aprobaci&oacute;n</span></th>
+            <th><span class="pill pill-qa">En QA</span></th>
+            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
+            <th><span class="pill pill-reabierto">Reabierto</span></th>
+            <th><span class="pill pill-backlog">Backlog Dev</span></th>
+            <th>Total</th>
+          </tr></thead>
           <tbody id="resumen-tbody"></tbody>
         </table>
       </div>
     </div>
+    <div id="loc-cards" style="display:none;"></div>
   </div>
 
-  <!-- TAB: ACTIVOS -->
-  <div id="tab-activos" class="tab-content">
-    <div class="info-box"><strong>¿Qué son los tickets activos?</strong> Son solicitudes que el equipo está atendiendo ahora mismo.</div>
-    <div class="warn-box">⚠ Los tickets <strong>BLOQUEADOS</strong> dependen de una acción externa. Los <strong>EN APROBACIÓN</strong> ya tienen solución y esperan confirmación del cliente.</div>
+  <!-- TAB: APROBACION CLIENTE -->
+  <div id="tab-aprobacion" class="tab-content">
+    <div style="background:#1a3a4a;color:#fff;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
+      &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Soporte por Localidad
+    </div>
+    <div id="aprobacion-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
     <div class="panel">
       <div class="t-header">
-        <h3 style="margin:0">🔧 Desglose por Localidad y Estado</h3>
-        <input class="search-box" type="text" placeholder="Buscar localidad..." onkeyup="filtrarTabla('activos-tbody',this.value)">
+        <h3 style="margin:0">&#x1F4CD; Distribuci&oacute;n por Localidad</h3>
+        <span id="aprobacion-corte" style="font-size:.78rem;color:#a0aec0;"></span>
       </div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Localidad</th>
-              <th>En Progreso</th>
-              <th>Aprobación Cliente</th>
-              <th>En QA</th>
-              <th>Bloqueado</th>
-              <th>Reabierto</th>
-              <th>Backlog Dev</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody id="activos-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: APROBACIÓN CLIENTE -->
-  <div id="tab-aprobacion" class="tab-content">
-
-    <!-- Header card -->
-    <div style="background:#1a3a4a;border-radius:12px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:12px;height:12px;background:#dd6b20;border-radius:2px;display:inline-block;"></span>
-        <span style="color:#fff;font-weight:700;font-size:1.05rem;">Aprobación por Cliente — Soporte por Localidad</span>
-      </div>
-      <span style="color:#90cdf4;font-size:.82rem;" id="aprobacion-corte"></span>
-    </div>
-
-    <!-- KPI mini-cards -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;" id="aprobacion-kpis"></div>
-
-    <!-- Tabla -->
-    <div class="panel">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:180px;">Localidad</th>
-              <th>Distribución</th>
-              <th style="width:50px;text-align:right;">#</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Localidad</th><th>Distribuci&oacute;n</th><th>#</th></tr></thead>
           <tbody id="aprobacion-tbody"></tbody>
         </table>
       </div>
@@ -234,158 +194,91 @@
 
   <!-- TAB: BACKLOG -->
   <div id="tab-backlog" class="tab-content">
-    <div class="info-box"><strong>¿Qué es el Backlog?</strong> Incidentes registrados que aún no han comenzado su atención formal.</div>
+    <div class="info-box"><strong>&iquest;Qu&eacute; es el Backlog?</strong> Incidentes registrados que a&uacute;n no han comenzado su atenci&oacute;n formal.</div>
     <div class="panel">
-      <div class="t-header">
-        <h3 style="margin:0" id="backlog-title">📌 Backlog por Localidad</h3>
-      </div>
+      <h3>&#x1F4CC; Backlog por Localidad</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Localidad</th><th>Incidentes Pendientes</th><th>Distribución</th></tr></thead>
+          <thead><tr><th>Localidad</th><th>Incidentes Pendientes</th><th>Distribuci&oacute;n</th></tr></thead>
           <tbody id="backlog-tbody"></tbody>
         </table>
       </div>
     </div>
-
-    <!-- REZAGO POR RESPONSABLE -->
     <div class="panel">
-      <h3>⚠️ Rezago de Tickets por Responsable</h3>
-      <div class="warn-box" style="margin-bottom:18px;">Mayor número = mayor acumulación pendiente. Fuente: hoja <strong>Product Backlog Soportes</strong>. Total: <strong id="backlog-resp-total"></strong> tickets distribuidos en <strong id="backlog-resp-personas"></strong> personas.</div>
-
-      <!-- Alerta top 3 con más rezago -->
-      <div id="backlog-resp-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;"></div>
-
-      <div class="grid-2">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:36px;">#</th>
-                <th>Responsable</th>
-                <th style="width:70px;text-align:right;">Pendientes</th>
-                <th>Rezago</th>
-              </tr>
-            </thead>
-            <tbody id="backlog-resp-tbody"></tbody>
-          </table>
-        </div>
-        <div style="position:relative;min-height:320px;">
-          <canvas id="chartBacklogResp"></canvas>
-        </div>
-      </div>
+      <h3>&#x26A0; Rezago de Tickets por Responsable</h3>
+      <div style="font-size:.78rem;color:#718096;margin-bottom:16px;">Mayor n&uacute;mero = mayor acumulaci&oacute;n pendiente &bull; Fuente: <strong>Product Backlog Soportes</strong></div>
+      <div id="rezago-ranking"></div>
     </div>
   </div>
 
-  <!-- TAB: CERRADOS / DONE -->
+  <!-- TAB: ATENDIDOS DONE -->
   <div id="tab-cerrados" class="tab-content">
-    <div class="info-box"><strong>Tickets Atendidos (DONE):</strong> Histórico mensual de tickets resueltos. Fuente: hoja <strong>TD_DONE</strong>.</div>
-
-    <div class="panel" style="margin-bottom:22px;">
-      <h3>📅 Historial de Cierres por Día</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Fecha</th><th>Total acumulado</th><th>Cerrados ese día</th><th>Tendencia</th></tr></thead>
-          <tbody id="historial-cerrados-tbody"></tbody>
-        </table>
+    <div class="info-box"><strong>Atendidos (DONE)</strong> son tickets completados y entregados al cliente. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+      <!-- Lista izquierda -->
+      <div class="panel" style="margin-bottom:0;">
+        <h3>Tickets por Mes</h3>
+        <div id="cerrados-lista"></div>
       </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="panel">
-        <h3>✅ Tickets Atendidos (DONE) por Mes</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Mes</th><th>Atendidos</th><th>% del Total</th></tr></thead>
-            <tbody id="cerrados-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="panel" style="display:flex;flex-direction:column;justify-content:center;">
-        <h3>📈 Tendencia de Cierres por Mes</h3>
+      <!-- Gráfica barras derecha -->
+      <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
+        <h3>Distribución Mensual</h3>
         <div style="position:relative;flex:1;min-height:280px;">
-          <canvas id="chartCerrados"></canvas>
+          <canvas id="chartCerradosBars"></canvas>
         </div>
       </div>
     </div>
-
-    <!-- TOP RESPONSABLES -->
-    <div class="panel">
-      <h3>🏆 Top Responsables — Tickets Atendidos por Persona</h3>
-      <div class="info-box" style="margin-bottom:18px;">Muestra quién ha atendido más tickets en el histórico total. Fuente: tabla dinámica en hoja <strong>TD_DONE</strong>.</div>
-
-      <!-- Medallas top 3 -->
-      <div id="responsables-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;"></div>
-
-      <div class="grid-2">
-        <!-- Tabla ranking completo -->
+    <div class="panel" style="margin-top:28px;">
+      <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
+      <div class="info-box" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: tabla din&aacute;mica en hoja TD_DONE.</div>
+      <!-- Podio top 3 -->
+      <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
+      <!-- Tabla + gráfica -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th style="width:36px;">#</th>
-                <th>Responsable</th>
-                <th style="width:70px;text-align:right;">Tickets</th>
-                <th>Participación</th>
-              </tr>
-            </thead>
-            <tbody id="responsables-tbody"></tbody>
+            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
+            <tbody id="historial-cerrados-tbody"></tbody>
           </table>
         </div>
-        <!-- Gráfica horizontal -->
-        <div style="position:relative;min-height:380px;">
-          <canvas id="chartResponsables"></canvas>
+        <div style="position:relative;min-height:320px;height:100%;">
+          <canvas id="chartTopResp"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB: BITÁCORA -->
+  <!-- TAB: BITACORA -->
   <div id="tab-bitacora" class="tab-content">
-    <div class="info-box"><strong>¿Qué es la Bitácora?</strong> Registro diario de cómo evolucionan los indicadores. Se actualiza automáticamente cada 6pm de lunes a viernes.</div>
+    <div class="info-box"><strong>Bit&aacute;cora Hist&oacute;rica</strong> registra el estado del panel en cada actualizaci&oacute;n. Permite ver tendencias y variaciones en el tiempo.</div>
     <div class="panel">
-      <h3>📅 Registro Diario de Indicadores</h3>
+      <h3>&#x1F4C8; Evoluci&oacute;n de Indicadores</h3>
+      <div style="position:relative;height:300px;margin-bottom:22px;">
+        <canvas id="chartBitacora"></canvas>
+      </div>
+    </div>
+    <div id="variacion-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;"></div>
+    <div class="panel">
+      <h3>&#x1F4CB; Detalle por Fecha</h3>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Tickets Activos</th>
-              <th>Atendidos</th>
-              <th>Aprobación Cliente</th>
-              <th>Backlog</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Fecha</th><th>Cerrados</th><th>Variaci&oacute;n</th><th>Tendencia</th></tr></thead>
           <tbody id="bitacora-tbody"></tbody>
         </table>
       </div>
     </div>
-    <div class="panel">
-      <h3>📊 Evolución de Indicadores</h3>
-      <div style="position:relative;height:280px;">
-        <canvas id="chartBitacora"></canvas>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>📉 Variación vs día anterior</h3>
-      <div id="variacion-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;"></div>
-    </div>
   </div>
 
 </div>
 
-<div class="footer">
-  Reporte generado automáticamente · <strong>Seguritech — Área de Mantenimiento DIT</strong> · Datos provenientes del sistema de seguimiento JIRA
-</div>
+<div class="footer">Panel Operativo &mdash; <strong>Soportes DIT Mtto</strong> &bull; Actualizaci&oacute;n autom&aacute;tica cada hora</div>
 
 <script>
-// ─── BITÁCORA ────────────────────────────────────────────────────────────────
 const BITACORA = [
   { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
   { fecha:'16 – 30 Jun 2026', activos:36, cerrados:1539, aprobacion:32, backlog:143 },
   { fecha:'17 Jun 2026', activos:36, cerrados:1539, aprobacion:31, desplegar:7, backlog:145 },
 ];
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
 const SOPORTES = [
   {loc:'Baja California', prog:3, aprob:1, qa:1, bloq:0, reabierto:1, bkdev:1, total:7},
   {loc:'Chiapas',         prog:0, aprob:0, qa:0, bloq:1, reabierto:0, bkdev:0, total:1},
@@ -396,8 +289,7 @@ const SOPORTES = [
   {loc:'Quintana Roo',    prog:0, aprob:0, qa:0, bloq:2, reabierto:1, bkdev:4, total:7},
   {loc:'Sonora',          prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
 ];
-
-// TD_Aprobacion_Cliente — Localidad | # Tickets
+const TOTAL_ACTIVOS = 36;
 const APROBACION = [
   {loc:'Jalisco', n:9},
   {loc:'Colima', n:8},
@@ -408,47 +300,40 @@ const APROBACION = [
   {loc:'Coahuila', n:1},
   {loc:'Hidalgo', n:1},
   {loc:'Zacatecas', n:1},
-  {loc:'Chiapas', n:1},
+  {loc:'Chiapas', n:1}
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
-
-// TD_DONE — Persona asignada | # tickets atendidos (filtro pivot TD_DONE)
 const RESPONSABLES = [
-  {nom:'Jonathan A. Lozano Hernández', n:174},
-  {nom:'Manuel A. Domínguez Enríquez', n:140},
-  {nom:'Yoshio A. Villegas Guevara', n:83},
-  {nom:'Leonardo Lucio Perez', n:62},
+  {nom:'Yoshio Adán Villegas Guevara', n:83},
   {nom:'Omar Villalpando', n:58},
+  {nom:'Manuel A. Domínguez Enríquez', n:54},
+  {nom:'Leonardo Lucio Perez', n:39},
   {nom:'Silvestre Cerrato', n:35},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:29},
   {nom:'Ivan Perez Felipe', n:29},
   {nom:'Aníbal Argüelles García', n:25},
   {nom:'Jesus Feria Ortiz', n:16},
-  {nom:'Rodrigo Gabriel Gras', n:7},
-  {nom:'Gibrán E. Solís Valenzuela', n:3},
+  {nom:'Rodrigo Gabriel Gras', n:7}
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
-
-// TD_DONE — Mes | # de Atendidos
 const CERRADOS = [
-  {loc:'2025-01 · Enero',     n:1},
-  {loc:'2025-11 · Noviembre', n:2},
-  {loc:'2025-12 · Diciembre', n:106},
-  {loc:'2026-01 · Enero',     n:163},
-  {loc:'2026-02 · Febrero',   n:200},
-  {loc:'2026-03 · Marzo',     n:387},
-  {loc:'2026-04 · Abril',     n:204},
-  {loc:'2026-05 · Mayo',      n:270},
-  {loc:'2026-06 · Junio',     n:206},
+  {loc:'2025-01 - Enero', n:1},
+  {loc:'2025-11 - Noviembre', n:2},
+  {loc:'2025-12 - Diciembre', n:106},
+  {loc:'2026-01 - Enero', n:163},
+  {loc:'2026-02 - Febrero', n:200},
+  {loc:'2026-03 - Marzo', n:387},
+  {loc:'2026-04 - Abril', n:204},
+  {loc:'2026-05 - Mayo', n:270},
+  {loc:'2026-06 - Junio', n:206}
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
-
-// Product Backlog Soportes — Persona asignada | # tickets pendientes (133 total)
 const BACKLOG_RESP = [
   {nom:'Eunice Anais Arevalo Avalos', n:14},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:13},
   {nom:'Gibran Esaú Solís Valenzuela', n:11},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:11},
   {nom:'Leonardo Lucio Perez', n:10},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:10},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:8},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:7},
   {nom:'Silvestre Cerrato', n:6},
@@ -466,7 +351,6 @@ const BACKLOG_RESP = [
   {nom:'Jorge Octavio Paz Hernandez', n:2},
   {nom:'Carlos Eduardo Chavez Ordaz', n:2},
   {nom:'Juan Jaime Soni Larios', n:2},
-  {nom:'VELAZQUEZ ZENIL ELIEL', n:2},
   {nom:'Mariano Conte', n:2},
   {nom:'Francisco Javier Bañuelos Esquivel', n:1},
   {nom:'Estif Fabian Arenas Pamplona', n:1},
@@ -477,51 +361,55 @@ const BACKLOG_RESP = [
   {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
   {nom:'Gabriel Alejandro Ramos Salazar', n:1},
+  {nom:'VELAZQUEZ ZENIL ELIEL', n:1},
   {nom:'Alejandra Magaña Lopez', n:1},
   {nom:'Dayamar Martinez', n:1},
   {nom:'SALDIVAR ACEVEDO EMILIO CESAR', n:1},
+  {nom:'Hugo Cesar Rivero Rodriguez', n:1},
+  {nom:'Sin responsable asignado', n:6}
 ];
-const TOTAL_BACKLOG_RESP = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
-
-// TD_Product backlog
 const BACKLOG = [
-  {loc:'Jalisco',          n:33},
-  {loc:'Quintana Roo',     n:26},
-  {loc:'Guanajuato',       n:21},
-  {loc:'Colima',           n:16},
-  {loc:'Hidalgo',          n:15},
-  {loc:'Baja California',  n:10},
-  {loc:'Sonora',           n:8},
-  {loc:'Zacatecas',        n:7},
-  {loc:'Chiapas',          n:5},
-  {loc:'Seguritech',       n:4},
+  {loc:'Jalisco', n:33},
+  {loc:'Quintana Roo', n:26},
+  {loc:'Guanajuato', n:21},
+  {loc:'Colima', n:16},
+  {loc:'Hidalgo', n:15},
+  {loc:'Baja California', n:10},
+  {loc:'Sonora', n:8},
+  {loc:'Zacatecas', n:8},
+  {loc:'Seguritech', n:4},
+  {loc:'Chiapas', n:4}
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
 
-const COLORS_LOC = ['#3182ce','#38a169','#dd6b20','#805ad5','#e53e3e','#d69e2e','#319795','#e53e3e','#718096','#2b6cb0'];
-
-// ─── TABS ────────────────────────────────────────────────────────────────────
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function showTab(name, el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   el.classList.add('active');
 }
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
 function pill(n, css){
-  return n > 0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#cbd5e0">—</span>`;
+  return n>0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#cbd5e0">—</span>`;
 }
-function pbar(n, total, color='#3182ce'){
-  const pct = total > 0 ? ((n/total)*100).toFixed(1) : 0;
+function pbar(n, total, color){
+  color = color||'#3182ce';
+  const pct = total>0 ? ((n/total)*100).toFixed(1) : 0;
   return `<div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div><span class="pct-lbl">${pct}%</span></div>`;
 }
+function filtrarTabla(tbodyId, val){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+  Array.from(tbody.rows).forEach(row=>{
+    row.style.display = row.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
 
-// ─── RENDER: RESUMEN ──────────────────────────────────────────────────────────
+// ─── RENDER: RESUMEN (tabla + gráficas) ──────────────────────────────────────
 function renderResumen(){
   const tb = document.getElementById('resumen-tbody');
-  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totT=0;
-  let html='';
+  if(!tb) return;
+  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totT=0, html='';
   SOPORTES.forEach(r=>{
     totP+=r.prog; totA+=r.aprob; totQ+=r.qa;
     totB+=r.bloq; totR+=r.reabierto; totBK+=r.bkdev; totT+=r.total;
@@ -536,23 +424,94 @@ function renderResumen(){
       <td><strong>${r.total}</strong></td>
     </tr>`;
   });
+  // Tickets sin localidad asignada
+  const kpiActivos = TOTAL_ACTIVOS;
+  const sinLoc = kpiActivos - totT;
+  if(sinLoc > 0){
+    html+=`<tr style="background:#fff5f5;">
+      <td style="color:#e53e3e;font-style:italic;">⚠ Sin localidad asignada</td>
+      <td colspan="6" style="color:#e53e3e;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
+      <td><strong style="color:#e53e3e;">${sinLoc}</strong></td>
+    </tr>`;
+  }
   html+=`<tr class="tr-total">
-    <td>TOTAL ACTIVOS</td>
-    <td>${pill(totP,'pill-progreso')}</td>
-    <td>${pill(totA,'pill-aprobacion')}</td>
-    <td>${pill(totQ,'pill-qa')}</td>
-    <td>${pill(totB,'pill-bloqueado')}</td>
-    <td>${pill(totR,'pill-reabierto')}</td>
-    <td>${pill(totBK,'pill-backlog')}</td>
-    <td><strong>${totT}</strong></td>
+    <td>TOTAL REAL (Sheet)</td>
+    <td>${pill(totP,'pill-progreso')}</td><td>${pill(totA,'pill-aprobacion')}</td>
+    <td>${pill(totQ,'pill-qa')}</td><td>${pill(totB,'pill-bloqueado')}</td>
+    <td>${pill(totR,'pill-reabierto')}</td><td>${pill(totBK,'pill-backlog')}</td>
+    <td><strong>${kpiActivos > 0 ? kpiActivos : totT}</strong></td>
   </tr>`;
   tb.innerHTML = html;
-}
 
-// ─── RENDER: LOC CARDS ───────────────────────────────────────────────────────
-function renderLocCards(){
+  // Mostrar totales sobre las gráficas
+  const elDona = document.getElementById('total-dona');
+  if(elDona) elDona.textContent = kpiActivos;
+  const elLoc = document.getElementById('total-loc');
+  if(elLoc) elLoc.textContent = totT;
+  const elSin = document.getElementById('total-sinloc');
+  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
+
+  // Gráfica dona: distribución por estado
+  const ctxE = document.getElementById('chartEstado');
+  if(ctxE && typeof Chart !== 'undefined'){
+    if(window._chartEstado) window._chartEstado.destroy();
+    window._chartEstado = new Chart(ctxE, {
+      type: 'doughnut',
+      data: {
+        labels: ['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'],
+        datasets:[{
+          data: [totP, totA, totQ, totB, totR, totBK],
+          backgroundColor: ['#4299e1','#ed8936','#48bb78','#fc8181','#f6e05e','#a0aec0'],
+          borderWidth: 2, borderColor: '#fff'
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{position:'right', labels:{font:{size:11}, boxWidth:14}},
+          tooltip:{callbacks:{label: c=>`${c.label}: ${c.parsed} tickets`}}
+        }
+      }
+    });
+  }
+
+  // Gráfica barras horizontales apiladas: por localidad
+  const ctxL = document.getElementById('chartLocalidad');
+  if(ctxL && typeof Chart !== 'undefined'){
+    if(window._chartLocalidad) window._chartLocalidad.destroy();
+    const sorted = [...SOPORTES].sort((a,b)=>b.total-a.total);
+    window._chartLocalidad = new Chart(ctxL, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(r=>r.loc),
+        datasets: [
+          {label:'En Progreso',    data:sorted.map(r=>r.prog),      backgroundColor:'#4299e1'},
+          {label:'Aprob. Cliente', data:sorted.map(r=>r.aprob),     backgroundColor:'#ed8936'},
+          {label:'En QA',          data:sorted.map(r=>r.qa),        backgroundColor:'#48bb78'},
+          {label:'Bloqueado',      data:sorted.map(r=>r.bloq),      backgroundColor:'#fc8181'},
+          {label:'Reabierto',      data:sorted.map(r=>r.reabierto), backgroundColor:'#f6e05e'},
+          {label:'Backlog Dev',    data:sorted.map(r=>r.bkdev),     backgroundColor:'#a0aec0'},
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        indexAxis:'y',
+        scales:{
+          x:{stacked:true, ticks:{stepSize:1}},
+          y:{stacked:true, ticks:{font:{size:11}}}
+        },
+        plugins:{
+          legend:{position:'bottom', labels:{font:{size:11}, boxWidth:12}},
+          tooltip:{mode:'index', intersect:false}
+        }
+      }
+    });
+  }
+
+  // Tarjetas por localidad
   const wrap = document.getElementById('loc-cards');
-  const defs = [
+  if(!wrap) return;
+  const defs=[
     {key:'prog',     label:'En Progreso',    css:'pill-progreso'},
     {key:'aprob',    label:'Aprob. Cliente', css:'pill-aprobacion'},
     {key:'qa',       label:'En QA',          css:'pill-qa'},
@@ -560,211 +519,308 @@ function renderLocCards(){
     {key:'reabierto',label:'Reabierto',      css:'pill-reabierto'},
     {key:'bkdev',    label:'Backlog Dev',    css:'pill-backlog'},
   ];
-  let html='';
+  let cards='';
   SOPORTES.forEach(r=>{
-    let rows = defs.filter(s=>r[s.key]>0)
-      .map(s=>`<div class="loc-row"><span class="lc-label">${s.label}</span><span class="pill ${s.css}">${r[s.key]}</span></div>`).join('');
+    let rows=defs.filter(d=>r[d.key]>0)
+      .map(d=>`<div class="loc-row"><span class="lc-label">${d.label}</span><span class="pill ${d.css}">${r[d.key]}</span></div>`).join('');
     if(!rows) rows=`<div style="font-size:.78rem;color:#a0aec0">Sin tickets activos</div>`;
-    html+=`<div class="loc-card"><h4>📍 ${r.loc} <span style="color:#a0aec0;font-weight:400;font-size:.8rem">(${r.total})</span></h4>${rows}</div>`;
+    cards+=`<div class="loc-card"><h4>📍 ${r.loc} <span style="color:#a0aec0;font-weight:400;font-size:.8rem">(${r.total})</span></h4>${rows}</div>`;
   });
-  wrap.innerHTML=html;
+  wrap.innerHTML = cards;
 }
 
-// ─── RENDER: ACTIVOS ──────────────────────────────────────────────────────────
-function renderActivos(){
-  const tb = document.getElementById('activos-tbody');
-  let html='';
-  SOPORTES.forEach(r=>{
-    html+=`<tr>
-      <td><strong>${r.loc}</strong></td>
-      <td>${pill(r.prog,'pill-progreso')}</td>
-      <td>${pill(r.aprob,'pill-aprobacion')}</td>
-      <td>${pill(r.qa,'pill-qa')}</td>
-      <td>${pill(r.bloq,'pill-bloqueado')}</td>
-      <td>${pill(r.reabierto,'pill-reabierto')}</td>
-      <td>${pill(r.bkdev,'pill-backlog')}</td>
-      <td><strong>${r.total}</strong></td>
-    </tr>`;
-  });
-  tb.innerHTML=html;
-}
-
-// ─── RENDER: APROBACIÓN CLIENTE ──────────────────────────────────────────────
+// ─── RENDER: APROBACIÓN ───────────────────────────────────────────────────────
 function renderAprobacion(){
-  // Corte date
   const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const h=new Date();
-  document.getElementById('aprobacion-corte').textContent=`Corte: ${h.getDate()} ${meses[h.getMonth()].substring(0,3)} ${h.getFullYear()}`;
-
+  const corte=document.getElementById('aprobacion-corte');
+  if(corte) corte.textContent=`Corte: ${h.getDate()} ${meses[h.getMonth()].substring(0,3)} ${h.getFullYear()}`;
   const sorted=[...APROBACION].sort((a,b)=>b.n-a.n);
-  const MAX=sorted[0].n;
-  const prom=(TOTAL_APROBACION/APROBACION.length).toFixed(1);
+  const MAX=sorted[0]?sorted[0].n:0;
+  const prom=APROBACION.length>0?(TOTAL_APROBACION/APROBACION.length).toFixed(1):0;
   const maxLocs=sorted.filter(r=>r.n===MAX).map(r=>r.loc).join('/');
-
-  // KPI cards
   const kpis=[
-    {num:TOTAL_APROBACION, lbl:'Total incidentes',   col:'#dd6b20'},
-    {num:APROBACION.length,lbl:'Localidades',         col:'#2d3748'},
-    {num:prom,             lbl:'Promedio por loc.',   col:'#2d3748'},
-    {num:MAX,              lbl:`Máximo\n(${maxLocs})`,col:'#e53e3e'},
+    {num:TOTAL_APROBACION, lbl:'Total incidentes',  col:'#dd6b20'},
+    {num:APROBACION.length,lbl:'Localidades',        col:'#2d3748'},
+    {num:prom,             lbl:'Promedio por loc.',  col:'#2d3748'},
+    {num:MAX,              lbl:`Máximo (${maxLocs})`,col:'#e53e3e'},
   ];
-  document.getElementById('aprobacion-kpis').innerHTML=kpis.map(k=>`
+  const kpiEl=document.getElementById('aprobacion-kpis');
+  if(kpiEl) kpiEl.innerHTML=kpis.map(k=>`
     <div style="background:#f7fafc;border-radius:10px;padding:16px;text-align:center;border:1px solid #e2e8f0;">
       <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
-      <div style="font-size:.75rem;color:#718096;margin-top:6px;white-space:pre-line;">${k.lbl}</div>
+      <div style="font-size:.75rem;color:#718096;margin-top:6px;">${k.lbl}</div>
     </div>`).join('');
-
-  // Tabla
   const tb=document.getElementById('aprobacion-tbody');
+  if(!tb) return;
   let html='';
   sorted.forEach(r=>{
-    const pct=((r.n/TOTAL_APROBACION)*100).toFixed(0);
-    const barW=Math.round((r.n/MAX)*100);
-    const col=r.n>=10?'#e53e3e':r.n>=5?'#dd6b20':'#f6ad55';
     html+=`<tr>
-      <td style="font-weight:500;">${r.loc}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;background:#e2e8f0;border-radius:4px;height:10px;overflow:hidden;">
-            <div style="width:${barW}%;height:100%;background:${col};border-radius:4px;"></div>
-          </div>
-          <span style="font-size:.8rem;color:#718096;min-width:32px;">${pct}%</span>
-        </div>
-      </td>
-      <td style="text-align:right;font-weight:700;color:${col};font-size:1rem;">${r.n}</td>
+      <td><strong>${r.loc}</strong></td>
+      <td>${pbar(r.n,MAX,'#ed8936')}</td>
+      <td><strong>${r.n}</strong></td>
     </tr>`;
   });
-  html+=`<tr class="tr-total"><td>TOTAL</td><td></td><td style="text-align:right;">${TOTAL_APROBACION}</td></tr>`;
   tb.innerHTML=html;
 }
 
 // ─── RENDER: BACKLOG ──────────────────────────────────────────────────────────
 function renderBacklog(){
-  const tb = document.getElementById('backlog-tbody');
-  document.getElementById('backlog-title').textContent = `📌 Backlog por Localidad (${TOTAL_BACKLOG} incidentes totales)`;
-  let html='';
-  BACKLOG.sort((a,b)=>b.n-a.n).forEach(r=>{
-    const color = r.n>=40?'#e53e3e':r.n>=25?'#dd6b20':r.n>=15?'#d69e2e':'#718096';
-    html+=`<tr><td><strong>${r.loc}</strong></td><td><strong style="font-size:1rem;color:${color}">${r.n}</strong></td><td>${pbar(r.n,TOTAL_BACKLOG,color)}</td></tr>`;
-  });
-  html+=`<tr class="tr-total"><td>TOTAL</td><td>${TOTAL_BACKLOG}</td><td></td></tr>`;
-  tb.innerHTML=html;
+  const tb=document.getElementById('backlog-tbody');
+  if(tb){
+    const sorted=[...BACKLOG].sort((a,b)=>b.n-a.n);
+    const MAX=sorted[0]?sorted[0].n:0;
+    tb.innerHTML=sorted.map(r=>`<tr>
+      <td><strong>${r.loc}</strong></td>
+      <td><strong>${r.n}</strong></td>
+      <td>${pbar(r.n,MAX,'#4a5568')}</td>
+    </tr>`).join('');
+  }
+  const rk=document.getElementById('rezago-ranking');
+  if(rk){
+    const sorted=[...BACKLOG_RESP].sort((a,b)=>b.n-a.n);
+    const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
+    const n=sorted.length;
+    const critico=Math.ceil(n*0.3);
+    var html='<div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">';
+    html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;background:#f7fafc;padding:8px 16px;font-size:.7rem;font-weight:700;color:#a0aec0;text-transform:uppercase;letter-spacing:.5px;">';
+    html+='<span>#</span><span>Responsable</span><span style="text-align:center;">Tickets</span><span style="text-align:right;">%</span></div>';
+    for(var i=0;i<sorted.length;i++){
+      var r=sorted[i];
+      var pct=(r.n/TOTAL*100).toFixed(1);
+      var isTop=(i<critico);
+      var isSinResp=(r.nom==='Sin responsable asignado');
+      var bg=(i%2===0)?'#fff':'#fafafa';
+      var leftBorder=isTop?'border-left:3px solid #fc8181;':'border-left:3px solid transparent;';
+      var numCol=isTop?'#c53030':'#2d3748';
+      var fw=(isTop||isSinResp)?'600':'400';
+      var alerta=isTop?'<span style="font-size:.65rem;background:#fff5f5;color:#c53030;border:1px solid #fed7d7;border-radius:3px;padding:1px 5px;margin-left:7px;">atención</span>':'';
+      var borderTop=(i===0)?'':'border-top:1px solid #f0f4f8;';
+      html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;padding:10px 16px;background:'+bg+';'+leftBorder+borderTop+'align-items:center;">';
+      html+='<span style="font-size:.8rem;color:#a0aec0;">'+( i+1)+'</span>';
+      html+='<span style="font-size:.87rem;color:#2d3748;font-weight:'+fw+';">'+r.nom+alerta+'</span>';
+      html+='<span style="text-align:center;font-size:1rem;font-weight:700;color:'+numCol+';">'+r.n+'</span>';
+      html+='<span style="text-align:right;font-size:.78rem;color:#a0aec0;">'+pct+'%</span>';
+      html+='</div>';
+    }
+    html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;padding:10px 16px;background:#f0f4f8;border-top:2px solid #e2e8f0;align-items:center;">';
+    html+='<span></span>';
+    html+='<span style="font-size:.78rem;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:.4px;">Total</span>';
+    html+='<span style="text-align:center;font-size:1rem;font-weight:700;color:#2d3748;">'+TOTAL+'</span>';
+    html+='<span style="text-align:right;font-size:.78rem;color:#a0aec0;">100%</span>';
+    html+='</div>';
+    html+='</div>';
+    rk.innerHTML=html;
+  }
 }
 
 // ─── RENDER: CERRADOS ─────────────────────────────────────────────────────────
 function renderCerrados(){
-  const tb = document.getElementById('cerrados-tbody');
-  let html='';
-  CERRADOS.forEach(r=>{
-    html+=`<tr><td><strong>${r.loc}</strong></td><td><span class="pill pill-cerrado">${r.n}</span></td><td>${pbar(r.n,TOTAL_CERRADOS,'#38a169')}</td></tr>`;
-  });
-  html+=`<tr class="tr-total"><td>TOTAL</td><td><span class="pill pill-cerrado">${TOTAL_CERRADOS.toLocaleString()}</span></td><td></td></tr>`;
-  tb.innerHTML=html;
+  const lista=document.getElementById('cerrados-lista');
+  if(!lista) return;
+  const sorted=[...CERRADOS].sort((a,b)=>a.loc.localeCompare(b.loc));
+  const total=sorted.reduce((s,r)=>s+r.n,0);
+  const colors=['#38a169','#3182ce','#d69e2e','#e53e3e','#805ad5','#2b6cb0','#dd6b20','#319795','#c05621'];
+
+  // Lista izquierda: solo periodo + número, sin barras
+  lista.innerHTML=sorted.map((r,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #f0f4f8;">
+      <span style="font-size:.85rem;color:#4a5568;">${r.loc}</span>
+      <span style="font-size:1rem;font-weight:800;color:${colors[i%colors.length]};">${r.n}</span>
+    </div>`).join('')
+  + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#2d3748;">
+      <span>Total</span><span>${total.toLocaleString()}</span>
+    </div>`;
+
+  // Gráfica vertical derecha
+  const ctx=document.getElementById('chartCerradosBars');
+  if(ctx && typeof Chart!=='undefined'){
+    if(window._chartCerrados) window._chartCerrados.destroy();
+    window._chartCerrados=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
+        datasets:[{
+          label:'Tickets cerrados',
+          data:sorted.map(r=>r.n),
+          backgroundColor:sorted.map((_,i)=>colors[i%colors.length]),
+          borderRadius:6,
+          borderSkipped:false
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' tickets'}}},
+        scales:{
+          x:{grid:{display:false},ticks:{color:'#4a5568',font:{size:11},maxRotation:45}},
+          y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{color:'#718096',font:{size:11}}}
+        }
+      }
+    });
+  }
 }
 
-// ─── RENDER: HISTORIAL CERRADOS ───────────────────────────────────────────────
+// ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
 function renderHistorialCerrados(){
-  const tb = document.getElementById('historial-cerrados-tbody');
-  let html='';
-  BITACORA.forEach((r,i)=>{
-    const prev = BITACORA[i-1];
-    const delta = prev ? r.cerrados - prev.cerrados : r.cerrados;
-    const isLast = i===BITACORA.length-1;
-    const rowBg = isLast?'#f0fff4':(i%2===0?'#fff':'#f7fafc');
-    let tend='';
-    if(i===0) tend=`<span style="color:#a0aec0;font-size:.8rem;">— base</span>`;
-    else if(delta>0) tend=`<span style="color:#38a169;font-weight:600;">▲ ${delta}</span>`;
-    else if(delta<0) tend=`<span style="color:#e53e3e;font-weight:600;">▼ ${Math.abs(delta)}</span>`;
-    else tend=`<span style="color:#a0aec0;">= sin cambio</span>`;
-    html+=`<tr style="background:${rowBg}${isLast?';font-weight:700':''}">
-      <td>${r.fecha}</td>
-      <td>${r.cerrados.toLocaleString()}</td>
-      <td style="text-align:center">${i===0?'—':(delta>0?'+'+delta:delta)}</td>
-      <td>${tend}</td>
+  const tb=document.getElementById('historial-cerrados-tbody');
+  if(!tb) return;
+  const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
+  const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
+  const medals=['🥇','🥈','🥉'];
+  const podioColors=['#d69e2e','#718096','#c05621'];
+  const podioColorsLight=['#fefcbf','#f7fafc','#fff5f0'];
+
+  // Podio top 3
+  const podio=document.getElementById('top3-podio');
+  if(podio){
+    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
+      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
+        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
+        <div style="font-size:.82rem;font-weight:600;color:#2d3748;margin:8px 0 4px;">${r.nom}</div>
+        <div style="font-size:.75rem;color:#718096;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
+      </div>`).join('');
+  }
+
+  // Tabla
+  tb.innerHTML=sorted.map((r,i)=>{
+    const pct=(r.n/TOTAL*100).toFixed(1);
+    const barW=Math.round(r.n/sorted[0].n*100);
+    const rowStyle=i<3?`font-weight:700;`:'';
+    const numColor=i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce';
+    return `<tr style="${rowStyle}">
+      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
+      <td>${r.nom}</td>
+      <td style="color:${numColor};font-weight:700;">${r.n}</td>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:8px;background:#edf2f7;border-radius:4px;overflow:hidden;min-width:60px;">
+          <div style="width:${barW}%;height:100%;background:${i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce'};border-radius:4px;"></div>
+        </div>
+        <span style="font-size:.75rem;color:#718096;min-width:34px;">${pct}%</span>
+      </div></td>
     </tr>`;
-  });
-  tb.innerHTML=html;
+  }).join('');
+
+  // Gráfica horizontal
+  const ctx=document.getElementById('chartTopResp');
+  if(ctx && typeof Chart!=='undefined'){
+    if(window._chartTopResp) window._chartTopResp.destroy();
+    const barColors=sorted.map((_,i)=>i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce');
+    window._chartTopResp=new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
+        datasets:[{
+          label:'Tickets atendidos',
+          data:sorted.map(r=>r.n),
+          backgroundColor:barColors,
+          borderRadius:5,
+          borderSkipped:false
+        }]
+      },
+      options:{
+        indexAxis:'y',
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' tickets'}}},
+        scales:{
+          x:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{color:'#718096',font:{size:11}}},
+          y:{grid:{display:false},ticks:{color:'#2d3748',font:{size:11}}}
+        }
+      }
+    });
+  }
 }
 
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
 function renderBitacora(){
-  // Tabla
   const tb=document.getElementById('bitacora-tbody');
-  let html='';
-  [...BITACORA].reverse().forEach((r,i)=>{
-    const isLast=(i===0);
-    html+=`<tr${isLast?' style="background:#f0fff4;font-weight:700"':''}>
-      <td>${r.fecha}</td>
-      <td>${r.activos}</td>
-      <td>${r.cerrados.toLocaleString()}</td>
-      <td>${r.aprobacion}</td>
-      <td>${r.backlog}</td>
-    </tr>`;
-  });
-  tb.innerHTML=html;
+  if(tb){
+    let html='';
+    [...BITACORA].reverse().forEach((r,i)=>{
+      const prev=BITACORA[BITACORA.length-2-i];
+      const delta=prev?(r.cerrados-prev.cerrados):r.cerrados;
+      const isLast=i===0;
+      let tend='';
+      if(BITACORA.length-2-i<0) tend=`<span style="color:#a0aec0;font-size:.8rem;">— base</span>`;
+      else if(delta>0) tend=`<span style="color:#38a169;font-weight:600;">▲ ${delta}</span>`;
+      else if(delta<0) tend=`<span style="color:#e53e3e;font-weight:600;">▼ ${Math.abs(delta)}</span>`;
+      else tend=`<span style="color:#a0aec0;">= sin cambio</span>`;
+      html+=`<tr style="background:${isLast?'#f0fff4':i%2===0?'#fff':'#f7fafc'}${isLast?';font-weight:700':''}">
+        <td>${r.fecha}</td>
+        <td>${r.cerrados.toLocaleString()}</td>
+        <td style="text-align:center">${delta>0?'+'+delta:delta}</td>
+        <td>${tend}</td>
+      </tr>`;
+    });
+    tb.innerHTML=html;
+  }
 
-  // Variación vs día anterior
+  // Variación vs entrada anterior
   const last=BITACORA[BITACORA.length-1];
-  const prev = BITACORA[BITACORA.length-2];
-  const vg = document.getElementById('variacion-grid');
-  if(vg){
+  const prev=BITACORA[BITACORA.length-2];
+  const vg=document.getElementById('variacion-grid');
+  if(vg&&last){
     const fields=[
       {key:'activos',    label:'Tickets Activos',   icon:'🔧', downGood:true},
       {key:'cerrados',   label:'Atendidos (DONE)',   icon:'✅', downGood:false},
       {key:'aprobacion', label:'Aprobación Cliente', icon:'🟠', downGood:false},
       {key:'backlog',    label:'Backlog',             icon:'📌', downGood:true},
     ];
-    let vhtml='';
-    fields.forEach(f=>{
-      const val=(last[f.key]||0), old=prev?(prev[f.key]||0):val, delta=val-old;
-      let color='#718096';
-      if(delta!==0){ const good=f.downGood?delta<0:delta>0; color=good?'#38a169':'#e53e3e'; }
-      const arrow=delta>0?'▲':delta<0?'▼':'=';
-      vhtml+=`<div style="background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)">
-        <div style="font-size:1.5rem;margin-bottom:4px">${f.icon}</div>
-        <div style="font-size:1.4rem;font-weight:700;color:${color}">${arrow} ${Math.abs(delta)}</div>
-        <div style="font-size:.8rem;color:#4a5568;margin-top:4px">${f.label}</div>
-        <div style="font-size:.75rem;color:#a0aec0">${old.toLocaleString()} → ${val.toLocaleString()}</div>
+    vg.innerHTML=fields.map(f=>{
+      const curr=last[f.key]||0;
+      const pv=prev?(prev[f.key]||0):curr;
+      const delta=curr-pv;
+      let arrow='', color='#718096';
+      if(delta>0){arrow='▲ +'+delta; color=f.downGood?'#e53e3e':'#38a169';}
+      else if(delta<0){arrow='▼ '+delta; color=f.downGood?'#38a169':'#e53e3e';}
+      else{arrow='= sin cambio'; color='#a0aec0';}
+      return `<div style="background:#f7fafc;border-radius:10px;padding:14px 18px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.85rem;font-weight:600;color:#4a5568;">${f.icon} ${f.label}</span>
+        <span style="font-size:1.1rem;font-weight:700;color:${color};">${arrow}</span>
       </div>`;
-    });
-    vg.innerHTML=vhtml;
+    }).join('');
   }
 
-  // Gráfica de evolución
-  const labels2=BITACORA.map(r=>r.fecha);
-  const ctx2=document.getElementById('chartBitacora').getContext('2d');
-  if(window._chartBit) window._chartBit.destroy();
-  window._chartBit=new Chart(ctx2,{
-    type:'line',
-    data:{
-      labels:labels2,
-      datasets:[
-        {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#4299e1',backgroundColor:'rgba(66,153,225,.08)',fill:true,tension:.3,pointRadius:4},
-        {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#ed8936',backgroundColor:'rgba(237,137,54,.08)',fill:true,tension:.3,pointRadius:4},
-        {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    borderColor:'#9f7aea',backgroundColor:'rgba(159,122,234,.08)',fill:true,tension:.3,pointRadius:4},
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}
-  });
+  // Gráfica de línea
+  const ctx=document.getElementById('chartBitacora');
+  if(ctx && typeof Chart !== 'undefined'){
+    if(window._chartBit) window._chartBit.destroy();
+    window._chartBit=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:BITACORA.map(r=>r.fecha),
+        datasets:[
+          {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#4299e1',backgroundColor:'rgba(66,153,225,.08)',fill:true,tension:.3,pointRadius:4},
+          {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#ed8936',backgroundColor:'rgba(237,137,54,.08)',fill:true,tension:.3,pointRadius:4},
+          {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    borderColor:'#9f7aea',backgroundColor:'rgba(159,122,234,.08)',fill:true,tension:.3,pointRadius:4},
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{position:'top'}},
+        scales:{x:{ticks:{maxRotation:45}}, y:{beginAtZero:true}}
+      }
+    });
+  }
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  const now=new Date();
-  const opts={day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'};
-  const el=document.getElementById('badge-fecha');
-  if(el) el.textContent=now.toLocaleDateString('es-MX',opts);
+// ─── INIT ────────────────────────
+window.onload = function(){
+  // Fecha de actualización
+  const el = document.getElementById('badge-fecha');
+  if(el){
+    const d = new Date();
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
+      + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
 
-  renderResumen();
-  renderLocCards();
-  renderActivos();
-  renderAprobacion();
-  renderBacklog();
-  renderCerrados();
-  renderHistorialCerrados();
-  renderBitacora();
-});
+  [renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn=>{
+    try{ fn(); } catch(e){ console.warn(fn.name + ':', e.message); }
+  });
+};
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                              
