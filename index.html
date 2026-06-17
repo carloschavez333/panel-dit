@@ -103,12 +103,12 @@
       <div class="sub" id="kpi-cerrados-sub">206 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">31</div>
+      <div class="num" id="kpi-aprobacion">32</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">145</div>
+      <div class="num" id="kpi-backlog">146</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -296,44 +296,45 @@ const APROBACION = [
   {loc:'Sonora', n:4},
   {loc:'Guanajuato', n:3},
   {loc:'Baja California', n:2},
+  {loc:'Hidalgo', n:2},
   {loc:'CDMX', n:1},
   {loc:'Coahuila', n:1},
-  {loc:'Hidalgo', n:1},
   {loc:'Zacatecas', n:1},
   {loc:'Chiapas', n:1}
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:174},
   {nom:'Yoshio Adán Villegas Guevara', n:83},
   {nom:'Omar Villalpando', n:58},
   {nom:'Manuel A. Domínguez Enríquez', n:54},
   {nom:'Leonardo Lucio Perez', n:39},
   {nom:'Silvestre Cerrato', n:35},
-  {nom:'Jonathan Aristeo Lozano Hernandez', n:29},
   {nom:'Ivan Perez Felipe', n:29},
   {nom:'Aníbal Argüelles García', n:25},
   {nom:'Jesus Feria Ortiz', n:16},
-  {nom:'Rodrigo Gabriel Gras', n:7}
+  {nom:'Rodrigo Gabriel Gras', n:7},
+  {nom:'Gibran Esaú Solís Valenzuela', n:3}
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 const CERRADOS = [
-  {loc:'2025-01 - Enero', n:1},
-  {loc:'2025-11 - Noviembre', n:2},
-  {loc:'2025-12 - Diciembre', n:106},
-  {loc:'2026-01 - Enero', n:163},
-  {loc:'2026-02 - Febrero', n:200},
-  {loc:'2026-03 - Marzo', n:387},
-  {loc:'2026-04 - Abril', n:204},
-  {loc:'2026-05 - Mayo', n:270},
-  {loc:'2026-06 - Junio', n:206}
+  {loc:'2025-01 · Enero', n:1},
+  {loc:'2025-11 · Noviembre', n:2},
+  {loc:'2025-12 · Diciembre', n:106},
+  {loc:'2026-01 · Enero', n:163},
+  {loc:'2026-02 · Febrero', n:200},
+  {loc:'2026-03 · Marzo', n:387},
+  {loc:'2026-04 · Abril', n:204},
+  {loc:'2026-05 · Mayo', n:270},
+  {loc:'2026-06 · Junio', n:206}
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos', n:14},
+  {nom:'Eunice Anais Arevalo Avalos', n:13},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:13},
   {nom:'Gibran Esaú Solís Valenzuela', n:11},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:11},
   {nom:'Leonardo Lucio Perez', n:10},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:10},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:8},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:7},
   {nom:'Silvestre Cerrato', n:6},
@@ -350,6 +351,7 @@ const BACKLOG_RESP = [
   {nom:'GRAS RODRIGO GABRIEL', n:2},
   {nom:'Jorge Octavio Paz Hernandez', n:2},
   {nom:'Carlos Eduardo Chavez Ordaz', n:2},
+  {nom:'Gabriel Alejandro Ramos Salazar', n:2},
   {nom:'Juan Jaime Soni Larios', n:2},
   {nom:'Mariano Conte', n:2},
   {nom:'Francisco Javier Bañuelos Esquivel', n:1},
@@ -360,20 +362,20 @@ const BACKLOG_RESP = [
   {nom:'Joaquin Di Santo', n:1},
   {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
-  {nom:'Gabriel Alejandro Ramos Salazar', n:1},
   {nom:'VELAZQUEZ ZENIL ELIEL', n:1},
   {nom:'Alejandra Magaña Lopez', n:1},
   {nom:'Dayamar Martinez', n:1},
   {nom:'SALDIVAR ACEVEDO EMILIO CESAR', n:1},
+  {nom:'Luis Antonio Jimenez Matus', n:1},
   {nom:'Hugo Cesar Rivero Rodriguez', n:1},
   {nom:'Sin responsable asignado', n:6}
 ];
 const BACKLOG = [
-  {loc:'Jalisco', n:33},
+  {loc:'Jalisco', n:34},
   {loc:'Quintana Roo', n:26},
-  {loc:'Guanajuato', n:21},
+  {loc:'Guanajuato', n:22},
   {loc:'Colima', n:16},
-  {loc:'Hidalgo', n:15},
+  {loc:'Hidalgo', n:14},
   {loc:'Baja California', n:10},
   {loc:'Sonora', n:8},
   {loc:'Zacatecas', n:8},
