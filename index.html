@@ -108,7 +108,7 @@
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">143</div>
+      <div class="num" id="kpi-backlog">147</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -278,19 +278,20 @@ const BITACORA = [
   { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
   { fecha:'16 – 30 Jun 2026', activos:36, cerrados:1539, aprobacion:32, backlog:143 },
   { fecha:'17 Jun 2026', activos:37, cerrados:1539, aprobacion:34, desplegar:7, backlog:142 },
-  { fecha:'18 Jun 2026', activos:33, cerrados:1553, aprobacion:34, desplegar:7, backlog:143 },
+  { fecha:'18 Jun 2026', activos:33, cerrados:1553, aprobacion:34, desplegar:7, backlog:147 },
 ];
 const SOPORTES = [
-  {loc:'Baja California', prog:3, aprob:1, qa:1, bloq:0, reabierto:1, bkdev:1, total:7},
+  {loc:'Baja California', prog:1, aprob:1, qa:0, bloq:0, reabierto:1, bkdev:3, total:6},
   {loc:'Chiapas',         prog:0, aprob:0, qa:0, bloq:1, reabierto:0, bkdev:0, total:1},
   {loc:'Colima',          prog:1, aprob:3, qa:0, bloq:0, reabierto:0, bkdev:1, total:5},
-  {loc:'Guanajuato',      prog:3, aprob:2, qa:0, bloq:0, reabierto:0, bkdev:1, total:6},
-  {loc:'Hidalgo',         prog:2, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:0, total:2},
-  {loc:'Jalisco',         prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:3},
-  {loc:'Quintana Roo',    prog:0, aprob:0, qa:0, bloq:2, reabierto:1, bkdev:4, total:7},
+  {loc:'Guanajuato',      prog:1, aprob:3, qa:0, bloq:0, reabierto:0, bkdev:1, total:5},
+  {loc:'Hidalgo',         prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:4},
+  {loc:'Jalisco',         prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
+  {loc:'Quintana Roo',    prog:0, aprob:1, qa:0, bloq:4, reabierto:1, bkdev:1, total:7},
+  {loc:'Sin Localidad',   prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
   {loc:'Sonora',          prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
 ];
-const TOTAL_ACTIVOS = 37;
+const TOTAL_ACTIVOS = 33;
 const APROBACION = [
   {loc:'Jalisco', n:9},
   {loc:'Colima', n:9},
@@ -333,7 +334,7 @@ const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
   {nom:'Eunice Anais Arevalo Avalos', n:15},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:13},
-  {nom:'Leonardo Lucio Perez', n:12},
+  {nom:'Leonardo Lucio Perez', n:13},
   {nom:'Gibran Esaú Solís Valenzuela', n:11},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:8},
   {nom:'Silvestre Cerrato', n:6},
@@ -372,16 +373,16 @@ const BACKLOG_RESP = [
   {nom:'DURAZO RIOS MANUEL ANGEL', n:1}
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:28},
+  {loc:'Quintana Roo', n:29},
   {loc:'Jalisco', n:28},
   {loc:'Guanajuato', n:25},
   {loc:'Colima', n:15},
-  {loc:'Hidalgo', n:12},
-  {loc:'Zacatecas', n:9},
-  {loc:'Sonora', n:9},
+  {loc:'Hidalgo', n:13},
+  {loc:'Zacatecas', n:10},
   {loc:'Baja California', n:9},
-  {loc:'Seguritech', n:4},
-  {loc:'Chiapas', n:4}
+  {loc:'Sonora', n:9},
+  {loc:'Chiapas', n:5},
+  {loc:'Seguritech', n:4}
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
 
