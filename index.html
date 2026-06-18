@@ -705,7 +705,7 @@ function renderHistorialCerrados(){
     </tr>`;
   }).join('');
 
-  // Fila de total
+  // Fila de total dinámica
   tb.innerHTML+=`<tr style="border-top:2px solid #2d3748;background:#edf2f7;">
     <td colspan="2" style="font-weight:800;color:#2d3748;padding-top:6px;">TOTAL</td>
     <td style="font-weight:800;color:#2d3748;">${TOTAL}</td>
@@ -823,4 +823,12 @@ window.onload = function(){
   if(el){
     const d = new Date();
     const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    el.textConte
+    el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
+      + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  [renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
+};
+</script>
+</body>
+</html>
