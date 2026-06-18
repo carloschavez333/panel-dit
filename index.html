@@ -820,4 +820,8 @@ window.onload = function(){
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
 
-  [renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitac   
+  [renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
+};
+</script>
+</body>
+</html>
