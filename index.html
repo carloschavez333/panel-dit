@@ -93,7 +93,7 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">34</div>
+      <div class="num" id="kpi-activos">35</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
@@ -108,7 +108,7 @@
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">141</div>
+      <div class="num" id="kpi-backlog">143</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -293,8 +293,9 @@ const SOPORTES = [
   {loc:'Hidalgo', prog:0, aprob:0, qa:2, bloq:0, reabierto:1, bkdev:2, total:5},
   {loc:'Jalisco', prog:0, aprob:2, qa:0, bloq:0, reabierto:1, bkdev:0, total:3},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
+  {loc:'Sin Localidad', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
-const TOTAL_ACTIVOS = 34;
+const TOTAL_ACTIVOS = 35;
 const APROBACION = [
   {loc:'Guanajuato', n:11},
   {loc:'Colima', n:11},
@@ -335,24 +336,24 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Leonardo Lucio Perez', n:19},
+  {nom:'Leonardo Lucio Perez', n:20},
   {nom:'Eunice Anais Arevalo Avalos', n:17},
   {nom:'Gibran Esaú Solís Valenzuela', n:12},
-  {nom:'Jesus Feria Ortiz', n:8},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:8},
+  {nom:'Jesus Feria Ortiz', n:9},
   {nom:'Silvestre Cerrato', n:7},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:7},
   {nom:'Omar Villalpando', n:6},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:6},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:5},
   {nom:'Pedro Emanuel Jimenez Oscoy', n:4},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:3},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:3},
   {nom:'Jorge Octavio Paz Hernandez', n:3},
   {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:3},
   {nom:'BAENA ESCALANTE DARA YAZMIN', n:3},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:3},
   {nom:'Mariano Conte', n:3},
   {nom:'GRAS RODRIGO GABRIEL', n:2},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:2},
   {nom:'Dayamar Martinez', n:2},
   {nom:'Luis Antonio Hernández Martínez', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
@@ -370,13 +371,14 @@ const BACKLOG_RESP = [
   {nom:'Angel Ulises Velasquez Hernandez', n:1},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:1},
   {nom:'Alejandro Cruz Torres', n:1},
+  {nom:'Alejandra Magaña Lopez', n:1},
 ];
 const BACKLOG = [
   {loc:'Quintana Roo', n:29},
   {loc:'Guanajuato', n:29},
-  {loc:'Jalisco', n:23},
+  {loc:'Jalisco', n:24},
   {loc:'Colima', n:15},
-  {loc:'Hidalgo', n:12},
+  {loc:'Hidalgo', n:13},
   {loc:'Baja California', n:9},
   {loc:'Sonora', n:9},
   {loc:'Zacatecas', n:7},
