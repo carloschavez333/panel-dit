@@ -93,22 +93,22 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">35</div>
+      <div class="num" id="kpi-activos">34</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
     <div class="kpi kpi-cerrados">
-      <div class="num" id="kpi-cerrados">1,630</div>
+      <div class="num" id="kpi-cerrados">1,619</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">297 en Junio 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">293 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">51</div>
+      <div class="num" id="kpi-aprobacion">50</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">143</div>
+      <div class="num" id="kpi-backlog">150</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -284,6 +284,7 @@ const BITACORA = [
     { fecha:'23 Jun 2026', activos:42, cerrados:1590, aprobacion:58, desplegar:12, backlog:141 },
   { fecha:'24 Jun 2026', activos:41, cerrados:1599, aprobacion:56, desplegar:9, backlog:142 },
   { fecha:'26 Jun 2026', activos:34, cerrados:1630, aprobacion:51, desplegar:10, backlog:141 },
+  { fecha:'27 Jun 2026', activos:34, cerrados:1619, aprobacion:50, desplegar:10, backlog:150}
 ];
 const SOPORTES = [
   {loc:'Guanajuato', prog:2, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:0, total:6},
@@ -294,10 +295,18 @@ const SOPORTES = [
   {loc:'Jalisco', prog:0, aprob:2, qa:0, bloq:0, reabierto:1, bkdev:0, total:3},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:2}
 ];
-const TOTAL_ACTIVOS = 35;
+const TOTAL_ACTIVOS = 34;
 const APROBACION = [
-  {loc:'Validación en QA L1/Sucursal', n:25},
-  {loc:'APROBACIÓN POR CLIENTE', n:25}
+  {loc:'Colima', n:12},
+  {loc:'Guanajuato', n:11},
+  {loc:'Jalisco', n:7},
+  {loc:'Quintana Roo', n:5},
+  {loc:'Sonora', n:5},
+  {loc:'Zacatecas', n:3},
+  {loc:'Baja California', n:3},
+  {loc:'Hidalgo', n:2},
+  {loc:'CDMX', n:1},
+  {loc:'Coahuila', n:1}
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
@@ -311,19 +320,19 @@ const RESPONSABLES = [
   {nom:'Aníbal Argüelles', n:25},
   {nom:'Jesus Feria Ortiz', n:18},
   {nom:'Rodrigo Gras', n:7},
-  {nom:'Gibran Solís', n:4},
+  {nom:'Gibran Solís', n:4}
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 const CERRADOS = [
   {loc:'2025-01 · Enero', n:1},
   {loc:'2025-11 · Noviembre', n:2},
   {loc:'2025-12 · Diciembre', n:106},
-  {loc:'2026-01 · Enero', n:163},
-  {loc:'2026-02 · Febrero', n:200},
-  {loc:'2026-03 · Marzo', n:387},
+  {loc:'2026-01 · Enero', n:162},
+  {loc:'2026-02 · Febrero', n:199},
+  {loc:'2026-03 · Marzo', n:382},
   {loc:'2026-04 · Abril', n:204},
   {loc:'2026-05 · Mayo', n:270},
-  {loc:'2026-06 · Junio', n:297},
+  {loc:'2026-06 · Junio', n:293}
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
