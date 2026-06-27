@@ -286,27 +286,18 @@ const BITACORA = [
   { fecha:'26 Jun 2026', activos:34, cerrados:1630, aprobacion:51, desplegar:10, backlog:141 },
 ];
 const SOPORTES = [
-  {loc:'Guanajuato', prog:2, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:1, total:6},
-  {loc:'Colima', prog:1, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:1, total:6},
-  {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:4, reabierto:0, bkdev:1, total:6},
-  {loc:'Baja California', prog:1, aprob:1, qa:1, bloq:0, reabierto:0, bkdev:3, total:6},
-  {loc:'Hidalgo', prog:0, aprob:0, qa:2, bloq:0, reabierto:1, bkdev:2, total:5},
+  {loc:'Guanajuato', prog:2, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:0, total:6},
+  {loc:'Colima', prog:1, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:0, total:6},
+  {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:4, reabierto:0, bkdev:0, total:6},
+  {loc:'Baja California', prog:1, aprob:1, qa:1, bloq:0, reabierto:0, bkdev:0, total:6},
+  {loc:'Hidalgo', prog:0, aprob:0, qa:2, bloq:0, reabierto:1, bkdev:0, total:5},
   {loc:'Jalisco', prog:0, aprob:2, qa:0, bloq:0, reabierto:1, bkdev:0, total:3},
-  {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
-  {loc:'Sin Localidad', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
+  {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:2}
 ];
 const TOTAL_ACTIVOS = 35;
 const APROBACION = [
-  {loc:'Guanajuato', n:11},
-  {loc:'Colima', n:11},
-  {loc:'Jalisco', n:7},
-  {loc:'Quintana Roo', n:6},
-  {loc:'Sonora', n:5},
-  {loc:'Zacatecas', n:3},
-  {loc:'Baja California', n:3},
-  {loc:'Hidalgo', n:2},
-  {loc:'CDMX', n:1},
-  {loc:'Coahuila', n:1},
+  {loc:'Validación en QA L1/Sucursal', n:25},
+  {loc:'APROBACIÓN POR CLIENTE', n:25}
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
@@ -338,29 +329,29 @@ const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
   {nom:'Leonardo Lucio Perez', n:20},
   {nom:'Eunice Anais Arevalo Avalos', n:17},
-  {nom:'Gibran Esaú Solís Valenzuela', n:12},
+  {nom:'Gibran Esaú Solís Valenzuela', n:11},
   {nom:'Jesus Feria Ortiz', n:9},
   {nom:'Silvestre Cerrato', n:7},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:7},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:7},
   {nom:'Omar Villalpando', n:6},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:6},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:5},
   {nom:'Pedro Emanuel Jimenez Oscoy', n:4},
+  {nom:'Jorge Octavio Paz Hernandez', n:4},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:3},
-  {nom:'Jorge Octavio Paz Hernandez', n:3},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:3},
   {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:3},
   {nom:'BAENA ESCALANTE DARA YAZMIN', n:3},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:3},
   {nom:'Mariano Conte', n:3},
   {nom:'GRAS RODRIGO GABRIEL', n:2},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:2},
+  {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:2},
   {nom:'Dayamar Martinez', n:2},
   {nom:'Luis Antonio Hernández Martínez', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Susana Jacqueline Arroyo Juarez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
-  {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:1},
   {nom:'Carlos Eduardo Chavez Ordaz', n:1},
   {nom:'Gabriel Alejandro Ramos Salazar', n:1},
   {nom:'SALDIVAR ACEVEDO EMILIO CESAR', n:1},
@@ -368,22 +359,22 @@ const BACKLOG_RESP = [
   {nom:'Ivan Perez Felipe', n:1},
   {nom:'JIMENEZ MICETE RICARDO', n:1},
   {nom:'ESTRADA LOPEZ SANDRA', n:1},
-  {nom:'Angel Ulises Velasquez Hernandez', n:1},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:1},
   {nom:'Alejandro Cruz Torres', n:1},
   {nom:'Alejandra Magaña Lopez', n:1},
+  {nom:'Jesus Jonathan Ramos Nuñez', n:1}
 ];
 const BACKLOG = [
   {loc:'Quintana Roo', n:29},
   {loc:'Guanajuato', n:29},
-  {loc:'Jalisco', n:24},
-  {loc:'Colima', n:15},
-  {loc:'Hidalgo', n:13},
+  {loc:'Jalisco', n:26},
+  {loc:'Hidalgo', n:17},
+  {loc:'Colima', n:16},
+  {loc:'Sonora', n:10},
   {loc:'Baja California', n:9},
-  {loc:'Sonora', n:9},
-  {loc:'Zacatecas', n:7},
   {loc:'Seguritech', n:6},
-  {loc:'Chiapas', n:2},
+  {loc:'Zacatecas', n:6},
+  {loc:'Chiapas', n:2}
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
 
