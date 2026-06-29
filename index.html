@@ -837,27 +837,44 @@ function renderHistorialCerrados(){
   if(!tb) return;
   const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
   const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
-  const medals=['🥇','🥈','🥉','4️⃣'];
+  const medals=['🥇','🥈','🥉',
+    '<svg width="36" height="40" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg">'
+    +'<circle cx="18" cy="26" r="13" fill="#3182ce" stroke="#1a5fa8" stroke-width="2"/>'
+    +'<ellipse cx="18" cy="10" rx="5" ry="3" fill="#90cdf4" stroke="#3182ce" stroke-width="1.5"/>'
+    +'<line x1="13" y1="10" x2="10" y2="20" stroke="#3182ce" stroke-width="2"/>'
+    +'<line x1="23" y1="10" x2="26" y2="20" stroke="#3182ce" stroke-width="2"/>'
+    +'<text x="18" y="31" text-anchor="middle" font-size="13" font-weight="bold" fill="white" font-family="Segoe UI,sans-serif">4</text>'
+    +'</svg>'];
   const podioColors=['#d69e2e','#718096','#c05621','#3182ce'];
   const podioColorsLight=['#fefcbf','#f7fafc','#fff5f0','#ebf8ff'];
+  const medalSvg2=['',
+    '<svg width="36" height="40" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="26" r="13" fill="#718096" stroke="#4a5568" stroke-width="2"/><ellipse cx="18" cy="10" rx="5" ry="3" fill="#cbd5e0" stroke="#718096" stroke-width="1.5"/><line x1="13" y1="10" x2="10" y2="20" stroke="#718096" stroke-width="2"/><line x1="23" y1="10" x2="26" y2="20" stroke="#718096" stroke-width="2"/><text x="18" y="31" text-anchor="middle" font-size="13" font-weight="bold" fill="white" font-family="Segoe UI,sans-serif">2</text></svg>',
+    '<svg width="36" height="40" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="26" r="13" fill="#c05621" stroke="#9c4221" stroke-width="2"/><ellipse cx="18" cy="10" rx="5" ry="3" fill="#fbd38d" stroke="#c05621" stroke-width="1.5"/><line x1="13" y1="10" x2="10" y2="20" stroke="#c05621" stroke-width="2"/><line x1="23" y1="10" x2="26" y2="20" stroke="#c05621" stroke-width="2"/><text x="18" y="31" text-anchor="middle" font-size="13" font-weight="bold" fill="white" font-family="Segoe UI,sans-serif">3</text></svg>',
+    '<svg width="36" height="40" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="26" r="13" fill="#3182ce" stroke="#1a5fa8" stroke-width="2"/><ellipse cx="18" cy="10" rx="5" ry="3" fill="#90cdf4" stroke="#3182ce" stroke-width="1.5"/><line x1="13" y1="10" x2="10" y2="20" stroke="#3182ce" stroke-width="2"/><line x1="23" y1="10" x2="26" y2="20" stroke="#3182ce" stroke-width="2"/><text x="18" y="31" text-anchor="middle" font-size="13" font-weight="bold" fill="white" font-family="Segoe UI,sans-serif">4</text></svg>'
+  ];
+  const medal1Svg='<svg width="54" height="60" viewBox="0 0 54 60" xmlns="http://www.w3.org/2000/svg">'
+    +'<polygon points="27,2 32,14 45,14 35,22 39,35 27,27 15,35 19,22 9,14 22,14" fill="#f6e05e" stroke="#d69e2e" stroke-width="1.5"/>'
+    +'<circle cx="27" cy="44" r="15" fill="#d69e2e" stroke="#b7791f" stroke-width="2"/>'
+    +'<text x="27" y="50" text-anchor="middle" font-size="16" font-weight="bold" fill="white" font-family="Segoe UI,sans-serif">1</text>'
+    +'</svg>';
 
-  // Podio top 4: #1 arriba centrado, #2 #3 #4 abajo en fila
+  // Podio top 4: #1 arriba centrado con corona, #2 #3 #4 abajo en fila con medallas SVG
   const podio=document.getElementById('top3-podio');
   if(podio && sorted.length>=1){
     const top1=sorted[0];
     const rest=sorted.slice(1,4);
     podio.innerHTML=
-      '<div style="display:flex;justify-content:center;margin-bottom:14px;">'
-      +'<div style="background:'+podioColorsLight[0]+';border:2px solid '+podioColors[0]+';border-radius:14px;padding:22px 40px;text-align:center;min-width:220px;">'
-      +'<div style="font-size:2.4rem;margin-bottom:6px;">'+medals[0]+'</div>'
-      +'<div style="font-size:2.8rem;font-weight:800;color:'+podioColors[0]+';line-height:1;">'+top1.n+'</div>'
-      +'<div style="font-size:.9rem;font-weight:700;color:#2d3748;margin:10px 0 4px;">'+top1.nom+'</div>'
-      +'<div style="font-size:.78rem;color:#718096;">'+(top1.n/TOTAL*100).toFixed(1)+'% del total registrado</div>'
+      '<div style="display:flex;justify-content:center;margin-bottom:16px;">'
+      +'<div style="background:linear-gradient(135deg,#fefcbf 0%,#fef08a 60%,#fde047 100%);border:3px solid #d69e2e;border-radius:18px;padding:26px 48px;text-align:center;min-width:240px;box-shadow:0 8px 24px rgba(214,158,46,.35);">'
+      +'<div style="margin-bottom:8px;">'+medal1Svg+'</div>'
+      +'<div style="font-size:3.2rem;font-weight:900;color:#b7791f;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,.15);">'+top1.n+'</div>'
+      +'<div style="font-size:.95rem;font-weight:700;color:#2d3748;margin:10px 0 4px;letter-spacing:.2px;">'+top1.nom+'</div>'
+      +'<div style="font-size:.78rem;color:#92400e;font-weight:600;">'+(top1.n/TOTAL*100).toFixed(1)+'% del total registrado</div>'
       +'</div></div>'
       +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">'
       +rest.map((r,i)=>
         '<div style="background:'+podioColorsLight[i+1]+';border:2px solid '+podioColors[i+1]+';border-radius:14px;padding:18px 14px;text-align:center;">'
-        +'<div style="font-size:1.8rem;margin-bottom:4px;">'+medals[i+1]+'</div>'
+        +'<div style="margin-bottom:6px;">'+medalSvg2[i+1]+'</div>'
         +'<div style="font-size:2rem;font-weight:800;color:'+podioColors[i+1]+';line-height:1;">'+r.n+'</div>'
         +'<div style="font-size:.82rem;font-weight:600;color:#2d3748;margin:8px 0 4px;">'+r.nom+'</div>'
         +'<div style="font-size:.73rem;color:#718096;">'+(r.n/TOTAL*100).toFixed(1)+'% del total registrado</div>'
