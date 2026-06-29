@@ -231,8 +231,8 @@
     <div class="panel" style="margin-top:28px;">
       <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
       <div class="info-box" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: tabla din&aacute;mica en hoja TD_DONE.</div>
-      <!-- Podio top 3 -->
-      <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
+      <!-- Podio top 4 -->
+      <div id="top3-podio" style="margin-bottom:22px;"></div>
       <!-- Tabla + gráfica -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
         <div class="table-wrap">
@@ -837,20 +837,33 @@ function renderHistorialCerrados(){
   if(!tb) return;
   const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
   const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
-  const medals=['🥇','🥈','🥉'];
-  const podioColors=['#d69e2e','#718096','#c05621'];
-  const podioColorsLight=['#fefcbf','#f7fafc','#fff5f0'];
+  const medals=['🥇','🥈','🥉','4️⃣'];
+  const podioColors=['#d69e2e','#718096','#c05621','#3182ce'];
+  const podioColorsLight=['#fefcbf','#f7fafc','#fff5f0','#ebf8ff'];
 
-  // Podio top 3
+  // Podio top 4: #1 arriba centrado, #2 #3 #4 abajo en fila
   const podio=document.getElementById('top3-podio');
-  if(podio){
-    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
-      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
-        <div style="font-size:.82rem;font-weight:600;color:#2d3748;margin:8px 0 4px;">${r.nom}</div>
-        <div style="font-size:.75rem;color:#718096;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
-      </div>`).join('');
+  if(podio && sorted.length>=1){
+    const top1=sorted[0];
+    const rest=sorted.slice(1,4);
+    podio.innerHTML=
+      '<div style="display:flex;justify-content:center;margin-bottom:14px;">'
+      +'<div style="background:'+podioColorsLight[0]+';border:2px solid '+podioColors[0]+';border-radius:14px;padding:22px 40px;text-align:center;min-width:220px;">'
+      +'<div style="font-size:2.4rem;margin-bottom:6px;">'+medals[0]+'</div>'
+      +'<div style="font-size:2.8rem;font-weight:800;color:'+podioColors[0]+';line-height:1;">'+top1.n+'</div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:#2d3748;margin:10px 0 4px;">'+top1.nom+'</div>'
+      +'<div style="font-size:.78rem;color:#718096;">'+(top1.n/TOTAL*100).toFixed(1)+'% del total registrado</div>'
+      +'</div></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">'
+      +rest.map((r,i)=>
+        '<div style="background:'+podioColorsLight[i+1]+';border:2px solid '+podioColors[i+1]+';border-radius:14px;padding:18px 14px;text-align:center;">'
+        +'<div style="font-size:1.8rem;margin-bottom:4px;">'+medals[i+1]+'</div>'
+        +'<div style="font-size:2rem;font-weight:800;color:'+podioColors[i+1]+';line-height:1;">'+r.n+'</div>'
+        +'<div style="font-size:.82rem;font-weight:600;color:#2d3748;margin:8px 0 4px;">'+r.nom+'</div>'
+        +'<div style="font-size:.73rem;color:#718096;">'+(r.n/TOTAL*100).toFixed(1)+'% del total registrado</div>'
+        +'</div>'
+      ).join('')
+      +'</div>';
   }
 
   // Tabla
