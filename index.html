@@ -100,7 +100,7 @@
     <div class="kpi kpi-cerrados">
       <div class="num" id="kpi-cerrados">1,646</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">293 en Junio 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">313 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
       <div class="num" id="kpi-aprobacion">52</div>
@@ -108,7 +108,7 @@
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">157</div>
+      <div class="num" id="kpi-backlog">158</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -288,13 +288,13 @@ const BITACORA = [
   { fecha:'29 Jun 2026', activos:35, cerrados:1646, aprobacion:52, desplegar:9, backlog:157 },
 ];
 const SOPORTES = [
-  {loc:'Guanajuato', prog:3, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:0, total:6},
-  {loc:'Colima', prog:2, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:0, total:6},
-  {loc:'Quintana Roo', prog:1, aprob:0, qa:1, bloq:4, reabierto:0, bkdev:0, total:6},
-  {loc:'Baja California', prog:3, aprob:1, qa:1, bloq:0, reabierto:0, bkdev:1, total:6},
-  {loc:'Hidalgo', prog:2, aprob:0, qa:2, bloq:0, reabierto:1, bkdev:0, total:5},
+  {loc:'Guanajuato', prog:2, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:1, total:6},
+  {loc:'Colima', prog:1, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:1, total:6},
+  {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:4, reabierto:0, bkdev:1, total:6},
+  {loc:'Baja California', prog:1, aprob:1, qa:1, bloq:0, reabierto:0, bkdev:3, total:6},
+  {loc:'Hidalgo', prog:0, aprob:0, qa:2, bloq:0, reabierto:1, bkdev:2, total:5},
   {loc:'Jalisco', prog:0, aprob:2, qa:0, bloq:0, reabierto:1, bkdev:0, total:3},
-  {loc:'Sonora', prog:1, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:2},
+  {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
   {loc:'Desconocido', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
 const TOTAL_ACTIVOS = 35;
@@ -312,13 +312,13 @@ const APROBACION = [
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
-  {nom:'Jonathan Lozano', n:184},
   {nom:'Yoshio Villegas', n:88},
   {nom:'Omar Villalpando', n:65},
   {nom:'Manuel Domínguez', n:56},
   {nom:'Leonardo Lucio Perez', n:48},
   {nom:'Ivan Perez Felipe', n:47},
   {nom:'Silvestre Cerrato', n:37},
+  {nom:'Jonathan Lozano', n:31},
   {nom:'Aníbal Argüelles', n:25},
   {nom:'Jesus Feria Ortiz', n:19},
   {nom:'Rodrigo Gras', n:7},
@@ -338,35 +338,35 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Leonardo Lucio Perez', n:19},
+  {nom:'Leonardo Lucio Perez', n:18},
   {nom:'Eunice Anais Arevalo Avalos', n:17},
   {nom:'Gibran Esaú Solís Valenzuela', n:12},
   {nom:'Jesus Feria Ortiz', n:10},
-  {nom:'Sin asignar', n:8},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:8},
   {nom:'Silvestre Cerrato', n:7},
+  {nom:'Sin asignar', n:7},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:7},
   {nom:'Omar Villalpando', n:6},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:6},
+  {nom:'DURAZO RIOS MANUEL ANGEL', n:6},
   {nom:'Mariano Conte', n:6},
   {nom:'Pedro Emanuel Jimenez Oscoy', n:4},
-  {nom:'DURAZO RIOS MANUEL ANGEL', n:4},
+  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:4},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:3},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:3},
   {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:3},
   {nom:'BAENA ESCALANTE DARA YAZMIN', n:3},
+  {nom:'Jesus Jonathan Ramos Nuñez', n:3},
   {nom:'GRAS RODRIGO GABRIEL', n:2},
   {nom:'Jorge Octavio Paz Hernandez', n:2},
   {nom:'Dayamar Martinez', n:2},
   {nom:'Luis Antonio Hernández Martínez', n:2},
-  {nom:'Luis Antonio Jimenez Matus', n:2},
-  {nom:'Jesus Jonathan Ramos Nuñez', n:2},
   {nom:'Angel Ulises Velasquez Hernandez', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Susana Jacqueline Arroyo Juarez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
   {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:1},
+  {nom:'FABIAN ARTURO MUÑOZ MARQUEZ', n:1},
   {nom:'Carlos Eduardo Chavez Ordaz', n:1},
   {nom:'Gabriel Alejandro Ramos Salazar', n:1},
   {nom:'SALDIVAR ACEVEDO EMILIO CESAR', n:1},
@@ -374,13 +374,14 @@ const BACKLOG_RESP = [
   {nom:'Ivan Perez Felipe', n:1},
   {nom:'JIMENEZ MICETE RICARDO', n:1},
   {nom:'ESTRADA LOPEZ SANDRA', n:1},
-  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:1},
   {nom:'Alejandro Cruz Torres', n:1},
   {nom:'Alejandra Magaña Lopez', n:1},
   {nom:'César Leonardo Rodríguez Martínez', n:1},
+  {nom:'Luis Antonio Jimenez Matus', n:1},
+  {nom:'HERNANDEZ HERNANDEZ MARISOL', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:29},
+  {loc:'Quintana Roo', n:30},
   {loc:'Guanajuato', n:29},
   {loc:'Jalisco', n:26},
   {loc:'Hidalgo', n:21},
@@ -951,12 +952,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
 });
-</script>
-</body>
-</html>
-zan al activar el tab
-  [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
-};
 </script>
 </body>
 </html>
