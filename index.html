@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SYDED-Soportes</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- Sin dependencias externas: gráficas con Canvas 2D nativo -->
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#eef2f7;color:#2d3748}
@@ -284,7 +284,7 @@ const BITACORA = [
     { fecha:'23 Jun 2026', activos:42, cerrados:1590, aprobacion:58, desplegar:12, backlog:141 },
   { fecha:'24 Jun 2026', activos:41, cerrados:1599, aprobacion:56, desplegar:9, backlog:142 },
   { fecha:'26 Jun 2026', activos:34, cerrados:1630, aprobacion:51, desplegar:10, backlog:141 },
-  { fecha:'27 Jun 2026', activos:34, cerrados:1619, aprobacion:50, desplegar:10, backlog:150}
+  { fecha:'27 Jun 2026', activos:34, cerrados:1619, aprobacion:50, desplegar:10, backlog:150},
   { fecha:'29 Jun 2026', activos:35, cerrados:1646, aprobacion:52, desplegar:9, backlog:157 },
 ];
 const SOPORTES = [
@@ -393,6 +393,218 @@ const BACKLOG = [
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
 
+// ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
+function drawDonut(id, data, labels, colors){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 400;
+  canvas.height = parent.offsetHeight || 260;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const total = data.reduce((a,b)=>a+b,0);
+  if(total===0){ cx.fillStyle='#a0aec0'; cx.font='14px Segoe UI'; cx.fillText('Sin datos',W/2-30,H/2); return; }
+  const cx0 = W*0.42, cy0 = H/2, r = Math.min(W*0.38, H*0.42), ri = r*0.55;
+  let angle = -Math.PI/2;
+  data.forEach((v,i)=>{
+    if(v===0) return;
+    const slice = (v/total)*2*Math.PI;
+    cx.beginPath(); cx.moveTo(cx0,cy0);
+    cx.arc(cx0,cy0,r,angle,angle+slice);
+    cx.closePath(); cx.fillStyle=colors[i]; cx.fill();
+    cx.beginPath(); cx.arc(cx0,cy0,ri,0,2*Math.PI);
+    cx.fillStyle='#fff'; cx.fill();
+    angle+=slice;
+  });
+  // Centro
+  cx.fillStyle='#2d3748'; cx.font=`bold ${Math.round(r*0.32)}px Segoe UI`;
+  cx.textAlign='center'; cx.textBaseline='middle';
+  cx.fillText(total, cx0, cy0-6);
+  cx.font=`${Math.round(r*0.18)}px Segoe UI`; cx.fillStyle='#718096';
+  cx.fillText('tickets', cx0, cy0+r*0.22);
+  // Leyenda derecha
+  const lx = W*0.68, ly0 = H/2 - (labels.length*18)/2;
+  labels.forEach((lbl,i)=>{
+    cx.fillStyle=colors[i]; cx.fillRect(lx, ly0+i*20, 12, 12);
+    cx.fillStyle='#4a5568'; cx.font='11px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
+    cx.fillText(`${lbl} (${data[i]})`, lx+16, ly0+i*20+1);
+  });
+}
+
+function drawHBar(id, labels, data, colors){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 400;
+  canvas.height = Math.max(parent.offsetHeight||320, labels.length*32+60);
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const maxV = Math.max(...data, 1);
+  const padL=140, padR=40, padT=20, padB=20;
+  const barArea = W-padL-padR;
+  const barH = Math.min(22, (H-padT-padB)/labels.length - 8);
+  const step = (H-padT-padB)/labels.length;
+  labels.forEach((lbl,i)=>{
+    const y = padT + i*step + step/2;
+    cx.fillStyle='#4a5568'; cx.font='11px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    const shortLbl = lbl.length>18?lbl.substring(0,17)+'…':lbl;
+    cx.fillText(shortLbl, padL-8, y);
+    const bw = (data[i]/maxV)*barArea;
+    cx.fillStyle=colors[i]||'#3182ce';
+    cx.beginPath();
+    const rx=padL, ry=y-barH/2, rw=Math.max(bw,2), rh=barH, rad=4;
+    cx.moveTo(rx+rad,ry); cx.lineTo(rx+rw-rad,ry); cx.quadraticCurveTo(rx+rw,ry,rx+rw,ry+rad);
+    cx.lineTo(rx+rw,ry+rh-rad); cx.quadraticCurveTo(rx+rw,ry+rh,rx+rw-rad,ry+rh);
+    cx.lineTo(rx+rad,ry+rh); cx.quadraticCurveTo(rx,ry+rh,rx,ry+rh-rad);
+    cx.lineTo(rx,ry+rad); cx.quadraticCurveTo(rx,ry,rx+rad,ry); cx.closePath(); cx.fill();
+    cx.fillStyle='#2d3748'; cx.font='bold 11px Segoe UI'; cx.textAlign='left'; cx.textBaseline='middle';
+    cx.fillText(data[i], padL+bw+5, y);
+  });
+}
+
+function drawVBar(id, labels, data, colors){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 500;
+  canvas.height = parent.offsetHeight || 280;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const maxV = Math.max(...data, 1);
+  const padL=36, padR=16, padT=20, padB=56;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const n = labels.length;
+  const bw = Math.min(36, (chartW/n)*0.6);
+  const gap = chartW/n;
+  // Grid lines
+  for(let g=0;g<=4;g++){
+    const y = padT + chartH*(1-g/4);
+    cx.strokeStyle='#f0f0f0'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(padL,y); cx.lineTo(padL+chartW,y); cx.stroke();
+    cx.fillStyle='#a0aec0'; cx.font='10px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    cx.fillText(Math.round(maxV*g/4), padL-4, y);
+  }
+  data.forEach((v,i)=>{
+    const x = padL + gap*i + gap/2 - bw/2;
+    const bh = (v/maxV)*chartH;
+    const y = padT + chartH - bh;
+    cx.fillStyle = colors[i]||'#3182ce';
+    cx.beginPath();
+    const rad=4;
+    cx.moveTo(x+rad,y); cx.lineTo(x+bw-rad,y); cx.quadraticCurveTo(x+bw,y,x+bw,y+rad);
+    cx.lineTo(x+bw,y+bh); cx.lineTo(x,y+bh); cx.lineTo(x,y+rad);
+    cx.quadraticCurveTo(x,y,x+rad,y); cx.closePath(); cx.fill();
+    cx.fillStyle='#2d3748'; cx.font='bold 10px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
+    cx.fillText(v, x+bw/2, y-2);
+    cx.fillStyle='#718096'; cx.font='10px Segoe UI'; cx.textBaseline='top';
+    const lbl = labels[i].length>7?labels[i].substring(0,6)+'…':labels[i];
+    cx.save(); cx.translate(x+bw/2, padT+chartH+6);
+    cx.rotate(Math.PI*0.35); cx.fillText(lbl, 0, 0); cx.restore();
+  });
+}
+
+function drawStackedHBar(id, labels, datasets){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 400;
+  canvas.height = Math.max(parent.offsetHeight||260, labels.length*34+80);
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const totals = labels.map((_,i)=>datasets.reduce((s,ds)=>s+(ds.data[i]||0),0));
+  const maxV = Math.max(...totals,1);
+  const padL=110, padR=16, padT=20, padB=60;
+  const barArea=W-padL-padR, barH=18, step=(H-padT-padB)/labels.length;
+  labels.forEach((lbl,i)=>{
+    const y = padT + i*step + step/2;
+    cx.fillStyle='#4a5568'; cx.font='11px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    cx.fillText(lbl.length>15?lbl.substring(0,14)+'…':lbl, padL-8, y);
+    let xoff=padL;
+    datasets.forEach(ds=>{
+      const v=ds.data[i]||0; if(!v) return;
+      const bw=(v/maxV)*barArea;
+      cx.fillStyle=ds.color;
+      cx.fillRect(xoff, y-barH/2, bw, barH);
+      xoff+=bw;
+    });
+    cx.fillStyle='#2d3748'; cx.font='bold 10px Segoe UI'; cx.textAlign='left'; cx.textBaseline='middle';
+    cx.fillText(totals[i], xoff+4, y);
+  });
+  // Leyenda
+  const lx0=padL, ly=H-padB+10;
+  datasets.forEach((ds,i)=>{
+    const lx=lx0+i*(barArea/datasets.length);
+    cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
+    cx.fillStyle='#4a5568'; cx.font='10px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
+    cx.fillText(ds.label, lx+13, ly);
+  });
+}
+
+function drawLine(id, labels, datasets){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 600;
+  canvas.height = parent.offsetHeight || 300;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const allVals = datasets.flatMap(ds=>ds.data);
+  const maxV = Math.max(...allVals,1);
+  const padL=42, padR=20, padT=20, padB=60;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const n=labels.length;
+  // Grid
+  for(let g=0;g<=4;g++){
+    const y=padT+cH*(1-g/4);
+    cx.strokeStyle='#f0f0f0'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(padL,y); cx.lineTo(padL+cW,y); cx.stroke();
+    cx.fillStyle='#a0aec0'; cx.font='10px Segoe UI'; cx.textAlign='right';
+    cx.fillText(Math.round(maxV*g/4),padL-4,y+4);
+  }
+  // Lines
+  datasets.forEach(ds=>{
+    const pts=ds.data.map((v,i)=>({
+      x: n<2 ? padL+cW/2 : padL+(i/(n-1))*cW,
+      y: padT+cH*(1-v/maxV)
+    }));
+    // Fill area
+    cx.beginPath(); cx.moveTo(pts[0].x, padT+cH);
+    pts.forEach(p=>cx.lineTo(p.x,p.y));
+    cx.lineTo(pts[pts.length-1].x, padT+cH); cx.closePath();
+    cx.fillStyle=ds.color.replace(')',',0.08)').replace('rgb','rgba')||'rgba(66,153,225,0.08)';
+    try{ cx.fill(); }catch(e){}
+    // Line
+    cx.beginPath(); cx.strokeStyle=ds.color; cx.lineWidth=2.5;
+    pts.forEach((p,i)=>i===0?cx.moveTo(p.x,p.y):cx.lineTo(p.x,p.y)); cx.stroke();
+    // Points
+    pts.forEach(p=>{
+      cx.beginPath(); cx.arc(p.x,p.y,4,0,2*Math.PI);
+      cx.fillStyle='#fff'; cx.fill();
+      cx.strokeStyle=ds.color; cx.lineWidth=2; cx.stroke();
+    });
+  });
+  // X labels
+  labels.forEach((lbl,i)=>{
+    const x = n<2 ? padL+cW/2 : padL+(i/(n-1))*cW;
+    cx.fillStyle='#718096'; cx.font='10px Segoe UI'; cx.textAlign='center';
+    cx.save(); cx.translate(x, padT+cH+8); cx.rotate(Math.PI*0.35);
+    const sl=lbl.length>12?lbl.substring(0,11)+'…':lbl;
+    cx.fillText(sl,0,0); cx.restore();
+  });
+  // Leyenda
+  datasets.forEach((ds,i)=>{
+    const lx=padL+i*(cW/datasets.length);
+    cx.fillStyle=ds.color; cx.fillRect(lx,H-14,16,8);
+    cx.fillStyle='#4a5568'; cx.font='11px Segoe UI'; cx.textAlign='left';
+    cx.fillText(ds.label, lx+20, H-7);
+  });
+}
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function showTab(name, el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -465,62 +677,26 @@ function renderResumen(){
   const elSin = document.getElementById('total-sinloc');
   if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
 
-  // Gráfica dona: distribución por estado
-  const ctxE = document.getElementById('chartEstado');
-  if(ctxE && typeof Chart !== 'undefined'){
-    if(window._chartEstado) window._chartEstado.destroy();
-    window._chartEstado = new Chart(ctxE, {
-      type: 'doughnut',
-      data: {
-        labels: ['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'],
-        datasets:[{
-          data: [totP, totA, totQ, totB, totR, totBK],
-          backgroundColor: ['#4299e1','#ed8936','#48bb78','#fc8181','#f6e05e','#a0aec0'],
-          borderWidth: 2, borderColor: '#fff'
-        }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{
-          legend:{position:'right', labels:{font:{size:11}, boxWidth:14}},
-          tooltip:{callbacks:{label: c=>`${c.label}: ${c.parsed} tickets`}}
-        }
-      }
-    });
-  }
+  // Gráfica dona: distribución por estado (Canvas nativo)
+  drawDonut('chartEstado',
+    [totP, totA, totQ, totB, totR, totBK],
+    ['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'],
+    ['#4299e1','#ed8936','#48bb78','#fc8181','#f6e05e','#a0aec0']
+  );
 
-  // Gráfica barras horizontales apiladas: por localidad
-  const ctxL = document.getElementById('chartLocalidad');
-  if(ctxL && typeof Chart !== 'undefined'){
-    if(window._chartLocalidad) window._chartLocalidad.destroy();
-    const sorted = [...SOPORTES].sort((a,b)=>b.total-a.total);
-    window._chartLocalidad = new Chart(ctxL, {
-      type: 'bar',
-      data: {
-        labels: sorted.map(r=>r.loc),
-        datasets: [
-          {label:'En Progreso',    data:sorted.map(r=>r.prog),      backgroundColor:'#4299e1'},
-          {label:'Aprob. Cliente', data:sorted.map(r=>r.aprob),     backgroundColor:'#ed8936'},
-          {label:'En QA',          data:sorted.map(r=>r.qa),        backgroundColor:'#48bb78'},
-          {label:'Bloqueado',      data:sorted.map(r=>r.bloq),      backgroundColor:'#fc8181'},
-          {label:'Reabierto',      data:sorted.map(r=>r.reabierto), backgroundColor:'#f6e05e'},
-          {label:'Backlog Dev',    data:sorted.map(r=>r.bkdev),     backgroundColor:'#a0aec0'},
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        indexAxis:'y',
-        scales:{
-          x:{stacked:true, ticks:{stepSize:1}},
-          y:{stacked:true, ticks:{font:{size:11}}}
-        },
-        plugins:{
-          legend:{position:'bottom', labels:{font:{size:11}, boxWidth:12}},
-          tooltip:{mode:'index', intersect:false}
-        }
-      }
-    });
-  }
+  // Gráfica barras apiladas por localidad (Canvas nativo)
+  const sortedLoc = [...SOPORTES].sort((a,b)=>b.total-a.total);
+  drawStackedHBar('chartLocalidad',
+    sortedLoc.map(r=>r.loc),
+    [
+      {label:'En Progreso',    data:sortedLoc.map(r=>r.prog),      color:'#4299e1'},
+      {label:'Aprob. Cliente', data:sortedLoc.map(r=>r.aprob),     color:'#ed8936'},
+      {label:'En QA',          data:sortedLoc.map(r=>r.qa),        color:'#48bb78'},
+      {label:'Bloqueado',      data:sortedLoc.map(r=>r.bloq),      color:'#fc8181'},
+      {label:'Reabierto',      data:sortedLoc.map(r=>r.reabierto), color:'#f6e05e'},
+      {label:'Backlog Dev',    data:sortedLoc.map(r=>r.bkdev),     color:'#a0aec0'},
+    ]
+  );
 
   // Tarjetas por localidad
   const wrap = document.getElementById('loc-cards');
@@ -646,33 +822,12 @@ function renderCerrados(){
       <span>Total</span><span>${total.toLocaleString()}</span>
     </div>`;
 
-  // Gráfica vertical derecha
-  const ctx=document.getElementById('chartCerradosBars');
-  if(ctx && typeof Chart!=='undefined'){
-    if(window._chartCerrados) window._chartCerrados.destroy();
-    window._chartCerrados=new Chart(ctx,{
-      type:'bar',
-      data:{
-        labels:sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
-        datasets:[{
-          label:'Tickets cerrados',
-          data:sorted.map(r=>r.n),
-          backgroundColor:sorted.map((_,i)=>colors[i%colors.length]),
-          borderRadius:6,
-          borderSkipped:false
-        }]
-      },
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' tickets'}}},
-        scales:{
-          x:{grid:{display:false},ticks:{color:'#4a5568',font:{size:11},maxRotation:45}},
-          y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{color:'#718096',font:{size:11}}}
-        }
-      }
-    });
-  }
+  // Gráfica vertical (Canvas nativo)
+  drawVBar('chartCerradosBars',
+    sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
+    sorted.map(r=>r.n),
+    sorted.map((_,i)=>colors[i%colors.length])
+  );
 }
 
 // ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
@@ -716,35 +871,13 @@ function renderHistorialCerrados(){
     </tr>`;
   }).join('');
 
-  // Gráfica horizontal
-  const ctx=document.getElementById('chartTopResp');
-  if(ctx && typeof Chart!=='undefined'){
-    if(window._chartTopResp) window._chartTopResp.destroy();
-    const barColors=sorted.map((_,i)=>i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce');
-    window._chartTopResp=new Chart(ctx,{
-      type:'bar',
-      data:{
-        labels:sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
-        datasets:[{
-          label:'Tickets atendidos',
-          data:sorted.map(r=>r.n),
-          backgroundColor:barColors,
-          borderRadius:5,
-          borderSkipped:false
-        }]
-      },
-      options:{
-        indexAxis:'y',
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' tickets'}}},
-        scales:{
-          x:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{color:'#718096',font:{size:11}}},
-          y:{grid:{display:false},ticks:{color:'#2d3748',font:{size:11}}}
-        }
-      }
-    });
-  }
+  // Gráfica horizontal responsables (Canvas nativo)
+  const barColors=sorted.map((_,i)=>i===0?'#d69e2e':i===1?'#718096':i===2?'#c05621':'#3182ce');
+  drawHBar('chartTopResp',
+    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
+    sorted.map(r=>r.n),
+    barColors
+  );
 }
 
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
@@ -758,8 +891,8 @@ function renderBitacora(){
       const isLast=i===0;
       let tend='';
       if(BITACORA.length-2-i<0) tend=`<span style="color:#a0aec0;font-size:.8rem;">— base</span>`;
-      else if(delta>0) tend=`<span style="color:#38a169;font-weight:600;">▲ ${delta}</span>`;
-      else if(delta<0) tend=`<span style="color:#e53e3e;font-weight:600;">▼ ${Math.abs(delta)}</span>`;
+      else if(delta>0) tend=`<span style="color:#38a169;font-weight:600;">&#9650; ${delta}</span>`;
+      else if(delta<0) tend=`<span style="color:#e53e3e;font-weight:600;">&#9660; ${Math.abs(delta)}</span>`;
       else tend=`<span style="color:#a0aec0;">= sin cambio</span>`;
       html+=`<tr style="background:${isLast?'#f0fff4':i%2===0?'#fff':'#f7fafc'}${isLast?';font-weight:700':''}">
         <td>${r.fecha}</td>
@@ -771,24 +904,23 @@ function renderBitacora(){
     tb.innerHTML=html;
   }
 
-  // Variación vs entrada anterior
   const last=BITACORA[BITACORA.length-1];
   const prev=BITACORA[BITACORA.length-2];
   const vg=document.getElementById('variacion-grid');
   if(vg&&last){
     const fields=[
-      {key:'activos',    label:'Tickets Activos',   icon:'🔧', downGood:true},
-      {key:'cerrados',   label:'Atendidos (DONE)',   icon:'✅', downGood:false},
-      {key:'aprobacion', label:'Aprobación Cliente', icon:'🟠', downGood:false},
-      {key:'backlog',    label:'Backlog',             icon:'📌', downGood:true},
+      {key:'activos',    label:'Tickets Activos',   icon:'&#128295;', downGood:true},
+      {key:'cerrados',   label:'Atendidos (DONE)',   icon:'&#9989;', downGood:false},
+      {key:'aprobacion', label:'Aprobación Cliente', icon:'&#128992;', downGood:false},
+      {key:'backlog',    label:'Backlog',             icon:'&#128204;', downGood:true},
     ];
     vg.innerHTML=fields.map(f=>{
       const curr=last[f.key]||0;
       const pv=prev?(prev[f.key]||0):curr;
       const delta=curr-pv;
       let arrow='', color='#718096';
-      if(delta>0){arrow='▲ +'+delta; color=f.downGood?'#e53e3e':'#38a169';}
-      else if(delta<0){arrow='▼ '+delta; color=f.downGood?'#38a169':'#e53e3e';}
+      if(delta>0){arrow='&#9650; +'+delta; color=f.downGood?'#e53e3e':'#38a169';}
+      else if(delta<0){arrow='&#9660; '+delta; color=f.downGood?'#38a169':'#e53e3e';}
       else{arrow='= sin cambio'; color='#a0aec0';}
       return `<div style="background:#f7fafc;border-radius:10px;padding:14px 18px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:.85rem;font-weight:600;color:#4a5568;">${f.icon} ${f.label}</span>
@@ -797,32 +929,19 @@ function renderBitacora(){
     }).join('');
   }
 
-  // Gráfica de línea
-  const ctx=document.getElementById('chartBitacora');
-  if(ctx && typeof Chart !== 'undefined'){
-    if(window._chartBit) window._chartBit.destroy();
-    window._chartBit=new Chart(ctx,{
-      type:'line',
-      data:{
-        labels:BITACORA.map(r=>r.fecha),
-        datasets:[
-          {label:'Activos',    data:BITACORA.map(r=>r.activos),    borderColor:'#4299e1',backgroundColor:'rgba(66,153,225,.08)',fill:true,tension:.3,pointRadius:4},
-          {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), borderColor:'#ed8936',backgroundColor:'rgba(237,137,54,.08)',fill:true,tension:.3,pointRadius:4},
-          {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    borderColor:'#9f7aea',backgroundColor:'rgba(159,122,234,.08)',fill:true,tension:.3,pointRadius:4},
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{position:'top'}},
-        scales:{x:{ticks:{maxRotation:45}}, y:{beginAtZero:true}}
-      }
-    });
-  }
+  // Gráfica de línea (Canvas nativo)
+  drawLine('chartBitacora',
+    BITACORA.map(r=>r.fecha),
+    [
+      {label:'Activos',    data:BITACORA.map(r=>r.activos),    color:'#4299e1'},
+      {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), color:'#ed8936'},
+      {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    color:'#9f7aea'},
+    ]
+  );
 }
 
 // ─── INIT ────────────────────────
-window.onload = function(){
-  // Fecha de actualización
+document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('badge-fecha');
   if(el){
     const d = new Date();
@@ -830,8 +949,12 @@ window.onload = function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-
-  // Solo renderizar los tabs visibles al inicio; los demás se renderizan al activar el tab
+  [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
+});
+</script>
+</body>
+</html>
+zan al activar el tab
   [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
 };
 </script>
