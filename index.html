@@ -93,22 +93,22 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">34</div>
+      <div class="num" id="kpi-activos">—</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
     <div class="kpi kpi-cerrados">
-      <div class="num" id="kpi-cerrados">1,646</div>
+      <div class="num" id="kpi-cerrados">—</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">313 en Junio 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">—</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">51</div>
+      <div class="num" id="kpi-aprobacion">—</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">158</div>
+      <div class="num" id="kpi-backlog">—</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -296,14 +296,14 @@ const SOPORTES = [
   {loc:'Jalisco', prog:0, aprob:2, qa:0, bloq:0, reabierto:1, bkdev:0, total:3},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
 ];
-const TOTAL_ACTIVOS = 34;
+const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
 const APROBACION = [
   {loc:'Colima', n:11},
   {loc:'Guanajuato', n:11},
   {loc:'Jalisco', n:6},
   {loc:'Sonora', n:6},
   {loc:'Quintana Roo', n:6},
-  {loc:'Hidalgo', n:4},
+  {loc:'Hidalgo', n:3},
   {loc:'Zacatecas', n:3},
   {loc:'Baja California', n:3},
   {loc:'CDMX', n:1},
@@ -942,12 +942,27 @@ function renderBitacora(){
 
 // ─── INIT ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
-  const el = document.getElementById('badge-fecha');
-  if(el){
+  // Fecha header
+  const elF = document.getElementById('badge-fecha');
+  if(elF){
     const d = new Date();
     const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
+    elF.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+  // KPIs dinámicos
+  const set = (id, val) => { const e=document.getElementById(id); if(e) e.textContent=val; };
+  set('kpi-activos',    TOTAL_ACTIVOS);
+  set('kpi-cerrados',   TOTAL_CERRADOS.toLocaleString('es-MX'));
+  set('kpi-aprobacion', TOTAL_APROBACION);
+  set('kpi-backlog',    TOTAL_BACKLOG);
+  // Subtítulo cerrados: último mes en CERRADOS
+  const lastMes = CERRADOS[CERRADOS.length-1];
+  if(lastMes){
+    const partes = lastMes.loc.split(' - ');
+    const nomMes = partes[1] || partes[0];
+    const anio   = lastMes.loc.substring(0,4);
+    set('kpi-cerrados-sub', lastMes.n + ' en ' + nomMes + ' ' + anio);
   }
   [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
 });
