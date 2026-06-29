@@ -103,12 +103,12 @@
       <div class="sub" id="kpi-cerrados-sub">293 en Junio 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">51</div>
+      <div class="num" id="kpi-aprobacion">52</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">156</div>
+      <div class="num" id="kpi-backlog">157</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -285,7 +285,7 @@ const BITACORA = [
   { fecha:'24 Jun 2026', activos:41, cerrados:1599, aprobacion:56, desplegar:9, backlog:142 },
   { fecha:'26 Jun 2026', activos:34, cerrados:1630, aprobacion:51, desplegar:10, backlog:141 },
   { fecha:'27 Jun 2026', activos:34, cerrados:1619, aprobacion:50, desplegar:10, backlog:150}
-  { fecha:'29 Jun 2026', activos:35, cerrados:1646, aprobacion:51, desplegar:9, backlog:156 },
+  { fecha:'29 Jun 2026', activos:35, cerrados:1646, aprobacion:52, desplegar:9, backlog:157 },
 ];
 const SOPORTES = [
   {loc:'Guanajuato', prog:3, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:0, total:6},
@@ -299,14 +299,14 @@ const SOPORTES = [
 ];
 const TOTAL_ACTIVOS = 35;
 const APROBACION = [
-  {loc:'Colima', n:13},
+  {loc:'Colima', n:12},
   {loc:'Guanajuato', n:11},
   {loc:'Jalisco', n:7},
+  {loc:'Sonora', n:6},
   {loc:'Quintana Roo', n:5},
-  {loc:'Sonora', n:5},
+  {loc:'Hidalgo', n:3},
   {loc:'Zacatecas', n:3},
   {loc:'Baja California', n:3},
-  {loc:'Hidalgo', n:2},
   {loc:'CDMX', n:1},
   {loc:'Coahuila', n:1},
 ];
@@ -382,13 +382,13 @@ const BACKLOG_RESP = [
 const BACKLOG = [
   {loc:'Quintana Roo', n:29},
   {loc:'Guanajuato', n:29},
-  {loc:'Jalisco', n:24},
+  {loc:'Jalisco', n:26},
   {loc:'Hidalgo', n:21},
   {loc:'Colima', n:18},
   {loc:'Sonora', n:11},
   {loc:'Baja California', n:9},
-  {loc:'Zacatecas', n:7},
   {loc:'Seguritech', n:6},
+  {loc:'Zacatecas', n:6},
   {loc:'Chiapas', n:2},
 ];
 const TOTAL_BACKLOG = BACKLOG.reduce((s,r)=>s+r.n,0);
@@ -399,6 +399,9 @@ function showTab(name, el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   el.classList.add('active');
+  // Re-renderizar gráficas de tabs que estaban ocultos al cargar
+  if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
+  if(name==='bitacora'){renderBitacora();}
 }
 function pill(n, css){
   return n>0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#cbd5e0">—</span>`;
@@ -828,7 +831,8 @@ window.onload = function(){
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
 
-  [renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
+  // Solo renderizar los tabs visibles al inicio; los demás se renderizan al activar el tab
+  [renderResumen, renderAprobacion, renderBacklog].forEach(fn => fn());
 };
 </script>
 </body>
