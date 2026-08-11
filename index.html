@@ -93,7 +93,7 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">101</div>
+      <div class="num" id="kpi-activos">100</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
@@ -103,12 +103,12 @@
       <div class="sub" id="kpi-cerrados-sub">88 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">25</div>
+      <div class="num" id="kpi-aprobacion">24</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">115</div>
+      <div class="num" id="kpi-backlog">108</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -311,19 +311,19 @@ const SOPORTES = [
   {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:13, total:13},
   {loc:'Colima', prog:0, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:3, total:7},
   {loc:'Baja California', prog:0, aprob:0, qa:2, bloq:2, reabierto:0, bkdev:1, total:5},
-  {loc:'Jalisco', prog:0, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:1, total:4},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:1, reabierto:0, bkdev:1, total:3},
-  {loc:'Sonora', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
+  {loc:'Jalisco', prog:0, aprob:0, qa:2, bloq:0, reabierto:0, bkdev:1, total:3},
+  {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
-const TOTAL_ACTIVOS = 101;
+const TOTAL_ACTIVOS = 100;
 const APROBACION = [
-  {loc:'Jalisco', n:6},
-  {loc:'Quintana Roo', n:5},
+  {loc:'Jalisco', n:5},
+  {loc:'Quintana Roo', n:4},
   {loc:'Colima', n:4},
   {loc:'Guanajuato', n:3},
+  {loc:'Sonora', n:2},
   {loc:'Hidalgo', n:2},
   {loc:'Zacatecas', n:1},
-  {loc:'Sonora', n:1},
   {loc:'CDMX', n:1},
   {loc:'Baja California', n:1},
   {loc:'Chiapas', n:1},
@@ -359,20 +359,20 @@ const CERRADOS = [
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
   {nom:'Leonardo Lucio Perez', n:20},
-  {nom:'Eunice Anais Arevalo Avalos', n:13},
+  {nom:'Eunice Anais Arevalo Avalos', n:12},
   {nom:'Jesus Feria Ortiz', n:8},
-  {nom:'Mariano Conte', n:7},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:6},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:6},
-  {nom:'Sin asignar', n:6},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:5},
+  {nom:'Sin asignar', n:5},
+  {nom:'Luis Antonio Jimenez Matus', n:4},
   {nom:'Omar Villalpando', n:3},
   {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:3},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
-  {nom:'Luis Antonio Jimenez Matus', n:3},
   {nom:'Alejandro Cruz Torres', n:3},
   {nom:'Jonathan Levi Márquez García', n:2},
+  {nom:'Mariano Conte', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
   {nom:'Berenice Zavala Jiménez', n:2},
   {nom:'salvador.fernandez', n:2},
@@ -384,29 +384,27 @@ const BACKLOG_RESP = [
   {nom:'GRAS RODRIGO GABRIEL', n:1},
   {nom:'Ivan Perez Felipe', n:1},
   {nom:'JIMENEZ MICETE RICARDO', n:1},
-  {nom:'Juan Pablo Sandoval Cruz', n:1},
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'Luis Fabian Frias Hernandez', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
   {nom:'Víctor Hugo Hernández López', n:1},
   {nom:'Hugo Cesar Rivero Rodriguez', n:1},
-  {nom:'Jesus Jonathan Ramos Nuñez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Juan Jaime Soni Larios', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:28},
-  {loc:'Jalisco', n:22},
+  {loc:'Quintana Roo', n:26},
+  {loc:'Jalisco', n:23},
   {loc:'Guanajuato', n:20},
-  {loc:'Hidalgo', n:18},
+  {loc:'Hidalgo', n:14},
   {loc:'Colima', n:11},
   {loc:'Baja California', n:6},
   {loc:'Seguritech', n:3},
   {loc:'Zacatecas', n:3},
-  {loc:'Sonora', n:2},
   {loc:'Sinaloa', n:1},
+  {loc:'Chiapas', n:1},
 ];
-const TOTAL_BACKLOG = 115;
+const TOTAL_BACKLOG = 108;
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
