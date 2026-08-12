@@ -103,12 +103,12 @@
       <div class="sub" id="kpi-cerrados-sub">101 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">29</div>
+      <div class="num" id="kpi-aprobacion">32</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">106</div>
+      <div class="num" id="kpi-backlog">101</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -309,7 +309,7 @@ const BITACORA = [
 ];
 const SOPORTES = [
   {loc:'Guanajuato', prog:18, aprob:1, qa:1, bloq:29, reabierto:0, bkdev:5, total:54},
-  {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:13, total:13},
+  {loc:'Hidalgo', prog:0, aprob:12, qa:0, bloq:0, reabierto:0, bkdev:1, total:13},
   {loc:'Colima', prog:0, aprob:3, qa:0, bloq:0, reabierto:0, bkdev:3, total:6},
   {loc:'Baja California', prog:0, aprob:0, qa:2, bloq:2, reabierto:0, bkdev:1, total:5},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:1, reabierto:0, bkdev:1, total:3},
@@ -318,9 +318,9 @@ const SOPORTES = [
 ];
 const TOTAL_ACTIVOS = 99;
 const APROBACION = [
-  {loc:'Jalisco', n:10},
+  {loc:'Hidalgo', n:9},
+  {loc:'Jalisco', n:7},
   {loc:'Guanajuato', n:4},
-  {loc:'Hidalgo', n:3},
   {loc:'Sonora', n:3},
   {loc:'CDMX', n:2},
   {loc:'Colima', n:2},
@@ -359,26 +359,25 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Leonardo Lucio Perez', n:19},
+  {nom:'Leonardo Lucio Perez', n:20},
   {nom:'Eunice Anais Arevalo Avalos', n:12},
-  {nom:'Jesus Feria Ortiz', n:9},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:6},
+  {nom:'Jesus Feria Ortiz', n:6},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
+  {nom:'Sin asignar', n:4},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:4},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:4},
   {nom:'Omar Villalpando', n:3},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:3},
-  {nom:'Manuel Alejandro Domínguez Enríquez', n:3},
-  {nom:'Sin asignar', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
   {nom:'Luis Antonio Jimenez Matus', n:3},
   {nom:'Jonathan Levi Márquez García', n:2},
+  {nom:'QUINTERO SERNA JUAN ANTONIO', n:2},
   {nom:'Mariano Conte', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:2},
   {nom:'salvador.fernandez', n:2},
-  {nom:'Alejandro Cruz Torres', n:2},
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:2},
   {nom:'Juan Jaime Soni Larios', n:2},
-  {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
   {nom:'Luis Andres Lopez Estrada', n:1},
@@ -392,21 +391,22 @@ const BACKLOG_RESP = [
   {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Hugo Cesar Rivero Rodriguez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
+  {nom:'Alejandro Cruz Torres', n:1},
   {nom:'Alejandra Magaña Lopez', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:27},
-  {loc:'Jalisco', n:19},
-  {loc:'Guanajuato', n:18},
+  {loc:'Quintana Roo', n:28},
+  {loc:'Guanajuato', n:19},
+  {loc:'Jalisco', n:18},
   {loc:'Colima', n:14},
-  {loc:'Hidalgo', n:13},
   {loc:'Baja California', n:6},
+  {loc:'Hidalgo', n:6},
   {loc:'Seguritech', n:3},
   {loc:'Zacatecas', n:3},
   {loc:'Sinaloa', n:1},
-  {loc:'Chiapas', n:1},
+  {loc:'Chihuahua', n:1},
 ];
-const TOTAL_BACKLOG = 106;
+const TOTAL_BACKLOG = 101;
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
