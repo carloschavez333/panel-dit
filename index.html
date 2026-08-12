@@ -93,7 +93,7 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">100</div>
+      <div class="num" id="kpi-activos">99</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
@@ -103,7 +103,7 @@
       <div class="sub" id="kpi-cerrados-sub">88 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">27</div>
+      <div class="num" id="kpi-aprobacion">30</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
@@ -307,24 +307,24 @@ const BITACORA = [
   { fecha:'11 Ago 2026', activos:101, cerrados:2072, aprobacion:25, desplegar:16, backlog:115 },
 ];
 const SOPORTES = [
-  {loc:'Guanajuato', prog:19, aprob:1, qa:0, bloq:29, reabierto:0, bkdev:5, total:54},
+  {loc:'Guanajuato', prog:18, aprob:1, qa:1, bloq:29, reabierto:0, bkdev:5, total:54},
   {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:13, total:13},
-  {loc:'Colima', prog:0, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:3, total:7},
+  {loc:'Colima', prog:0, aprob:3, qa:0, bloq:0, reabierto:0, bkdev:3, total:6},
   {loc:'Baja California', prog:0, aprob:0, qa:2, bloq:2, reabierto:0, bkdev:1, total:5},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:1, reabierto:0, bkdev:1, total:3},
   {loc:'Jalisco', prog:0, aprob:0, qa:2, bloq:0, reabierto:0, bkdev:1, total:3},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
-const TOTAL_ACTIVOS = 100;
+const TOTAL_ACTIVOS = 99;
 const APROBACION = [
-  {loc:'Jalisco', n:7},
-  {loc:'Colima', n:4},
+  {loc:'Jalisco', n:10},
+  {loc:'Guanajuato', n:4},
   {loc:'Hidalgo', n:3},
   {loc:'Sonora', n:3},
   {loc:'Quintana Roo', n:3},
-  {loc:'Guanajuato', n:3},
+  {loc:'CDMX', n:2},
+  {loc:'Colima', n:2},
   {loc:'Zacatecas', n:1},
-  {loc:'CDMX', n:1},
   {loc:'Baja California', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -360,23 +360,22 @@ const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
   {nom:'Leonardo Lucio Perez', n:18},
   {nom:'Eunice Anais Arevalo Avalos', n:12},
-  {nom:'Jesus Feria Ortiz', n:8},
+  {nom:'Jesus Feria Ortiz', n:10},
+  {nom:'Sin asignar', n:8},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:6},
-  {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:6},
-  {nom:'Sin asignar', n:5},
-  {nom:'Luis Antonio Jimenez Matus', n:4},
-  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:4},
+  {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:4},
   {nom:'Omar Villalpando', n:3},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:3},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
-  {nom:'Alejandro Cruz Torres', n:3},
+  {nom:'Luis Antonio Jimenez Matus', n:3},
+  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
   {nom:'Jonathan Levi Márquez García', n:2},
   {nom:'Mariano Conte', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
-  {nom:'Berenice Zavala Jiménez', n:2},
   {nom:'salvador.fernandez', n:2},
+  {nom:'Alejandro Cruz Torres', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
@@ -388,17 +387,17 @@ const BACKLOG_RESP = [
   {nom:'Luis Fabian Frias Hernandez', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
   {nom:'Víctor Hugo Hernández López', n:1},
+  {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Hugo Cesar Rivero Rodriguez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Juan Jaime Soni Larios', n:1},
-  {nom:'PEREZ VASQUEZ OSCAR URIEL', n:1},
 ];
 const BACKLOG = [
   {loc:'Quintana Roo', n:27},
-  {loc:'Jalisco', n:22},
-  {loc:'Guanajuato', n:20},
+  {loc:'Guanajuato', n:21},
+  {loc:'Jalisco', n:20},
+  {loc:'Colima', n:13},
   {loc:'Hidalgo', n:13},
-  {loc:'Colima', n:11},
   {loc:'Baja California', n:6},
   {loc:'Seguritech', n:3},
   {loc:'Zacatecas', n:3},
