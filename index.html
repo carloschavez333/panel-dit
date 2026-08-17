@@ -100,7 +100,7 @@
     <div class="kpi kpi-cerrados">
       <div class="num" id="kpi-cerrados">2,130</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">124 en Agosto 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">146 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
       <div class="num" id="kpi-aprobacion">36</div>
@@ -108,7 +108,7 @@
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">93</div>
+      <div class="num" id="kpi-backlog">99</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -311,7 +311,7 @@ const BITACORA = [
   { fecha:'17 Ago 2026', activos:86, cerrados:2130, aprobacion:36, desplegar:19, backlog:100 },
 ];
 const SOPORTES = [
-  {loc:'Guanajuato', prog:17, aprob:1, qa:0, bloq:26, reabierto:0, bkdev:3, total:47},
+  {loc:'Guanajuato', prog:14, aprob:1, qa:3, bloq:26, reabierto:0, bkdev:3, total:47},
   {loc:'Colima', prog:0, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:2, total:6},
   {loc:'Baja California', prog:0, aprob:0, qa:2, bloq:2, reabierto:0, bkdev:1, total:5},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:2, bloq:1, reabierto:0, bkdev:0, total:3},
@@ -324,11 +324,10 @@ const APROBACION = [
   {loc:'Jalisco', n:13},
   {loc:'Quintana Roo', n:6},
   {loc:'Colima', n:5},
-  {loc:'Guanajuato', n:3},
+  {loc:'Guanajuato', n:4},
   {loc:'CDMX', n:2},
   {loc:'Hidalgo', n:2},
   {loc:'Sonora', n:2},
-  {loc:'Zacatecas', n:1},
   {loc:'Baja California', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -362,23 +361,27 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
+  {nom:'Leonardo Lucio Perez', n:9},
   {nom:'Eunice Anais Arevalo Avalos', n:9},
-  {nom:'Leonardo Lucio Perez', n:8},
-  {nom:'Sin asignar', n:7},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
   {nom:'Jesus Feria Ortiz', n:6},
-  {nom:'Omar Villalpando', n:5},
+  {nom:'Sin asignar', n:6},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:5},
+  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:5},
+  {nom:'Omar Villalpando', n:4},
   {nom:'Mariano Conte', n:4},
-  {nom:'Angel Ulises Velasquez Hernandez', n:4},
   {nom:'Andrea Ixchel Tejeda Rayas', n:4},
   {nom:'Jonathan Levi Márquez García', n:3},
-  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
+  {nom:'Angel Ulises Velasquez Hernandez', n:3},
+  {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:3},
   {nom:'Ivan Perez Felipe', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:2},
   {nom:'salvador.fernandez', n:2},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:2},
+  {nom:'Luis Antonio Jimenez Matus', n:2},
+  {nom:'Juan Jaime Soni Larios', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
@@ -388,27 +391,24 @@ const BACKLOG_RESP = [
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'Luis Fabian Frias Hernandez', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:1},
   {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
-  {nom:'Luis Antonio Jimenez Matus', n:1},
-  {nom:'Juan Jaime Soni Larios', n:1},
-  {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
+  {nom:'Jorge Octavio Paz Hernandez', n:1},
 ];
 const BACKLOG = [
   {loc:'Quintana Roo', n:26},
-  {loc:'Guanajuato', n:16},
-  {loc:'Jalisco', n:12},
+  {loc:'Guanajuato', n:15},
+  {loc:'Jalisco', n:13},
+  {loc:'Colima', n:10},
   {loc:'Seguritech', n:10},
-  {loc:'Colima', n:9},
-  {loc:'Hidalgo', n:8},
+  {loc:'Hidalgo', n:9},
+  {loc:'Zacatecas', n:6},
   {loc:'Baja California', n:5},
-  {loc:'Zacatecas', n:3},
+  {loc:'Chiapas', n:2},
   {loc:'Sinaloa', n:1},
-  {loc:'Chiapas', n:1},
 ];
-const TOTAL_BACKLOG = 113;
+const TOTAL_BACKLOG = 99;
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
