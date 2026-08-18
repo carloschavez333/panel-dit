@@ -108,7 +108,7 @@
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">96</div>
+      <div class="num" id="kpi-backlog">90</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -363,26 +363,23 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Leonardo Lucio Perez', n:9},
   {nom:'Eunice Anais Arevalo Avalos', n:9},
+  {nom:'Leonardo Lucio Perez', n:6},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
-  {nom:'Mariano Conte', n:6},
+  {nom:'Jesus Feria Ortiz', n:6},
+  {nom:'Omar Villalpando', n:5},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
-  {nom:'Jesus Feria Ortiz', n:5},
   {nom:'Sin asignar', n:5},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:5},
-  {nom:'Omar Villalpando', n:4},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:4},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:4},
   {nom:'Angel Ulises Velasquez Hernandez', n:4},
   {nom:'Jonathan Levi Márquez García', n:3},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:3},
+  {nom:'Mariano Conte', n:3},
   {nom:'Ivan Perez Felipe', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
   {nom:'salvador.fernandez', n:2},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:2},
-  {nom:'Luis Antonio Jimenez Matus', n:2},
-  {nom:'Juan Jaime Soni Larios', n:2},
-  {nom:'Jorge Octavio Paz Hernandez', n:2},
+  {nom:'Arturo Cedeño Ortíz', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
@@ -392,25 +389,30 @@ const BACKLOG_RESP = [
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'Luis Fabian Frias Hernandez', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:1},
   {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
+  {nom:'Luis Antonio Jimenez Matus', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
   {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:1},
+  {nom:'Juan Jaime Soni Larios', n:1},
   {nom:'Jesus Jonathan Ramos Nuñez', n:1},
+  {nom:'Andrea Ixchel Tejeda Rayas', n:1},
+  {nom:'Luis Giovanni Rocha Carrizales', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:27},
-  {loc:'Guanajuato', n:19},
-  {loc:'Jalisco', n:11},
-  {loc:'Hidalgo', n:10},
+  {loc:'Quintana Roo', n:29},
+  {loc:'Guanajuato', n:18},
+  {loc:'Jalisco', n:9},
   {loc:'Colima', n:8},
-  {loc:'Seguritech', n:5},
+  {loc:'Seguritech', n:7},
+  {loc:'Hidalgo', n:7},
   {loc:'Baja California', n:5},
-  {loc:'Zacatecas', n:5},
   {loc:'Chiapas', n:2},
   {loc:'Sonora', n:2},
+  {loc:'Sinaloa', n:1},
 ];
-const TOTAL_BACKLOG = 96;
+const TOTAL_BACKLOG = 90;
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
