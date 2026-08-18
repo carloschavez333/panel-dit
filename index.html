@@ -93,7 +93,7 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">80</div>
+      <div class="num" id="kpi-activos">79</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
@@ -103,7 +103,7 @@
       <div class="sub" id="kpi-cerrados-sub">162 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">39</div>
+      <div class="num" id="kpi-aprobacion">41</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
@@ -317,18 +317,19 @@ const SOPORTES = [
   {loc:'Baja California', prog:0, aprob:0, qa:2, bloq:2, reabierto:0, bkdev:1, total:5},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:2, bloq:1, reabierto:0, bkdev:0, total:3},
   {loc:'Jalisco', prog:0, aprob:0, qa:1, bloq:0, reabierto:0, bkdev:1, total:2},
-  {loc:'Hidalgo', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:1, total:2},
+  {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
-const TOTAL_ACTIVOS = 80;
+const TOTAL_ACTIVOS = 79;
 const APROBACION = [
   {loc:'Jalisco', n:14},
   {loc:'Quintana Roo', n:7},
   {loc:'Colima', n:6},
   {loc:'Guanajuato', n:4},
+  {loc:'Zacatecas', n:3},
   {loc:'CDMX', n:2},
-  {loc:'Hidalgo', n:2},
   {loc:'Sonora', n:2},
+  {loc:'Hidalgo', n:1},
   {loc:'Baja California', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -365,23 +366,23 @@ const BACKLOG_RESP = [
   {nom:'Leonardo Lucio Perez', n:9},
   {nom:'Eunice Anais Arevalo Avalos', n:9},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
-  {nom:'Sin asignar', n:6},
+  {nom:'Mariano Conte', n:6},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
   {nom:'Jesus Feria Ortiz', n:5},
+  {nom:'Sin asignar', n:5},
+  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:5},
   {nom:'Omar Villalpando', n:4},
-  {nom:'Mariano Conte', n:4},
-  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:4},
-  {nom:'Andrea Ixchel Tejeda Rayas', n:4},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:4},
+  {nom:'Angel Ulises Velasquez Hernandez', n:4},
   {nom:'Jonathan Levi Márquez García', n:3},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:3},
-  {nom:'Angel Ulises Velasquez Hernandez', n:3},
-  {nom:'Jorge Octavio Paz Hernandez', n:3},
   {nom:'Ivan Perez Felipe', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
   {nom:'salvador.fernandez', n:2},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:2},
   {nom:'Luis Antonio Jimenez Matus', n:2},
   {nom:'Juan Jaime Soni Larios', n:2},
+  {nom:'Jorge Octavio Paz Hernandez', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
@@ -391,25 +392,23 @@ const BACKLOG_RESP = [
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'Luis Fabian Frias Hernandez', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:1},
   {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
   {nom:'RAMÍREZ MENDOZA PABLO IVÁN', n:1},
-  {nom:'Armando Cisneros', n:1},
   {nom:'Jesus Jonathan Ramos Nuñez', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:25},
-  {loc:'Guanajuato', n:18},
-  {loc:'Jalisco', n:12},
+  {loc:'Quintana Roo', n:27},
+  {loc:'Guanajuato', n:19},
+  {loc:'Jalisco', n:11},
   {loc:'Hidalgo', n:10},
-  {loc:'Seguritech', n:9},
   {loc:'Colima', n:8},
+  {loc:'Seguritech', n:5},
   {loc:'Baja California', n:5},
-  {loc:'Zacatecas', n:4},
+  {loc:'Zacatecas', n:5},
   {loc:'Chiapas', n:2},
-  {loc:'Sinaloa', n:1},
+  {loc:'Sonora', n:2},
 ];
 const TOTAL_BACKLOG = 96;
 
