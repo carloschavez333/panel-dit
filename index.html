@@ -93,7 +93,7 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">80</div>
+      <div class="num" id="kpi-activos">79</div>
       <div class="lbl">Tickets Activos</div>
       <div class="sub">En atenci&oacute;n ahora</div>
     </div>
@@ -103,12 +103,12 @@
       <div class="sub" id="kpi-cerrados-sub">169 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">40</div>
+      <div class="num" id="kpi-aprobacion">41</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">89</div>
+      <div class="num" id="kpi-backlog">86</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -313,7 +313,7 @@ const BITACORA = [
   { fecha:'19 Ago 2026', activos:78, cerrados:2154, aprobacion:39, desplegar:11, backlog:93 },
 ];
 const SOPORTES = [
-  {loc:'Guanajuato', prog:14, aprob:1, qa:3, bloq:26, reabierto:0, bkdev:4, total:48},
+  {loc:'Guanajuato', prog:12, aprob:1, qa:3, bloq:29, reabierto:0, bkdev:2, total:47},
   {loc:'Colima', prog:0, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:2, total:6},
   {loc:'Baja California', prog:0, aprob:1, qa:2, bloq:1, reabierto:0, bkdev:1, total:5},
   {loc:'Quintana Roo', prog:0, aprob:0, qa:2, bloq:1, reabierto:0, bkdev:0, total:3},
@@ -321,10 +321,10 @@ const SOPORTES = [
   {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
   {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
 ];
-const TOTAL_ACTIVOS = 80;
+const TOTAL_ACTIVOS = 79;
 const APROBACION = [
   {loc:'Jalisco', n:14},
-  {loc:'Quintana Roo', n:7},
+  {loc:'Quintana Roo', n:8},
   {loc:'Guanajuato', n:4},
   {loc:'Colima', n:3},
   {loc:'Baja California', n:3},
@@ -364,22 +364,20 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos', n:9},
-  {nom:'Leonardo Lucio Perez', n:6},
+  {nom:'Eunice Anais Arevalo Avalos', n:10},
+  {nom:'Sin asignar', n:7},
   {nom:'Gibran Esaú Solís Valenzuela', n:6},
-  {nom:'Sin asignar', n:6},
-  {nom:'Omar Villalpando', n:5},
+  {nom:'Omar Villalpando', n:6},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:5},
-  {nom:'Jesus Feria Ortiz', n:5},
+  {nom:'Leonardo Lucio Perez', n:4},
+  {nom:'Jesus Feria Ortiz', n:4},
   {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:4},
   {nom:'Jonathan Levi Márquez García', n:3},
   {nom:'Mariano Conte', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
-  {nom:'GRAS RODRIGO GABRIEL', n:2},
   {nom:'Ivan Perez Felipe', n:2},
   {nom:'DURAZO RIOS MANUEL ANGEL', n:2},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:2},
   {nom:'salvador.fernandez', n:2},
   {nom:'Juan Manuel Olguin Colin', n:2},
   {nom:'Luis Antonio Jimenez Matus', n:2},
@@ -388,23 +386,24 @@ const BACKLOG_RESP = [
   {nom:'Silvestre Cerrato', n:1},
   {nom:'Luis Antonio Hernández Martínez', n:1},
   {nom:'Luis Andres Lopez Estrada', n:1},
+  {nom:'GRAS RODRIGO GABRIEL', n:1},
   {nom:'JIMENEZ MICETE RICARDO', n:1},
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:1},
   {nom:'Berenice Zavala Jiménez', n:1},
   {nom:'Juan Pablo Sandoval Cruz', n:1},
   {nom:'Jesus Jonathan Ramos Nuñez', n:1},
   {nom:'Andrea Ixchel Tejeda Rayas', n:1},
   {nom:'Luis Giovanni Rocha Carrizales', n:1},
-  {nom:'Arturo Cedeño Ortíz', n:1},
   {nom:'Marisol Hernandez Hernandez', n:1},
   {nom:'VELAZQUEZ ZENIL ELIEL', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:24},
-  {loc:'Guanajuato', n:19},
-  {loc:'Jalisco', n:11},
-  {loc:'Colima', n:10},
+  {loc:'Quintana Roo', n:23},
+  {loc:'Guanajuato', n:17},
+  {loc:'Jalisco', n:12},
+  {loc:'Colima', n:9},
   {loc:'Seguritech', n:8},
   {loc:'Hidalgo', n:7},
   {loc:'Baja California', n:4},
@@ -412,7 +411,7 @@ const BACKLOG = [
   {loc:'Sinaloa', n:1},
   {loc:'Chiapas', n:1},
 ];
-const TOTAL_BACKLOG = 89;
+const TOTAL_BACKLOG = 86;
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
