@@ -21,17 +21,16 @@
   .tab.active{background:#fdeeea;color:#e0532c;border-color:#f9d3c6}
   .sidebar-foot{font-size:.65rem;color:#8a8f9c;border-top:1px solid #eceef1;padding-top:14px;padding-left:6px}
   .main{flex:1;min-width:0}
-  .topbar{display:flex;justify-content:space-between;align-items:center;max-width:1280px;margin:0 auto;padding:22px 32px 4px;color:#6b7280;font-size:.82rem}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:22px 32px 4px;color:#6b7280;font-size:.82rem}
   .header-date{font-size:.78rem;color:#9aa0ab}
-  .container{max-width:1280px;margin:0 auto;padding:20px 32px 32px}
-  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .container{max-width:1280px;padding:20px 32px 32px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
   
   .kpi{border-radius:16px;padding:20px 16px;text-align:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05);transition:transform .15s;color:#fff}
   .kpi:hover{transform:translateY(-2px)}
   .kpi .num{font-size:2.5rem;font-weight:800;line-height:1;margin-bottom:6px;color:#fff}
   .kpi .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.85);font-weight:700}
   .kpi .sub{font-size:.68rem;color:rgba(255,255,255,.7);margin-top:4px}
-  .kpi-activos{background:#2a9d8f}
   .kpi-cerrados{background:#3d4b7a}
   .kpi-aprobacion{background:#f2793a}
   .kpi-backlog{background:#7c6fd0}
@@ -74,9 +73,9 @@
   .loc-row .lc-label{font-size:.76rem;color:#6b7280}
   .footer{text-align:center;padding:18px;color:#9aa0ab;font-size:.74rem}
   .footer strong{color:#6b7280}
-  @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.loc-grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}}
+  @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.loc-grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}}
   @media(max-width:900px){.shell{flex-direction:column}.sidebar{width:100%;flex-direction:row;align-items:center;overflow-x:auto;gap:14px}.tabs{flex-direction:row}.brand p{display:none}.sidebar-foot{display:none}}
-  @media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.loc-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.kpi-grid{grid-template-columns:1fr}.loc-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -113,11 +112,6 @@
 <div class="container">
 
   <div class="kpi-grid">
-    <div class="kpi kpi-activos">
-      <div class="num" id="kpi-activos">77</div>
-      <div class="lbl">Tickets Activos</div>
-      <div class="sub">En atenci&oacute;n ahora</div>
-    </div>
     <div class="kpi kpi-cerrados">
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
