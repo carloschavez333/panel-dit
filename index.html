@@ -128,7 +128,7 @@
     <div class="kpi kpi-cerrados">
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">206 en Agosto 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias</div>
     </div>
     <div class="kpi kpi-aprobacion">
       <div class="num" id="kpi-aprobacion">34</div>
@@ -666,13 +666,7 @@ function renderKPIs(){
   const elCerrados = document.getElementById('kpi-cerrados');
   if(elCerrados) elCerrados.textContent = TOTAL_CERRADOS.toLocaleString();
   const elCerradosSub = document.getElementById('kpi-cerrados-sub');
-  if(elCerradosSub && CERRADOS.length){
-    const last = CERRADOS[CERRADOS.length-1];
-    const partes = last.loc.split(' \u00b7 ');
-    const anio = (partes[0]||'').split('-')[0];
-    const mesNombre = partes[1]||'';
-    elCerradosSub.textContent = `${last.n} en ${mesNombre} ${anio}`;
-  }
+  if(elCerradosSub) elCerradosSub.textContent = 'Soportes + Asistencias';
   const elAprobacion = document.getElementById('kpi-aprobacion');
   if(elAprobacion) elAprobacion.textContent = TOTAL_APROBACION.toLocaleString();
   const elBacklog = document.getElementById('kpi-backlog');
