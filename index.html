@@ -113,17 +113,17 @@
 
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados">
-      <div class="num" id="kpi-cerrados">3,024</div>
+      <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">273 en Agosto 2026</div>
+      <div class="sub" id="kpi-cerrados-sub">206 en Agosto 2026</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">38</div>
+      <div class="num" id="kpi-aprobacion">34</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">86</div>
+      <div class="num" id="kpi-backlog">84</div>
       <div class="lbl">Backlog</div>
       <div class="sub">Pendientes de inicio</div>
     </div>
@@ -334,11 +334,11 @@ const SOPORTES = [
 ];
 const TOTAL_ACTIVOS = 77;
 const APROBACION = [
-  {loc:'Quintana Roo', n:10},
+  {loc:'Quintana Roo', n:8},
   {loc:'Guanajuato', n:6},
   {loc:'Hidalgo', n:5},
-  {loc:'Jalisco', n:4},
-  {loc:'Colima', n:4},
+  {loc:'Jalisco', n:3},
+  {loc:'Colima', n:3},
   {loc:'Baja California', n:3},
   {loc:'Sonora', n:2},
   {loc:'Zacatecas', n:2},
@@ -347,41 +347,41 @@ const APROBACION = [
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
-  {nom:'Yoshio Adán Villegas Guevara', n:210},
-  {nom:'Leonardo Lucio Perez', n:181},
-  {nom:'Jonathan Aristeo Lozano Hernandez', n:150},
-  {nom:'Omar Villalpando', n:149},
-  {nom:'Manuel A. Domínguez Enríquez', n:143},
-  {nom:'Jesus Feria Ortiz', n:95},
-  {nom:'Ivan Perez Felipe', n:81},
-  {nom:'Gibran Esaú Solís Valenzuela', n:58},
-  {nom:'Silvestre Cerrato', n:54},
+  {nom:'Yoshio Adán Villegas Guevara', n:112},
+  {nom:'Leonardo Lucio Perez', n:93},
+  {nom:'Omar Villalpando', n:81},
+  {nom:'Manuel A. Domínguez Enríquez', n:78},
+  {nom:'Ivan Perez Felipe', n:63},
+  {nom:'Jesus Feria Ortiz', n:49},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:47},
+  {nom:'Silvestre Cerrato', n:39},
   {nom:'Aníbal Argüelles García', n:25},
-  {nom:'Rodrigo Gabriel Gras', n:11},
+  {nom:'Gibran Esaú Solís Valenzuela', n:16},
+  {nom:'Rodrigo Gabriel Gras', n:10},
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 const CERRADOS = [
   {loc:'2025-01 · Enero', n:1},
-  {loc:'2025-11 · Noviembre', n:9},
-  {loc:'2025-12 · Diciembre', n:110},
-  {loc:'2026-01 · Enero', n:168},
-  {loc:'2026-02 · Febrero', n:204},
-  {loc:'2026-03 · Marzo', n:631},
-  {loc:'2026-04 · Abril', n:295},
-  {loc:'2026-05 · Mayo', n:446},
-  {loc:'2026-06 · Junio', n:448},
-  {loc:'2026-07 · Julio', n:439},
-  {loc:'2026-08 · Agosto', n:273},
+  {loc:'2025-11 · Noviembre', n:2},
+  {loc:'2025-12 · Diciembre', n:106},
+  {loc:'2026-01 · Enero', n:158},
+  {loc:'2026-02 · Febrero', n:199},
+  {loc:'2026-03 · Marzo', n:384},
+  {loc:'2026-04 · Abril', n:211},
+  {loc:'2026-05 · Mayo', n:273},
+  {loc:'2026-06 · Junio', n:340},
+  {loc:'2026-07 · Julio', n:319},
+  {loc:'2026-08 · Agosto', n:206},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos', n:13},
+  {nom:'Eunice Anais Arevalo Avalos', n:12},
   {nom:'Sin asignar', n:8},
   {nom:'Gibran Esaú Solís Valenzuela', n:7},
   {nom:'Leonardo Lucio Perez', n:6},
   {nom:'Mariano Conte', n:6},
-  {nom:'Omar Villalpando', n:4},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:4},
+  {nom:'Omar Villalpando', n:3},
   {nom:'Ivan Perez Felipe', n:3},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
@@ -412,9 +412,9 @@ const BACKLOG_RESP = [
 ];
 const BACKLOG = [
   {loc:'Quintana Roo', n:22},
-  {loc:'Guanajuato', n:16},
-  {loc:'Colima', n:12},
+  {loc:'Guanajuato', n:15},
   {loc:'Hidalgo', n:12},
+  {loc:'Colima', n:11},
   {loc:'Jalisco', n:7},
   {loc:'Seguritech', n:5},
   {loc:'Baja California', n:4},
