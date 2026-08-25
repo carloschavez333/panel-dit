@@ -185,16 +185,19 @@
   .footer{text-align:center;padding:18px;color:#9aa0ab;font-size:.74rem}
   .footer strong{color:#6b7280}
 
-  /* ─── Reporte Individual (Rendimiento por Persona → hover en nombre), 25 Ago 2026 ───
-     v2: se cambió de "clic → reemplaza la tabla en el mismo lugar" a "hover → se abre
-     como ventana flotante ENCIMA de la tabla, sin ocultarla" — a pedido explícito del
-     usuario, que encontró "feo" el reemplazo en el mismo lugar. El overlay se abre con
-     mouseenter y se queda fijo (no se cierra solo al quitar el mouse) hasta que se le
-     da clic a la X o se hace clic fuera de la tarjeta — así se puede hacer scroll o usar
-     el botón Exportar sin que se cierre solo. */
-  .ri-clickrow{cursor:pointer}
+  /* ─── Reporte Individual (Rendimiento por Persona → clic en nombre), 25 Ago 2026 ───
+     v2: se cambió de "clic → reemplaza la tabla en el mismo lugar" a "se abre como
+     ventana flotante ENCIMA de la tabla, sin ocultarla" — a pedido explícito del
+     usuario, que encontró "feo" el reemplazo en el mismo lugar.
+     v3 (mismo día): se probó disparar el overlay con mouseenter (hover), pero el
+     usuario reportó que fallaba, así que se regresó a disparo por CLIC — únicamente
+     sobre el nombre subrayado (no la fila/tarjeta completa) para que quede claro
+     dónde hay que hacer clic. El overlay se queda fijo (no se cierra solo) hasta que
+     se le da clic a la X o se hace clic fuera de la tarjeta — así se puede hacer
+     scroll o usar el botón Exportar sin que se cierre solo. */
   .ri-clickrow:hover td{background:#f7f8fa}
-  .ri-podio-card{cursor:pointer;transition:background .12s ease}
+  .ri-name-cell{color:#2563eb;text-decoration:underline;cursor:pointer;font-weight:600;}
+  .ri-podio-name{color:#2563eb;text-decoration:underline;cursor:pointer;}
   .ri-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
   .ri-overlay.open{display:flex}
   .ri-modal-card{background:#f4f5f7;border-radius:18px;max-width:960px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(15,23,42,.3);animation:ri-pop .15s ease}
@@ -633,7 +636,7 @@
     </div>
     <div class="panel" id="rp-ranking-view" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
-      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Pasa el mouse sobre cualquier nombre para ver su reporte individual.</div>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre (subrayado) para ver su reporte individual.</div>
       <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
       <div class="table-wrap">
         <table>
@@ -2347,10 +2350,10 @@ function renderEquipoRendimiento(){
   const podio=document.getElementById('top3-podio-equipo');
   if(podio){
     podio.innerHTML=combinado.slice(0,3).map((r,i)=>`
-      <div class="ri-podio-card" onmouseenter="abrirReporteIndividual(${i})" style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+      <div style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
         <div style="font-size:2rem;margin-bottom:6px;">${RP_MEDALS[i]}</div>
         <div style="font-size:2.2rem;font-weight:800;color:${RP_PODIO_COLORS[i]};line-height:1;">${r.total}</div>
-        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
+        <div class="ri-podio-name" onclick="abrirReporteIndividual(${i})" style="font-size:.82rem;font-weight:600;margin:8px 0 4px;">${r.nom}</div>
         <div style="font-size:.75rem;color:#64748b;">Soportes ${r.sop} · Evolutivos ${r.dev} · Error ${r.err}</div>
       </div>`).join('');
   }
@@ -2360,9 +2363,9 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-      return `<tr class="ri-clickrow" onmouseenter="abrirReporteIndividual(${i})" style="${rowStyle}">
+      return `<tr class="ri-clickrow" style="${rowStyle}">
         <td style="color:${numColor};font-weight:700;">${i<3?RP_MEDALS[i]:i+1}</td>
-        <td>${r.nom}</td>
+        <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
