@@ -529,6 +529,12 @@
       <div class="info-box" style="font-size:.78rem;">S&iacute;ntesis de Calidad de Desarrollo + Ritmo de Atenci&oacute;n &mdash; no es un n&uacute;mero compuesto (ver por qu&eacute; abajo), es un sem&aacute;foro de 2 se&ntilde;ales que ya se calculan en sus propios paneles.</div>
       <div id="efectividad-equipo"></div>
     </div>
+    <div class="panel" style="margin-top:22px;border-top:4px solid #d97706;">
+      <h3>Velocidad de Atenci&oacute;n</h3>
+      <div class="info-box" style="font-size:.78rem;">Cu&aacute;ntas horas de trabajo efectivo (no d&iacute;as transcurridos) le toma al equipo resolver un ticket t&iacute;pico, por tipo. Mide esfuerzo/eficiencia del equipo, no la espera por aprobaciones u otros actores fuera de su control.</div>
+      <div id="velocidad-atencion" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
+      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="velocidad-atencion-formula"></div>
+    </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Productividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
@@ -954,6 +960,98 @@ const RESPONSABLES_ERR = [
 ];
 const TOTAL_RESPONSABLES_ERR = RESPONSABLES_ERR.reduce((s,r)=>s+r.n,0);
 
+// ─── VELOCIDAD DE ATENCIÓN (horas de trabajo por ticket) ──────────────────────
+// Agregado 25 Ago 2026: el usuario agregó la columna "Tiempo Empleado (Hrs)" a
+// Mtto_DONE_2026 (= "Σ Tiempo empleado" del worklog de Jira, en segundos, ÷
+// 3600 — ya calculada en el propio Sheet) y preguntó si esto sirve para ver
+// qué tan rápido es el equipo por incidencia.
+// IMPORTANTE — aclarado con el usuario vía AskUserQuestion (25 Ago 2026): este
+// campo mide HORAS DE TRABAJO EFECTIVO REGISTRADAS, NO los días que tarda un
+// ticket en cerrarse desde que se crea. Se calcularon ambas métricas para
+// comparar (Soporte típico: 1.6 días vs 1.5 hrs de trabajo real; Evolutivo
+// típico: 37.4 días vs 13.7 hrs de trabajo real) y el usuario pidió
+// explícitamente usar SOLO las horas de trabajo: "en el proceso entran otros
+// actores que no dependen de nosotros, a nosotros nos sirve cuánto tiempo en
+// horas nos tardamos en hacerlo". No agregar de vuelta el cálculo de días
+// transcurridos a este panel sin que el usuario lo pida.
+// Cobertura de datos (tickets cerrados 2026 con esta hora ya registrada):
+// Soporte 1,887/2,103 (90%), Evolutivo 100/109 (92%), Error 682/687 (99%) —
+// el resto no tiene hora registrada y se excluye del cálculo (no cuenta como 0).
+// Se usa MEDIANA como número principal, no promedio: la distribución tiene
+// outliers grandes (ej. un Soporte con 279 hrs registradas de un caso atípico)
+// que inflan mucho el promedio por encima de lo típico — la mediana no se
+// distorsiona por esos casos raros. El promedio se muestra igual, como dato
+// secundario, por transparencia (no se oculta el número "menos favorable").
+// Los valores por mes/mitad NO se pueden recalcular en el navegador a partir
+// de otros arrays (a diferencia de CERRADOS, que sí se puede sumar): una
+// mediana de medianas no es válida estadísticamente, así que estos totales
+// vienen pre-calculados desde el detalle de cada ticket (fuera del HTML) y se
+// hardcodean igual que el resto de los datos del panel.
+const TIEMPO_ATENCION = {
+  soporte: {
+    lbl: 'Soportes', color: '#16a34a',
+    monthly: [
+      {mes:'Enero',n:143,mean:4.15,median:1.5},{mes:'Febrero',n:181,mean:3.41,median:1.5},
+      {mes:'Marzo',n:352,mean:3.51,median:1.5},{mes:'Abril',n:193,mean:4.68,median:1.0},
+      {mes:'Mayo',n:244,mean:2.83,median:1.0},{mes:'Junio',n:293,mean:3.71,median:1.67},
+      {mes:'Julio',n:282,mean:5.02,median:2.0},{mes:'Agosto',n:199,mean:4.10,median:1.5},
+    ],
+    total: {n:1887, mean:3.90, median:1.5},
+    primera: {lbl:'Enero-Abril', n:869, mean:3.86, median:1.5},
+    segunda: {lbl:'Mayo-Agosto', n:1018, mean:3.94, median:1.5},
+  },
+  evolutivo: {
+    lbl: 'Evolutivos', color: '#d97706',
+    monthly: [
+      {mes:'Enero',n:4,mean:16.02,median:12.75},{mes:'Febrero',n:4,mean:18.04,median:3.5},
+      {mes:'Marzo',n:38,mean:25.35,median:20.46},{mes:'Abril',n:12,mean:15.72,median:9.62},
+      {mes:'Mayo',n:5,mean:6.92,median:7.5},{mes:'Junio',n:11,mean:22.95,median:21.0},
+      {mes:'Julio',n:13,mean:15.50,median:12.17},{mes:'Agosto',n:13,mean:23.41,median:20.0},
+    ],
+    total: {n:100, mean:20.81, median:13.71},
+    primera: {lbl:'Enero-Abril', n:58, mean:22.21, median:14.21},
+    segunda: {lbl:'Mayo-Agosto', n:42, mean:18.88, median:13.5},
+  },
+  error: {
+    lbl: 'Fallos de QA (Error)', color: '#2563eb',
+    monthly: [
+      {mes:'Marzo',n:200,mean:4.57,median:2.79},{mes:'Abril',n:67,mean:2.63,median:1.42},
+      {mes:'Mayo',n:163,mean:1.35,median:0.83},{mes:'Junio',n:89,mean:2.90,median:2.17},
+      {mes:'Julio',n:103,mean:3.66,median:2.25},{mes:'Agosto',n:60,mean:3.38,median:2.75},
+    ],
+    total: {n:682, mean:3.15, median:1.92},
+    primera: {lbl:'Marzo-Mayo', n:430, mean:3.05, median:1.54},
+    segunda: {lbl:'Junio-Agosto', n:252, mean:3.32, median:2.29},
+  },
+};
+
+function renderVelocidadAtencion(){
+  const wrap = document.getElementById('velocidad-atencion');
+  if(!wrap) return;
+  const grupos = ['soporte','evolutivo','error'];
+  wrap.innerHTML = grupos.map(k=>{
+    const g = TIEMPO_ATENCION[k];
+    const delta = g.segunda.median - g.primera.median;
+    const mejora = delta < 0; // menos horas registradas = más rápido
+    const arrow = Math.abs(delta) < 0.05 ? '→' : (mejora ? '▼' : '▲');
+    const tendColor = Math.abs(delta) < 0.05 ? '#64748b' : (mejora ? '#16a34a' : '#dc2626');
+    const tendTxt = Math.abs(delta) < 0.05 ? 'sin cambio' : (mejora ? 'más rápido' : 'más lento');
+    return `
+    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;border:1px solid #e5e7eb;">
+      <div style="font-size:.78rem;font-weight:700;color:#334155;">${g.lbl}</div>
+      <div style="font-size:1.9rem;font-weight:800;color:${g.color};line-height:1;margin-top:8px;">${g.total.median.toFixed(1)} hrs</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:4px;">mediana de horas de trabajo por ticket &middot; promedio ${g.total.mean.toFixed(1)} hrs &middot; n=${g.total.n.toLocaleString()}</div>
+      <div style="font-size:.74rem;font-weight:700;color:${tendColor};margin-top:12px;">${arrow} ${Math.abs(delta).toFixed(1)} hrs ${tendTxt}</div>
+      <div style="font-size:.68rem;color:#94a3b8;margin-top:2px;">de ${g.primera.median.toFixed(1)} hrs (${g.primera.lbl}) a ${g.segunda.median.toFixed(1)} hrs (${g.segunda.lbl})</div>
+    </div>`;
+  }).join('');
+  const formula = document.getElementById('velocidad-atencion-formula');
+  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> mediana de "Tiempo Empleado (Hrs)" (horas de trabajo efectivo registradas en Jira, no días transcurridos) por ticket cerrado en 2026, por tipo. `
+    + `Tendencia = mediana de la 1ª mitad de meses con datos vs la 2ª mitad (mismo criterio que "Tendencia de Calidad"). `
+    + `Cobertura: Soportes 1,887/2,103 tickets (90%), Evolutivos 100/109 (92%), Error 682/687 (99%) — el resto no tiene hora registrada en el Sheet y se excluye (no cuenta como 0). `
+    + `<strong>No mide</strong> cuánto tarda un ticket en cerrarse desde que se abre (eso depende también de aprobaciones, colas y otros actores fuera del equipo) — mide solo las horas de trabajo que el equipo efectivamente le dedicó, por instrucción explícita del usuario.`;
+}
+
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
   const canvas = document.getElementById(id);
@@ -1250,7 +1348,7 @@ function showTab(name, el){
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
-  if(name==='equipo'){renderEfectividadEquipo(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
+  if(name==='equipo'){renderEfectividadEquipo(); renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -2207,7 +2305,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
-   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion].forEach(fn => fn());
 });
 </script>
 </body>
