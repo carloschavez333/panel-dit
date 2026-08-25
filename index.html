@@ -57,6 +57,16 @@
   .kpi-backlog:hover{background-color:#fef2f2}
   .kpi-backlog .kpi-icon{background:#fee2e2;color:#dc2626}
   .kpi-backlog:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#7f1d1d;color:#7f1d1d;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(127,29,29,.35)}
+  /* Paleta propia del módulo "Tickets Evolutivos": teal / violeta / rojo (el rojo se
+     reutiliza de .kpi-backlog, mismo significado "En Atención" que en Soportes) */
+  .kpi-cerrados-dev{border-color:#0d9488}
+  .kpi-cerrados-dev .kpi-icon{background:#ccfbf1;color:#0f766e}
+  .kpi-cerrados-dev:hover{background-color:#f0fdfa}
+  .kpi-cerrados-dev:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#134e4a;color:#134e4a;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(19,78,74,.35)}
+  .kpi-aprobacion-dev{border-color:#8b5cf6}
+  .kpi-aprobacion-dev .kpi-icon{background:#ede9fe;color:#6d28d9}
+  .kpi-aprobacion-dev:hover{background-color:#f5f3ff}
+  .kpi-aprobacion-dev:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#4c1d95;color:#4c1d95;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(76,29,149,.35)}
   .kpi-linkable{cursor:pointer}
   .kpi-linkable:hover .lbl{text-decoration:underline;text-underline-offset:3px}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
@@ -142,8 +152,8 @@
       <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')">&#x25B8;</span>
     </div>
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
-      <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E0;</span> Espera de Firma</div>
-      <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F7E2;</span> Liberados Producci&oacute;n</div>
+      <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E3;</span> Espera de Firma</div>
+      <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F535;</span> Liberados Producci&oacute;n</div>
     </div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -269,14 +279,14 @@
   <!-- TAB: NUEVOS DESARROLLOS (RESUMEN) -->
   <div id="tab-resumen_dev" class="tab-content">
   <div class="kpi-grid">
-    <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Liberados Producci&oacute;n">
-      <div class="kpi-icon">&#x1F7E2;</div>
+    <div class="kpi kpi-cerrados-dev kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Liberados Producci&oacute;n">
+      <div class="kpi-icon">&#x1F535;</div>
       <div class="num" id="kpi-cerrados-dev">0</div>
       <div class="lbl">Liberados Producci&oacute;n</div>
       <div class="sub" id="kpi-cerrados-dev-sub">Evolutivos del año en curso</div>
     </div>
-    <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Espera de Firma">
-      <div class="kpi-icon">&#x1F7E0;</div>
+    <div class="kpi kpi-aprobacion-dev kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Espera de Firma">
+      <div class="kpi-icon">&#x1F7E3;</div>
       <div class="num" id="kpi-aprobacion-dev">0</div>
       <div class="lbl">Espera de Firma</div>
       <div class="sub">Estado: Pendiente de Firma</div>
@@ -327,8 +337,8 @@
 
   <!-- TAB: NUEVOS DESARROLLOS — APROBACION CLIENTE -->
   <div id="tab-aprobacion_dev" class="tab-content">
-    <div style="background:#fdeeea;color:#a83b1d;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
-      &#x1F7E0; Espera de Firma &mdash; Evolutivos por Localidad
+    <div style="background:#ede9fe;color:#5b21b6;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
+      &#x1F7E3; Espera de Firma &mdash; Evolutivos por Localidad
     </div>
     <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Pendiente de Firma"</strong> (la espera de aprobaci&oacute;n/firma del cliente en este flujo). No incluye "Aprobaci&oacute;n por Cliente" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen. Fuente: hoja CC Evolutivos (1hr activo).</div>
     <div id="aprobacion-dev-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
@@ -1098,7 +1108,7 @@ function renderAprobacionDev(){
   const prom=APROBACION_DEV.length>0?(TOTAL_APROBACION_DEV/APROBACION_DEV.length).toFixed(1):0;
   const maxLocs=sorted.filter(r=>r.n===MAX).map(r=>r.loc).join('/');
   const kpis=[
-    {num:TOTAL_APROBACION_DEV, lbl:'Total incidentes',  col:'#f2793a'},
+    {num:TOTAL_APROBACION_DEV, lbl:'Total incidentes',  col:'#8b5cf6'},
     {num:APROBACION_DEV.length,lbl:'Localidades',        col:'#1a1d29'},
     {num:prom,                 lbl:'Promedio por loc.',  col:'#1a1d29'},
     {num:MAX,                  lbl:`Máximo (${maxLocs})`,col:'#ef4444'},
@@ -1115,7 +1125,7 @@ function renderAprobacionDev(){
   sorted.forEach(r=>{
     html+=`<tr>
       <td><strong>${r.loc}</strong></td>
-      <td>${pbar(r.n,MAX,'#f2793a')}</td>
+      <td>${pbar(r.n,MAX,'#8b5cf6')}</td>
       <td><strong>${r.n}</strong></td>
     </tr>`;
   });
