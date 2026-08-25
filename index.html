@@ -74,6 +74,11 @@
   .kpi-aprobacion-dev .kpi-icon{background:#ede9fe;color:#6d28d9}
   .kpi-aprobacion-dev:hover{background-color:#f5f3ff}
   .kpi-aprobacion-dev:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#4c1d95;color:#4c1d95;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(76,29,149,.35)}
+  /* Tickets de Error — Resueltos (azul, distinto de Soportes/verde y Evolutivos/teal) */
+  .kpi-cerrados-err{border-color:#2563eb}
+  .kpi-cerrados-err .kpi-icon{background:#dbeafe;color:#1d4ed8}
+  .kpi-cerrados-err:hover{background-color:#eff6ff}
+  .kpi-cerrados-err:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#1e3a8a;color:#1e3a8a;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(30,58,138,.35)}
   .kpi-linkable{cursor:pointer}
   .kpi-linkable:hover .lbl{text-decoration:underline;text-underline-offset:3px}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
@@ -97,6 +102,7 @@
   .pill-certqa{background:rgba(16,185,129,0.16);color:#10b981}
   .pill-ready{background:rgba(6,182,212,0.16);color:#06b6d4}
   .pill-estim{background:rgba(161,98,7,0.16);color:#a16207}
+  .pill-nobug{background:rgba(100,116,139,0.14);color:#475569}
   .tab-content{display:none}
   .tab-content.active{display:block}
   .panel{background:#ffffff;border:1px solid #eceef1;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
@@ -161,6 +167,13 @@
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
       <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E3;</span> Espera de Firma</div>
       <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F535;</span> Liberados Producci&oacute;n</div>
+    </div>
+    <div class="tab" onclick="showTab('resumen_err',this)" style="padding-right:9px">
+      <span class="tab-ico">&#x1F41E;</span><span style="white-space:nowrap">Tickets de Error</span>
+      <span class="tab-caret" id="caret-err" onclick="toggleSubtabs(event,'err')"></span>
+    </div>
+    <div class="subtabs-wrap" id="subtabs-err" style="display:none">
+      <div class="tab tab-sub" onclick="showTab('cerrados_err',this)"><span class="tab-ico">&#x1F535;</span> Resueltos</div>
     </div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -397,6 +410,87 @@
         </div>
         <div style="position:relative;min-height:320px;height:100%;">
           <canvas id="chartTopRespDev"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TICKETS DE ERROR (RESUMEN + EN ATENCIÓN) -->
+  <div id="tab-resumen_err" class="tab-content">
+  <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);max-width:640px;">
+    <div class="kpi kpi-cerrados-err kpi-linkable" onclick="kpiGoTo('cerrados_err')" role="button" tabindex="0" title="Ver detalle de Resueltos">
+      <div class="kpi-icon"></div>
+      <div class="num" id="kpi-cerrados-err">0</div>
+      <div class="lbl">Resueltos</div>
+      <div class="sub" id="kpi-cerrados-err-sub">Errores del año en curso</div>
+    </div>
+    <div class="kpi kpi-backlog">
+      <div class="kpi-icon"></div>
+      <div class="num" id="kpi-backlog-err">0</div>
+      <div class="lbl">En Atenci&oacute;n</div>
+      <div class="sub">Errores activos</div>
+    </div>
+  </div>
+    <div class="panel" style="border-top:4px solid #dc2626">
+      <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-err" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-err" style="color:#ef4444;font-size:1rem;"></strong></div>
+      <div style="position:relative;height:410px;">
+        <canvas id="chartLocalidadErr"></canvas>
+      </div>
+    </div>
+    <div class="panel" style="border-top:4px solid #dc2626">
+      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; cada Estado de Jira es su propia columna (no se agrupan), agrupado por Localidad</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Localidad</th>
+            <th><span class="pill pill-nobug">No Bug</span></th>
+            <th><span class="pill pill-qa">En QA</span></th>
+            <th><span class="pill pill-ready">Ready to Merge</span></th>
+            <th><span class="pill pill-backlog">Sprint Backlog</span></th>
+            <th><span class="pill pill-progreso">En Progreso</span></th>
+            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
+            <th><span class="pill pill-reabierto">Reabierto</span></th>
+            <th><span class="pill pill-otro">Otro</span></th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody id="resumen-err-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TICKETS DE ERROR — RESUELTOS -->
+  <div id="tab-cerrados_err" class="tab-content">
+    <div class="info-box"><strong>Resueltos</strong> son tickets de Error completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+      <div class="panel" style="margin-bottom:0;">
+        <h3>Tickets por Mes</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:10px;" id="cerrados-err-year-label"></div>
+        <div id="cerrados-err-lista"></div>
+      </div>
+      <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
+        <h3>Distribución Mensual</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:4px;" id="cerrados-err-year-label2"></div>
+        <div style="position:relative;flex:1;min-height:280px;">
+          <canvas id="chartCerradosBarsErr"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:28px;">
+      <h3>Top Responsables &mdash; Tickets de Error Atendidos por Persona</h3>
+      <div class="info-box" style="font-size:.78rem;" id="responsables-info-err">Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error), agrupado por Persona asignada.</div>
+      <div id="top3-podio-err" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
+            <tbody id="historial-cerrados-err-tbody"></tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:320px;height:100%;">
+          <canvas id="chartTopRespErr"></canvas>
         </div>
       </div>
     </div>
@@ -649,6 +743,62 @@ const RESPONSABLES_DEV = [
 ];
 const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 
+// ─── TICKETS DE ERROR ──────────────────────────────────────────────────────
+// Fuente: hoja "Error (1hr activo)" (activos) y "Mtto_DONE_2026" filtrado a Tipo
+// de Incidencia == "Error" (resueltos). Mismo patrón que Soportes/Evolutivos: cada
+// Estado de Jira es su propia columna en la tabla de resumen (no se agrupan);
+// "otro" es la red de seguridad para cualquier Estado futuro no mapeado todavía.
+const ERROR_ACTIVOS = [
+  {loc:'Guanajuato',      nobug:4, qa:21, ready:2,  backlog:11, prog:0, bloq:6, reabierto:1, otro:0, total:45},
+  {loc:'Colima',          nobug:8, qa:0,  ready:18, backlog:3,  prog:4, bloq:1, reabierto:1, otro:0, total:35},
+  {loc:'Jalisco',         nobug:7, qa:1,  ready:0,  backlog:1,  prog:2, bloq:1, reabierto:0, otro:0, total:12},
+  {loc:'Hidalgo',         nobug:7, qa:1,  ready:0,  backlog:1,  prog:1, bloq:0, reabierto:0, otro:0, total:10},
+  {loc:'Quintana Roo',    nobug:3, qa:3,  ready:0,  backlog:0,  prog:1, bloq:0, reabierto:0, otro:0, total:7},
+  {loc:'Sonora',          nobug:4, qa:0,  ready:0,  backlog:2,  prog:0, bloq:1, reabierto:0, otro:0, total:7},
+  {loc:'Baja California', nobug:0, qa:0,  ready:2,  backlog:2,  prog:1, bloq:0, reabierto:0, otro:0, total:5},
+  {loc:'Chiapas',         nobug:0, qa:0,  ready:2,  backlog:1,  prog:0, bloq:0, reabierto:0, otro:0, total:3},
+];
+const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
+
+// Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia == "Error", agrupado por Mes.
+const CERRADOS_ERR = [
+  {loc:'2025-11 · Noviembre', n:7},
+  {loc:'2026-03 · Marzo', n:201},
+  {loc:'2026-04 · Abril', n:67},
+  {loc:'2026-05 · Mayo', n:167},
+  {loc:'2026-06 · Junio', n:89},
+  {loc:'2026-07 · Julio', n:103},
+  {loc:'2026-08 · Agosto', n:60},
+];
+const TOTAL_CERRADOS_ERR = CERRADOS_ERR.reduce((s,r)=>s+r.n,0); // histórico completo
+// Misma lógica que getCerradosVigentes()/getCerradosVigentesDev(): el KPI
+// "Resueltos" y su panel "Tickets por Mes" comparten esta única función-fuente.
+function getCerradosVigentesErr(){
+  const year = String(new Date().getFullYear());
+  const sinMes = CERRADOS_ERR.filter(r=>!/^\d{4}-/.test(r.loc));
+  const enAnio = CERRADOS_ERR.filter(r=>r.loc.startsWith(year+'-'))
+    .sort((a,b)=>a.loc.localeCompare(b.loc));
+  const rows = enAnio.concat(sinMes);
+  return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
+}
+
+// Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos — aquí
+// contando sus tickets de tipo "Error" en Mtto_DONE_2026.
+const RESPONSABLES_ERR = [
+  {nom:'Yoshio Adán Villegas Guevara', n:88},
+  {nom:'Omar Villalpando', n:53},
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:52},
+  {nom:'Leonardo Lucio Perez', n:72},
+  {nom:'Silvestre Cerrato', n:11},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:97},
+  {nom:'Ivan Perez Felipe', n:7},
+  {nom:'Aníbal Argüelles García', n:0},
+  {nom:'Jesus Feria Ortiz', n:39},
+  {nom:'Rodrigo Gabriel Gras', n:0},
+  {nom:'Gibran Esaú Solís Valenzuela', n:41},
+];
+const TOTAL_RESPONSABLES_ERR = RESPONSABLES_ERR.reduce((s,r)=>s+r.n,0);
+
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
   const canvas = document.getElementById(id);
@@ -880,6 +1030,7 @@ function showTab(name, el){
   // Re-renderizar gráficas de tabs que estaban ocultos al cargar
   if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
   if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
+  if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -1329,6 +1480,139 @@ function renderHistorialCerradosDev(){
   );
 }
 
+// ─── RENDER: TICKETS DE ERROR — KPIs ───────────────────────────────────────────
+function renderKPIsErr(){
+  const elCerrados = document.getElementById('kpi-cerrados-err');
+  const cerradosVigentes = getCerradosVigentesErr();
+  if(elCerrados) elCerrados.textContent = cerradosVigentes.total.toLocaleString();
+  const elCerradosSub = document.getElementById('kpi-cerrados-err-sub');
+  if(elCerradosSub) elCerradosSub.textContent = 'Errores del año en curso (' + cerradosVigentes.year + ')';
+  const elBacklog = document.getElementById('kpi-backlog-err');
+  if(elBacklog) elBacklog.textContent = TOTAL_ACTIVOS_ERR.toLocaleString();
+}
+
+// ─── RENDER: TICKETS DE ERROR — RESUMEN (tabla + gráfica de En Atención) ──────
+function renderResumenErr(){
+  const tb = document.getElementById('resumen-err-tbody');
+  if(!tb) return;
+  const keys=['nobug','qa','ready','backlog','prog','bloq','reabierto'];
+  const css={nobug:'pill-nobug',qa:'pill-qa',ready:'pill-ready',backlog:'pill-backlog',prog:'pill-progreso',bloq:'pill-bloqueado',reabierto:'pill-reabierto'};
+  const tot={}; keys.forEach(k=>tot[k]=0); let totO=0, totT=0, html='';
+  ERROR_ACTIVOS.forEach(r=>{
+    keys.forEach(k=>tot[k]+=r[k]);
+    totO+=(r.otro||0); totT+=r.total;
+    html+=`<tr><td><strong>${r.loc}</strong></td>`
+      + keys.map(k=>`<td>${pill(r[k],css[k])}</td>`).join('')
+      + `<td>${pill(r.otro||0,'pill-otro')}</td><td><strong>${r.total}</strong></td></tr>`;
+  });
+  const kpiActivos = TOTAL_ACTIVOS_ERR;
+  const sinLoc = kpiActivos - totT;
+  if(sinLoc > 0){
+    html+=`<tr style="background:rgba(229,85,90,.16);">
+      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
+      <td colspan="${keys.length+1}" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
+      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
+    </tr>`;
+  }
+  html+=`<tr class="tr-total"><td>TOTAL REAL (Sheet)</td>`
+    + keys.map(k=>`<td>${pill(tot[k],css[k])}</td>`).join('')
+    + `<td>${pill(totO,'pill-otro')}</td><td><strong>${kpiActivos>0?kpiActivos:totT}</strong></td></tr>`;
+  tb.innerHTML = html;
+
+  const elLoc = document.getElementById('total-loc-err');
+  if(elLoc) elLoc.textContent = totT;
+  const elSin = document.getElementById('total-sinloc-err');
+  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
+
+  const sortedLoc = [...ERROR_ACTIVOS].sort((a,b)=>b.total-a.total);
+  drawStackedHBar('chartLocalidadErr',
+    sortedLoc.map(r=>r.loc),
+    [ {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'} ]
+  );
+}
+
+// ─── RENDER: TICKETS DE ERROR — RESUELTOS ─────────────────────────────────────
+function renderCerradosErr(){
+  const lista=document.getElementById('cerrados-err-lista');
+  if(!lista) return;
+  const { year: currentYear, rows: sorted, total } = getCerradosVigentesErr();
+  const colors=sorted.map(()=>'#2563eb');
+
+  const yearLabelTxt = `Año ${currentYear} · ordenado por mes · Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error)`;
+  const yl1=document.getElementById('cerrados-err-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
+  const yl2=document.getElementById('cerrados-err-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
+
+  lista.innerHTML=sorted.map((r,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #f8fafc;">
+      <span style="font-size:.85rem;color:#334155;">${r.loc}</span>
+      <span style="font-size:1rem;font-weight:800;color:${colors[i]};">${r.n}</span>
+    </div>`).join('')
+  + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#1a1d29;">
+      <span>Total ${currentYear}</span><span>${total.toLocaleString()}</span>
+    </div>`;
+
+  drawVBar('chartCerradosBarsErr',
+    sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
+    sorted.map(r=>r.n),
+    sorted.map((_,i)=>colors[i])
+  );
+}
+
+// ─── RENDER: TOP RESPONSABLES (Error, misma lista de 11 personas que Soportes/Evolutivos) ──
+function renderHistorialCerradosErr(){
+  const tb=document.getElementById('historial-cerrados-err-tbody');
+  if(!tb) return;
+  const sorted=[...RESPONSABLES_ERR].sort((a,b)=>b.n-a.n);
+  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
+  const TOTAL = TOTAL_CERRADOS_ERR;
+  const medals=['🥇','🥈','🥉'];
+  const podioColors=['#eab308','#64748b','#c98a52'];
+  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+
+  const info=document.getElementById('responsables-info-err');
+  if(info){
+    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
+    info.innerHTML='Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos (no son necesariamente quienes más tickets de Error tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error), agrupado por Persona asignada. '
+      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets de Error del histórico total (${coberturaPct}%); el resto corresponde a otro personal que no forma parte de esta lista.`;
+  }
+
+  const podio=document.getElementById('top3-podio-err');
+  if(podio){
+    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
+      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
+        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
+        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
+        <div style="font-size:.75rem;color:#64748b;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
+      </div>`).join('');
+  }
+
+  tb.innerHTML=sorted.map((r,i)=>{
+    const pct=(r.n/TOTAL*100).toFixed(1);
+    const barW=Math.round(r.n/sorted[0].n*100);
+    const rowStyle=i<3?`font-weight:700;`:'';
+    const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
+    return `<tr style="${rowStyle}">
+      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
+      <td>${r.nom}</td>
+      <td style="color:${numColor};font-weight:700;">${r.n}</td>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px;">
+          <div style="width:${barW}%;height:100%;background:${i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8'};border-radius:4px;"></div>
+        </div>
+        <span style="font-size:.75rem;color:#64748b;min-width:34px;">${pct}%</span>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  const barColors=sorted.map((_,i)=>i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8');
+  drawHBar('chartTopRespErr',
+    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
+    sorted.map(r=>r.n),
+    barColors
+  );
+}
+
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
 function renderBitacora(){
   const tb=document.getElementById('bitacora-tbody');
@@ -1399,7 +1683,8 @@ document.addEventListener('DOMContentLoaded', function(){
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
-   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev].forEach(fn => fn());
+   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
+   renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr].forEach(fn => fn());
 });
 </script>
 </body>
