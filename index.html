@@ -23,9 +23,12 @@
   .tab-sub{padding-left:32px;font-size:.79rem;position:relative}
   .tab-sub .tab-ico{font-size:.85rem}
   .tab-sub::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:1px;background:#e2e6ec}
-  .tab-caret{margin-left:auto;font-size:.85rem;color:#2563eb;transition:transform .18s,background .15s;width:23px;height:23px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;border:1px solid #bcd4fb;line-height:1}
+  .tab-caret{margin-left:auto;color:#2563eb;transition:transform .18s,background .15s;width:28px;height:28px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;border:1px solid #bcd4fb}
   .tab-caret:hover{background:#dbe9fe}
   .tab-caret.open{transform:rotate(90deg)}
+  /* Triángulo dibujado con CSS (no glifo Unicode) para que quede perfectamente
+     centrado dentro del círculo — los glifos ▸/▾ no eran ópticamente centrados */
+  .tab-caret::after{content:'';display:block;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:9px solid #2563eb;margin-left:3px}
   .subtabs-wrap{display:flex;flex-direction:column;gap:4px;overflow:hidden}
   .sidebar-foot{font-size:.65rem;color:#8a8f9c;border-top:1px solid #eceef1;padding-top:14px;padding-left:6px}
   .main{flex:1;min-width:0}
@@ -141,7 +144,7 @@
   <div class="tabs">
     <div class="tab active" onclick="showTab('resumen',this)" style="padding-right:9px">
       <span class="tab-ico">&#x1F527;</span><span style="white-space:nowrap">Tickets de Soportes</span>
-      <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event,'soportes')">&#x25B8;</span>
+      <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event,'soportes')"></span>
     </div>
     <div class="subtabs-wrap" id="subtabs-soportes" style="display:none">
       <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
@@ -149,7 +152,7 @@
     </div>
     <div class="tab" onclick="showTab('resumen_dev',this)" style="padding-right:9px">
       <span class="tab-ico">&#x1F4BB;</span><span style="white-space:nowrap">Tickets Evolutivos</span>
-      <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')">&#x25B8;</span>
+      <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')"></span>
     </div>
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
       <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E3;</span> Espera de Firma</div>
