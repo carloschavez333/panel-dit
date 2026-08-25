@@ -633,24 +633,33 @@ const BITACORA = [
 // Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
 // Filtro: Tipo de Incidencia en {Soporte, Problema} (coincide con el conteo total
 // de filas de la hoja). Agrupado por Localidad y por Estado de Jira (columna
-// "Estado"), mapeado a: En Progreso, Aprobación (Espera Cliente Externo), En QA,
-// Bloqueado, Reabierto, Backlog Dev (Listo p/Desplegar + Ready to Merge +
-// Backlog Desarrollo Centralizado + Product Backlog). Cualquier valor de Estado
-// que NO caiga en ninguna de esas categorías conocidas se cuenta en "otro" — así
-// ningún registro se pierde/omite si en el futuro aparece un Estado nuevo en Jira
-// que aún no esté mapeado aquí.
+// "Estado"), un campo por cada Estado REAL tal cual existe en el Sheet — SIN
+// agrupar en categorías inventadas (mismo criterio que ya se usaba en
+// Evolutivos/Error: "cada Estado de Jira es su propia columna").
+// CORREGIDO 25 Ago 2026: la versión anterior agrupaba varios Estados bajo
+// nombres inventados ("Aprobación" = Espera Cliente Externo, "Backlog Dev" =
+// Listo p/Desplegar + Ready to Merge + Backlog Desarrollo Centralizado +
+// Product Backlog). El usuario reportó que "Aprobación" no debería tener
+// tickets — se verificó contra el Sheet en vivo y NO existe ningún Estado
+// literal llamado "Aprobación" en esta hoja; era un mapeo inventado y
+// equivocado. Confirmado con el usuario vía AskUserQuestion: se dejan TODOS
+// los Estados tal cual, sin agrupar. Estados reales encontrados (25 Ago
+// 2026): EN PROGRESO, LISTO PARA DESPLEGAR, READY TO MERGE, BLOQUEADO,
+// BACKLOG DE DESARROLLO CENTRALIZADO, PRODUCT BACKLOG, Reabierto, EN ESPERA
+// DE CLIENTE EXTERNO. "otro" se conserva como red de seguridad (0 por ahora)
+// para cualquier Estado nuevo que aparezca en Jira y todavía no esté aquí.
 const SOPORTES = [
-  {loc:'Quintana Roo', prog:4, aprob:0, qa:0, bloq:6, reabierto:0, bkdev:11, otro:0, total:21},
-  {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:6, reabierto:1, bkdev:5, otro:0, total:17},
-  {loc:'Colima', prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:10, otro:0, total:13},
-  {loc:'Hidalgo', prog:2, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:6, otro:0, total:9},
-  {loc:'Jalisco', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:5, otro:0, total:6},
-  {loc:'Baja California', prog:1, aprob:0, qa:0, bloq:2, reabierto:0, bkdev:1, otro:0, total:4},
-  {loc:'Seguritech', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:2, otro:0, total:3},
-  {loc:'Sonora', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:2, otro:0, total:3},
-  {loc:'Chihuahua', prog:2, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:0, otro:0, total:2},
-  {loc:'Sinaloa', prog:0, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:0, otro:0, total:1},
-  {loc:'Chiapas', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, otro:0, total:1},
+  {loc:'Quintana Roo', progreso:4, listo:5, ready:3, bloqueado:6, backlogc:1, pbacklog:3, reabierto:0, espera:0, otro:0, total:22},
+  {loc:'Guanajuato', progreso:5, listo:2, ready:1, bloqueado:6, backlogc:3, pbacklog:1, reabierto:0, espera:0, otro:0, total:18},
+  {loc:'Colima', progreso:2, listo:6, ready:1, bloqueado:0, backlogc:2, pbacklog:1, reabierto:0, espera:1, otro:0, total:13},
+  {loc:'Hidalgo', progreso:2, listo:2, ready:0, bloqueado:0, backlogc:3, pbacklog:1, reabierto:1, espera:0, otro:0, total:9},
+  {loc:'Jalisco', progreso:1, listo:2, ready:2, bloqueado:0, backlogc:1, pbacklog:0, reabierto:0, espera:0, otro:0, total:6},
+  {loc:'Baja California', progreso:1, listo:1, ready:0, bloqueado:2, backlogc:0, pbacklog:0, reabierto:0, espera:0, otro:0, total:4},
+  {loc:'Seguritech', progreso:1, listo:0, ready:0, bloqueado:0, backlogc:2, pbacklog:0, reabierto:0, espera:0, otro:0, total:3},
+  {loc:'Sonora', progreso:1, listo:0, ready:0, bloqueado:0, backlogc:1, pbacklog:1, reabierto:0, espera:0, otro:0, total:3},
+  {loc:'Chihuahua', progreso:2, listo:0, ready:0, bloqueado:0, backlogc:0, pbacklog:0, reabierto:0, espera:0, otro:0, total:2},
+  {loc:'Sinaloa', progreso:0, listo:0, ready:0, bloqueado:0, backlogc:0, pbacklog:0, reabierto:1, espera:0, otro:0, total:1},
+  {loc:'Chiapas', progreso:0, listo:0, ready:0, bloqueado:0, backlogc:1, pbacklog:0, reabierto:0, espera:0, otro:0, total:1},
 ];
 // Se calcula sumando el array (no un número fijo) para que el KPI, la gráfica y
 // la tabla sean matemáticamente imposibles de desincronizar entre sí.
@@ -1459,10 +1468,11 @@ function filtrarTabla(tbodyId, val){
 function renderResumen(){
   const cardsEl = document.getElementById('resumen-cards');
   if(!cardsEl) return;
-  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totO=0,totT=0;
+  let totProgreso=0,totListo=0,totReady=0,totBloqueado=0,totBacklogc=0,totPbacklog=0,totReabierto=0,totEspera=0,totOtro=0,totT=0;
   SOPORTES.forEach(r=>{
-    totP+=r.prog; totA+=r.aprob; totQ+=r.qa;
-    totB+=r.bloq; totR+=r.reabierto; totBK+=r.bkdev; totO+=(r.otro||0); totT+=r.total;
+    totProgreso+=r.progreso; totListo+=r.listo; totReady+=r.ready; totBloqueado+=r.bloqueado;
+    totBacklogc+=r.backlogc; totPbacklog+=r.pbacklog; totReabierto+=r.reabierto;
+    totEspera+=r.espera; totOtro+=(r.otro||0); totT+=r.total;
   });
   const kpiActivos = TOTAL_ACTIVOS;
   const sinLoc = kpiActivos - totT;
@@ -1470,17 +1480,21 @@ function renderResumen(){
 
   // Tarjetas de "Universo de Estados" — 25 Ago 2026: reemplaza la tabla por
   // Localidad (pedido del usuario: sin desglose por localidad, solo el total
-  // de cada Estado de Jira). Mismo orden y mismos nombres que ya tenía la
-  // tabla original ("En Progreso", "Aprobación", "En QA", "Bloqueado",
-  // "Reabierto", "Backlog Dev", "Otro") — sin reordenar por cantidad.
+  // de cada Estado). CORREGIDO el mismo día: se dejan los Estados REALES tal
+  // cual existen en el Sheet, sin agrupar bajo nombres inventados (ver nota
+  // junto a `const SOPORTES` arriba) — confirmado con el usuario vía
+  // AskUserQuestion. "Otro" se conserva como red de seguridad para Estados
+  // futuros no mapeados.
   const ESTADOS_RESUMEN = [
-    { n: totP,  lbl: 'En Progreso', css: 'pill-progreso',  bg: 'rgba(42,157,143,0.12)',  col: '#2a9d8f' },
-    { n: totA,  lbl: 'Aprobación',  css: 'pill-aprobacion',bg: 'rgba(242,121,58,0.12)',  col: '#f2793a' },
-    { n: totQ,  lbl: 'En QA',       css: 'pill-qa',        bg: 'rgba(34,197,94,0.12)',   col: '#22c55e' },
-    { n: totB,  lbl: 'Bloqueado',   css: 'pill-bloqueado', bg: 'rgba(239,68,68,0.10)',   col: '#ef4444' },
-    { n: totR,  lbl: 'Reabierto',   css: 'pill-reabierto', bg: 'rgba(234,179,8,0.14)',   col: '#eab308' },
-    { n: totBK, lbl: 'Backlog Dev', css: 'pill-backlog',   bg: 'rgba(124,111,208,0.12)', col: '#7c6fd0' },
-    { n: totO,  lbl: 'Otro',        css: 'pill-otro',      bg: 'rgba(100,116,139,0.12)', col: '#64748b' },
+    { n: totProgreso,  lbl: 'En Progreso',                        bg: 'rgba(42,157,143,0.12)',  col: '#2a9d8f' },
+    { n: totListo,     lbl: 'Listo para Desplegar',                bg: 'rgba(37,99,235,0.10)',   col: '#2563eb' },
+    { n: totReady,     lbl: 'Ready to Merge',                      bg: 'rgba(124,111,208,0.12)', col: '#7c6fd0' },
+    { n: totBloqueado, lbl: 'Bloqueado',                           bg: 'rgba(239,68,68,0.10)',   col: '#ef4444' },
+    { n: totBacklogc,  lbl: 'Backlog de Desarrollo Centralizado',  bg: 'rgba(139,92,246,0.12)',  col: '#8b5cf6' },
+    { n: totPbacklog,  lbl: 'Product Backlog',                     bg: 'rgba(100,116,139,0.12)', col: '#64748b' },
+    { n: totReabierto, lbl: 'Reabierto',                           bg: 'rgba(234,179,8,0.14)',   col: '#eab308' },
+    { n: totEspera,    lbl: 'En Espera de Cliente Externo',        bg: 'rgba(242,121,58,0.12)',  col: '#f2793a' },
+    { n: totOtro,      lbl: 'Otro',                                bg: 'rgba(100,116,139,0.08)', col: '#94a3b8' },
   ];
   cardsEl.innerHTML = ESTADOS_RESUMEN.map(e=>{
     const pct = totalReal>0 ? ((e.n/totalReal)*100).toFixed(1) : 0;
@@ -1496,19 +1510,10 @@ function renderResumen(){
     </div>`;
 
   // Mostrar totales sobre las gráficas
-  const elDona = document.getElementById('total-dona');
-  if(elDona) elDona.textContent = kpiActivos;
   const elLoc = document.getElementById('total-loc');
   if(elLoc) elLoc.textContent = totT;
   const elSin = document.getElementById('total-sinloc');
   if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
-
-  // Gráfica dona: distribución por estado (Canvas nativo)
-  drawDonut('chartEstado',
-    [totP, totA, totQ, totB, totR, totBK],
-    ['En Progreso','Aprob. Cliente','En QA','Bloqueado','Reabierto','Backlog Dev'],
-    ['#17a2b8','#f2793a','#22c55e','#ef4444','#eab308','#7c6fd0']
-  );
 
   // Gráfica "piruleta" (lollipop) por localidad/cliente: total de tickets en
   // atención (sin desglose por estado de Jira, ya que ese detalle vive en la
@@ -1525,12 +1530,14 @@ function renderResumen(){
   const wrap = document.getElementById('loc-cards');
   if(!wrap) return;
   const defs=[
-    {key:'prog',     label:'En Progreso',    css:'pill-progreso'},
-    {key:'aprob',    label:'Aprob. Cliente', css:'pill-aprobacion'},
-    {key:'qa',       label:'En QA',          css:'pill-qa'},
-    {key:'bloq',     label:'Bloqueado',      css:'pill-bloqueado'},
-    {key:'reabierto',label:'Reabierto',      css:'pill-reabierto'},
-    {key:'bkdev',    label:'Backlog Dev',    css:'pill-backlog'},
+    {key:'progreso', label:'En Progreso',                       css:'pill-progreso'},
+    {key:'listo',    label:'Listo para Desplegar',               css:'pill-backlog'},
+    {key:'ready',    label:'Ready to Merge',                     css:'pill-qa'},
+    {key:'bloqueado',label:'Bloqueado',                          css:'pill-bloqueado'},
+    {key:'backlogc', label:'Backlog de Desarrollo Centralizado', css:'pill-aprobacion'},
+    {key:'pbacklog', label:'Product Backlog',                    css:'pill-otro'},
+    {key:'reabierto',label:'Reabierto',                          css:'pill-reabierto'},
+    {key:'espera',   label:'En Espera de Cliente Externo',       css:'pill-aprobacion'},
   ];
   let cards='';
   SOPORTES.forEach(r=>{
