@@ -23,6 +23,10 @@
   .tab-sub{padding-left:32px;font-size:.79rem;position:relative}
   .tab-sub .tab-ico{font-size:.85rem}
   .tab-sub::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:1px;background:#e2e6ec}
+  .tab-caret{margin-left:auto;font-size:.65rem;color:#9aa1ad;transition:transform .18s;padding:4px 6px;border-radius:6px;line-height:1}
+  .tab-caret:hover{background:rgba(37,99,235,.1);color:#2563eb}
+  .tab-caret.open{transform:rotate(90deg)}
+  .subtabs-wrap{display:flex;flex-direction:column;gap:4px;overflow:hidden}
   .sidebar-foot{font-size:.65rem;color:#8a8f9c;border-top:1px solid #eceef1;padding-top:14px;padding-left:6px}
   .main{flex:1;min-width:0}
   .topbar{display:flex;justify-content:space-between;align-items:center;padding:22px 32px 4px;color:#6b7280;font-size:.82rem}
@@ -112,9 +116,14 @@
     </div>
   </div>
   <div class="tabs">
-    <div class="tab active" onclick="showTab('resumen',this)"><span class="tab-ico">&#x1F527;</span> Tickets de Soportes</div>
-    <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
-    <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x2705;</span> Atendidos (DONE)</div>
+    <div class="tab active" onclick="showTab('resumen',this)">
+      <span class="tab-ico">&#x1F527;</span> Tickets de Soportes
+      <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event)">&#x25B8;</span>
+    </div>
+    <div class="subtabs-wrap" id="subtabs-soportes" style="display:none">
+      <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
+      <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x2705;</span> Atendidos (DONE)</div>
+    </div>
     <div class="tab" onclick="showTab('backlog',this)"><span class="tab-ico">&#x1F4CC;</span> Backlog</div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -657,6 +666,14 @@ function showTab(name, el){
   // Re-renderizar gráficas de tabs que estaban ocultos al cargar
   if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
   if(name==='bitacora'){renderBitacora();}
+}
+function toggleSubtabs(e){
+  e.stopPropagation();
+  const wrap = document.getElementById('subtabs-soportes');
+  const caret = document.getElementById('caret-soportes');
+  const isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'flex';
+  caret.classList.toggle('open', !isOpen);
 }
 function pill(n, css){
   return n>0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#94a3b8">—</span>`;
