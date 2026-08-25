@@ -302,7 +302,6 @@
     </div>
     <div class="tab" onclick="showTab('equipo',this)"><span class="tab-ico">🧑‍💼</span> Informe de desempe&ntilde;o</div>
     <div class="tab" onclick="showTab('ritmo',this)"><span class="tab-ico">&#x23F1;</span> Ritmo de Atenci&oacute;n</div>
-    <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
   <div class="sidebar-foot">Actualizaci&oacute;n autom&aacute;tica cada hora</div>
 </aside>
@@ -655,26 +654,6 @@
     </div>
   </div>
 
-  <!-- TAB: BITACORA -->
-  <div id="tab-bitacora" class="tab-content">
-    <div class="info-box"><strong>Bit&aacute;cora Hist&oacute;rica</strong> registra el estado del panel en cada actualizaci&oacute;n. Permite ver tendencias y variaciones en el tiempo.</div>
-    <div class="panel">
-      <h3>&#x1F4C8; Evoluci&oacute;n de Indicadores</h3>
-      <div style="position:relative;height:300px;margin-bottom:22px;">
-        <canvas id="chartBitacora"></canvas>
-      </div>
-    </div>
-    <div id="variacion-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;"></div>
-    <div class="panel">
-      <h3>&#x1F4CB; Detalle por Fecha</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Fecha</th><th>Cerrados</th><th>Variaci&oacute;n</th><th>Tendencia</th></tr></thead>
-          <tbody id="bitacora-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
 </div>
 <div class="footer">Centro de Control DIT &mdash; <strong>Mtto, Desarrollo y Estabilidad</strong> &bull; Actualizaci&oacute;n autom&aacute;tica cada hora</div>
@@ -733,48 +712,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 });
 
-const BITACORA = [
-  { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
-  { fecha:'16 – 30 Jun 2026', activos:36, cerrados:1539, aprobacion:32, backlog:143 },
-  { fecha:'17 Jun 2026', activos:37, cerrados:1539, aprobacion:34, desplegar:7, backlog:142 },
-    { fecha:'18 Jun 2026', activos:33, cerrados:1553, aprobacion:51, desplegar:7, backlog:142 },
-  { fecha:'19 Jun 2026', activos:31, cerrados:1564, aprobacion:57, desplegar:7, backlog:136 },
-  { fecha:'22 Jun 2026', activos:33, cerrados:1580, aprobacion:62, desplegar:10, backlog:141 },
-    { fecha:'23 Jun 2026', activos:42, cerrados:1590, aprobacion:58, desplegar:12, backlog:141 },
-  { fecha:'24 Jun 2026', activos:41, cerrados:1599, aprobacion:56, desplegar:9, backlog:142 },
-  { fecha:'26 Jun 2026', activos:34, cerrados:1630, aprobacion:51, desplegar:10, backlog:141 },
-  { fecha:'27 Jun 2026', activos:34, cerrados:1619, aprobacion:50, desplegar:10, backlog:150},
-  { fecha:'29 Jun 2026', activos:35, cerrados:1646, aprobacion:53, desplegar:9, backlog:158 },
-  { fecha:'30 Jun 2026', activos:35, cerrados:1660, aprobacion:54, desplegar:6, backlog:149 },
-  { fecha:'2 Jul 2026', activos:46, cerrados:1687, aprobacion:55, desplegar:6, backlog:150 },
-  { fecha:'3 Jul 2026', activos:46, cerrados:1696, aprobacion:57, desplegar:6, backlog:148 },
-  { fecha:'8 Jul 2026', activos:69, cerrados:1767, aprobacion:25, desplegar:8, backlog:114 },
-  { fecha:'9 Jul 2026', activos:69, cerrados:1776, aprobacion:28, desplegar:8, backlog:111 },
-  { fecha:'16 Jul 2026', activos:50, cerrados:1849, aprobacion:30, desplegar:6, backlog:103 },
-  { fecha:'20 Jul 2026', activos:50, cerrados:1872, aprobacion:28, desplegar:7, backlog:105 },
-  { fecha:'22 Jul 2026', activos:50, cerrados:1893, aprobacion:27, desplegar:7, backlog:116 },
-  { fecha:'23 Jul 2026', activos:50, cerrados:1909, aprobacion:29, desplegar:10, backlog:111 },
-  { fecha:'27 Jul 2026', activos:58, cerrados:1940, aprobacion:30, desplegar:9, backlog:101 },
-  { fecha:'28 Jul 2026', activos:70, cerrados:1950, aprobacion:37, desplegar:10, backlog:97 },
-  { fecha:'29 Jul 2026', activos:70, cerrados:1965, aprobacion:28, desplegar:13, backlog:99 },
-  { fecha:'31 Jul 2026', activos:55, cerrados:1986, aprobacion:28, desplegar:8, backlog:109 },
-  { fecha:'3 Ago 2026', activos:70, cerrados:2010, aprobacion:28, desplegar:9, backlog:111 },
-  { fecha:'4 Ago 2026', activos:70, cerrados:2019, aprobacion:26, desplegar:11, backlog:116 },
-  { fecha:'5 Ago 2026', activos:62, cerrados:2036, aprobacion:19, desplegar:13, backlog:113 },
-  { fecha:'7 Ago 2026', activos:77, cerrados:2042, aprobacion:25, desplegar:13, backlog:104 },
-  { fecha:'10 Ago 2026', activos:77, cerrados:2053, aprobacion:30, desplegar:13, backlog:111 },
-  { fecha:'11 Ago 2026', activos:101, cerrados:2072, aprobacion:25, desplegar:16, backlog:115 },
-  { fecha:'12 Ago 2026', activos:99, cerrados:2085, aprobacion:29, desplegar:14, backlog:106 },
-  { fecha:'13 Ago 2026', activos:99, cerrados:2098, aprobacion:33, desplegar:14, backlog:102 },
-  { fecha:'14 Ago 2026', activos:97, cerrados:2108, aprobacion:34, desplegar:16, backlog:106 },
-  { fecha:'17 Ago 2026', activos:86, cerrados:2130, aprobacion:36, desplegar:19, backlog:100 },
-  { fecha:'18 Ago 2026', activos:80, cerrados:2147, aprobacion:39, desplegar:10, backlog:96 },
-  { fecha:'19 Ago 2026', activos:78, cerrados:2154, aprobacion:39, desplegar:11, backlog:93 },
-  { fecha:'20 Ago 2026', activos:79, cerrados:2164, aprobacion:43, desplegar:10, backlog:88 },
-  { fecha:'21 Ago 2026', activos:79, cerrados:2172, aprobacion:46, desplegar:12, backlog:88 },
-  { fecha:'24 Ago 2026', activos:77, cerrados:2199, aprobacion:36, desplegar:10, backlog:82 },
-  { fecha:'25 Ago 2026', activos:77, cerrados:2204, aprobacion:35, desplegar:9, backlog:80 },
-];
 // Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
 // Filtro: Tipo de Incidencia en {Soporte, Problema} (coincide con el conteo total
 // de filas de la hoja). Agrupado por Localidad; dentro de cada Localidad, el
@@ -1642,7 +1579,6 @@ function showTab(name, el){
   if(name==='cerrados_err'){renderCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
   if(name==='equipo'){renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoRendimiento(); renderVolumenVelocidad();}
-  if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
   e.stopPropagation();
@@ -2680,66 +2616,6 @@ function cerrarReporteIndividual(){
   if(overlay) overlay.classList.remove('open');
 }
 
-// ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
-function renderBitacora(){
-  const tb=document.getElementById('bitacora-tbody');
-  if(tb){
-    let html='';
-    [...BITACORA].reverse().forEach((r,i)=>{
-      const prev=BITACORA[BITACORA.length-2-i];
-      const delta=prev?(r.cerrados-prev.cerrados):r.cerrados;
-      const isLast=i===0;
-      let tend='';
-      if(BITACORA.length-2-i<0) tend=`<span style="color:#94a3b8;font-size:.8rem;">— base</span>`;
-      else if(delta>0) tend=`<span style="color:#22c55e;font-weight:600;">&#9650; ${delta}</span>`;
-      else if(delta<0) tend=`<span style="color:#ef4444;font-weight:600;">&#9660; ${Math.abs(delta)}</span>`;
-      else tend=`<span style="color:#94a3b8;">= sin cambio</span>`;
-      html+=`<tr style="background:${isLast?'rgba(52,201,143,.14)':i%2===0?'rgba(15,23,42,.02)':'#eef1f5'}${isLast?';font-weight:700':''}">
-        <td>${r.fecha}</td>
-        <td>${r.cerrados.toLocaleString()}</td>
-        <td style="text-align:center">${delta>0?'+'+delta:delta}</td>
-        <td>${tend}</td>
-      </tr>`;
-    });
-    tb.innerHTML=html;
-  }
-
-  const last=BITACORA[BITACORA.length-1];
-  const prev=BITACORA[BITACORA.length-2];
-  const vg=document.getElementById('variacion-grid');
-  if(vg&&last){
-    const fields=[
-      {key:'activos',    label:'Tickets Activos',   icon:'&#128295;', downGood:true},
-      {key:'cerrados',   label:'Atendidos (DONE)',   icon:'&#9989;', downGood:false},
-      {key:'aprobacion', label:'Aprobación Cliente', icon:'&#128992;', downGood:false},
-      {key:'backlog',    label:'Backlog',             icon:'&#128204;', downGood:true},
-    ];
-    vg.innerHTML=fields.map(f=>{
-      const curr=last[f.key]||0;
-      const pv=prev?(prev[f.key]||0):curr;
-      const delta=curr-pv;
-      let arrow='', color='#64748b';
-      if(delta>0){arrow='&#9650; +'+delta; color=f.downGood?'#ef4444':'#22c55e';}
-      else if(delta<0){arrow='&#9660; '+delta; color=f.downGood?'#22c55e':'#ef4444';}
-      else{arrow='= sin cambio'; color='#94a3b8';}
-      return `<div style="background:#f8fafc;border-radius:10px;padding:14px 18px;border:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:.85rem;font-weight:600;color:#334155;">${f.icon} ${f.label}</span>
-        <span style="font-size:1.1rem;font-weight:700;color:${color};">${arrow}</span>
-      </div>`;
-    }).join('');
-  }
-
-  // Gráfica de línea (Canvas nativo)
-  drawLine('chartBitacora',
-    BITACORA.map(r=>r.fecha),
-    [
-      {label:'Activos',    data:BITACORA.map(r=>r.activos),    color:'#17a2b8'},
-      {label:'Aprobación', data:BITACORA.map(r=>r.aprobacion), color:'#f2793a'},
-      {label:'Backlog',    data:BITACORA.map(r=>r.backlog),    color:'#7c6fd0'},
-    ]
-  );
-}
-
 // ─── INIT ────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('badge-fecha');
@@ -2749,7 +2625,7 @@ document.addEventListener('DOMContentLoaded', function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
+  [renderKPIs, renderResumen, renderAprobacion, renderCerrados,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr,
    renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
