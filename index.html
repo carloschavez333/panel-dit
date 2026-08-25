@@ -230,7 +230,7 @@
     </div>
     <div class="panel" style="margin-top:28px;">
       <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
-      <div class="info-box" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: tabla din&aacute;mica en hoja TD_DONE.</div>
+      <div class="info-box" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
       <!-- Podio top 3 -->
       <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
       <!-- Tabla + gráfica -->
@@ -369,6 +369,10 @@ const RESPONSABLES = [
   {nom:'Luis Antonio Jimenez Matus', n:67},
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
+// Fuente: hoja "Mtto_DONE_2026". Filtro: Tipo de Incidencia en {Soporte, Asistencia
+// Técnica}. Agrupado por la columna "Mes" (calculada en el propio Sheet a partir de
+// la fecha "Resuelta"). RESPONSABLES arriba viene de la misma hoja, agrupado en su
+// caso por "Persona asignada" en lugar de por Mes.
 const CERRADOS = [
   {loc:'2025-01 · Enero', n:1},
   {loc:'2025-11 · Noviembre', n:2},
@@ -799,7 +803,7 @@ function renderCerrados(){
   const total=sorted.reduce((s,r)=>s+r.n,0);
   const colors=sorted.map(r=> /^\d{4}-/.test(r.loc) ? '#17a2b8' : '#12707d');
 
-  const yearLabelTxt = `Año ${currentYear} · ordenado por mes`;
+  const yearLabelTxt = `Año ${currentYear} · ordenado por mes · Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia Técnica)`;
   const yl1=document.getElementById('cerrados-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
   const yl2=document.getElementById('cerrados-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
 
