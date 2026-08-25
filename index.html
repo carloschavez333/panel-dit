@@ -39,8 +39,12 @@
   
   .kpi{background:#fff;border-radius:16px;padding:20px 16px 18px;text-align:left;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05);transition:transform .18s,box-shadow .18s,background-color .18s;border-top:8px solid;position:relative;cursor:default}
   .kpi:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(15,23,42,.08),0 14px 28px rgba(15,23,42,.12)}
-  .kpi .kpi-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px;transition:transform .18s}
+  .kpi .kpi-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:10px;transition:transform .18s}
   .kpi:hover .kpi-icon{transform:scale(1.1)}
+  /* Punto dibujado con CSS (currentColor) en vez de emoji — así el color del punto
+     SIEMPRE coincide exactamente con el color asignado a esa tarjeta (borde, hover,
+     etc.), sin depender del tono fijo que trae cada glifo de color por su cuenta */
+  .kpi .kpi-icon::after{content:'';width:13px;height:13px;border-radius:50%;background:currentColor}
   .kpi .num{font-family:'Segoe UI Rounded','SF Pro Rounded',system-ui,-apple-system,sans-serif;font-size:2.3rem;font-weight:800;line-height:1;margin-bottom:6px;letter-spacing:.3px;transition:font-weight .18s;
     background:linear-gradient(180deg,#0f172a 0%,#0f172a 42%,rgba(15,23,42,.6) 50%,#0f172a 58%,#0f172a 100%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
@@ -172,19 +176,19 @@
   <div id="tab-resumen" class="tab-content active">
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
-      <div class="kpi-icon">&#x1F7E2;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias del año en curso</div>
     </div>
     <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
-      <div class="kpi-icon">&#x1F7E0;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-aprobacion">37</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="kpi-icon">&#x1F534;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-backlog">82</div>
       <div class="lbl">En Atenci&oacute;n</div>
       <div class="sub">Soportes + Asistencias</div>
@@ -283,19 +287,19 @@
   <div id="tab-resumen_dev" class="tab-content">
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados-dev kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Liberados Producci&oacute;n">
-      <div class="kpi-icon">&#x1F535;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-cerrados-dev">0</div>
       <div class="lbl">Liberados Producci&oacute;n</div>
       <div class="sub" id="kpi-cerrados-dev-sub">Evolutivos del año en curso</div>
     </div>
     <div class="kpi kpi-aprobacion-dev kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Espera de Firma">
-      <div class="kpi-icon">&#x1F7E3;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-aprobacion-dev">0</div>
       <div class="lbl">Espera de Firma</div>
       <div class="sub">Estado: Pendiente de Firma</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="kpi-icon">&#x1F534;</div>
+      <div class="kpi-icon"></div>
       <div class="num" id="kpi-backlog-dev">0</div>
       <div class="lbl">En Atenci&oacute;n</div>
       <div class="sub">Evolutivos activos</div>
