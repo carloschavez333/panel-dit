@@ -508,7 +508,7 @@ function drawVBar(id, labels, data, colors){
     cx.quadraticCurveTo(x,y,x+rad,y); cx.closePath(); cx.fill();
     cx.fillStyle='#1a1d29'; cx.font='bold 10px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
     cx.fillText(v, x+bw/2, y-2);
-    cx.fillStyle='#64748b'; cx.font='10px Segoe UI'; cx.textBaseline='top';
+    cx.fillStyle='#64748b'; cx.font='10px Segoe UI'; cx.textBaseline='top'; cx.textAlign='left';
     const lbl = labels[i].length>7?labels[i].substring(0,6)+'…':labels[i];
     cx.save(); cx.translate(x+bw/2, padT+chartH+6);
     cx.rotate(Math.PI*0.35); cx.fillText(lbl, 0, 0); cx.restore();
