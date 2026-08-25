@@ -2092,10 +2092,15 @@ function renderEquipoTendencia(){
   const icon = document.getElementById('icon-equipo-tendencia');
   if(icon) icon.innerHTML = ICONO_LINEA;
 
+  // Paleta propia de este panel (navy/ámbar/gris-azulado), a pedido explícito
+  // del usuario — replica los colores del mockup de referencia (25 Ago 2026),
+  // distinta del verde/ámbar/azul que usa el resto del dashboard para
+  // Soportes/Evolutivos/Error (KPIs, pastillas de "Rendimiento por Persona",
+  // íconos del menú). Es una decisión consciente solo para esta gráfica.
   const series = [
-    {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#16a34a'},
+    {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#1e3a5f'},
     {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#d97706'},
-    {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
+    {label:'Error',      data: rows.map(r=>r.error),      color:'#7c93b3'},
   ];
   drawGroupedVBar('chartEquipoTendencia', rows.map(r=>r.mes), series, {legend:'none'});
 
