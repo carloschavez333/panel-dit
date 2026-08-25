@@ -273,24 +273,6 @@
         </div>
       </div>
     </div>
-    <div class="panel" style="margin-top:28px;">
-      <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
-      <div class="info-box" id="responsables-info" style="font-size:.78rem;">Lista fija de 11 Responsables de Soporte reconocidos oficialmente. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
-      <!-- Podio top 3 -->
-      <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
-      <!-- Tabla + gráfica -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
-            <tbody id="historial-cerrados-tbody"></tbody>
-          </table>
-        </div>
-        <div style="position:relative;min-height:320px;height:100%;">
-          <canvas id="chartTopResp"></canvas>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- TAB: NUEVOS DESARROLLOS (RESUMEN) -->
@@ -1393,7 +1375,7 @@ function showTab(name, el){
   // dibujar. Por eso CADA tab con al menos un <canvas> debe re-renderizarse aquí
   // la primera vez que se muestra, para que mida su contenedor ya visible.
   if(name==='resumen'){renderResumen();}
-  if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
+  if(name==='cerrados'){renderCerrados();}
   if(name==='resumen_dev'){renderResumenDev();}
   if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
   if(name==='resumen_err'){renderResumenErr();}
@@ -1780,69 +1762,6 @@ function renderCerradosDev(){
     sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
     sorted.map(r=>r.n),
     sorted.map((_,i)=>colors[i])
-  );
-}
-
-// ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
-function renderHistorialCerrados(){
-  const tb=document.getElementById('historial-cerrados-tbody');
-  if(!tb) return;
-  const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
-  // El % de participación de cada responsable debe ser sobre el total REAL de tickets
-  // atendidos (TOTAL_CERRADOS, la misma fuente que el KPI "Atendidos (DONE)"), no sobre
-  // la suma de esta lista — de lo contrario cada % sale inflado, porque RESPONSABLES es
-  // una lista fija de 11 personas (ver comentario junto al array) y no incluye a todo
-  // el personal que cerró tickets.
-  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
-  const TOTAL = TOTAL_CERRADOS;
-  const medals=['🥇','🥈','🥉'];
-  const podioColors=['#eab308','#64748b','#c98a52'];
-  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
-
-  const info=document.getElementById('responsables-info');
-  if(info){
-    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
-    info.innerHTML='Lista fija de 11 Responsables de Soporte reconocidos oficialmente (no son necesariamente quienes más tickets tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia Técnica), agrupado por Persona asignada. '
-      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets del histórico total (${coberturaPct}%); el resto corresponde a otro personal (supervisión, coordinación, etc.) que no forma parte de esta lista.`;
-  }
-
-  // Podio top 3
-  const podio=document.getElementById('top3-podio');
-  if(podio){
-    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
-      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
-        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
-        <div style="font-size:.75rem;color:#64748b;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
-      </div>`).join('');
-  }
-
-  // Tabla
-  tb.innerHTML=sorted.map((r,i)=>{
-    const pct=(r.n/TOTAL*100).toFixed(1);
-    const barW=Math.round(r.n/sorted[0].n*100);
-    const rowStyle=i<3?`font-weight:700;`:'';
-    const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-    return `<tr style="${rowStyle}">
-      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
-      <td>${r.nom}</td>
-      <td style="color:${numColor};font-weight:700;">${r.n}</td>
-      <td><div style="display:flex;align-items:center;gap:8px;">
-        <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px;">
-          <div style="width:${barW}%;height:100%;background:${i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8'};border-radius:4px;"></div>
-        </div>
-        <span style="font-size:.75rem;color:#64748b;min-width:34px;">${pct}%</span>
-      </div></td>
-    </tr>`;
-  }).join('');
-
-  // Gráfica horizontal responsables (Canvas nativo)
-  const barColors=sorted.map((_,i)=>i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8');
-  drawHBar('chartTopResp',
-    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
-    sorted.map(r=>r.n),
-    barColors
   );
 }
 
@@ -2387,7 +2306,7 @@ document.addEventListener('DOMContentLoaded', function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
+  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
    renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion].forEach(fn => fn());
