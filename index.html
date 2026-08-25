@@ -142,6 +142,10 @@
   .panel-header-icon svg{width:17px;height:17px}
   #icon-equipo-tendencia{width:48px;height:48px;border-radius:13px}
   #icon-equipo-tendencia svg{width:25px;height:25px}
+  #icon-velocidad{width:48px;height:48px;border-radius:50%}
+  #icon-velocidad svg{width:23px;height:23px}
+  .vel-card-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .vel-card-icon svg{width:15px;height:15px}
   .mes-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f8fafc}
   .mes-row .mes-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .mes-row .mes-icon svg{width:14px;height:14px}
@@ -535,14 +539,34 @@
       <div id="equipo-tendencia-legend" style="display:flex;justify-content:center;gap:36px;flex-wrap:wrap;border:1px solid #e5e7eb;border-radius:12px;padding:14px 20px;margin-top:16px;"></div>
     </div>
     <div class="panel" style="margin-top:22px;border-top:4px solid #d97706;">
-      <h3>Velocidad de Atenci&oacute;n</h3>
-      <div class="info-box" style="font-size:.78rem;">Cu&aacute;ntas horas de trabajo efectivo (no d&iacute;as transcurridos) le toma al equipo resolver un ticket t&iacute;pico, por tipo. Mide esfuerzo/eficiencia del equipo, no la espera por aprobaciones u otros actores fuera de su control.</div>
-      <div id="velocidad-atencion" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
-      <div style="font-size:.82rem;font-weight:700;color:#334155;margin:22px 0 4px;">Mediana de horas por ticket &mdash; mes a mes</div>
-      <div style="position:relative;height:320px;">
-        <canvas id="chartVelocidadMensual"></canvas>
+      <div class="panel-title-row" style="justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="panel-header-icon" id="icon-velocidad" style="background:#1e3a5f;color:#fff;"></div>
+          <div>
+            <h3 style="margin:0;">Velocidad de Atenci&oacute;n</h3>
+            <div style="font-size:.78rem;color:#d97706;margin-top:4px;max-width:520px;">Cu&aacute;ntas horas de trabajo efectivo (no d&iacute;as transcurridos) le toma al equipo resolver un ticket t&iacute;pico, por tipo. Mide esfuerzo/eficiencia del equipo, no la espera por aprobaciones u otros actores fuera de su control.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;border:1px solid #e5e7eb;border-radius:9px;padding:8px 12px;font-size:.72rem;color:#64748b;max-width:220px;flex-shrink:0;line-height:1.4;">
+          <span style="color:#94a3b8;flex-shrink:0;width:15px;height:15px;" id="icon-velocidad-info"></span>
+          <span>Los datos representan la mediana de horas por ticket cerrado en 2026.</span>
+        </div>
       </div>
-      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;margin-top:16px;" id="velocidad-atencion-formula"></div>
+      <div id="velocidad-atencion" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
+      <div class="panel-title-row" style="justify-content:space-between;align-items:center;margin:22px 0 4px;">
+        <div style="font-size:.82rem;font-weight:700;color:#334155;">Mediana de horas por ticket &mdash; mes a mes</div>
+        <div id="velocidad-mensual-legend" style="display:flex;gap:16px;flex-wrap:wrap;"></div>
+      </div>
+      <div style="display:flex;gap:6px;height:320px;">
+        <div style="writing-mode:vertical-rl;transform:rotate(180deg);color:#94a3b8;font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">Horas (hrs)</div>
+        <div style="position:relative;flex:1;min-width:0;">
+          <canvas id="chartVelocidadMensual"></canvas>
+        </div>
+      </div>
+      <div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-top:16px;background:#f8fafc;display:flex;gap:9px;align-items:flex-start;">
+        <span style="color:#94a3b8;flex-shrink:0;width:15px;height:15px;margin-top:1px;" id="icon-velocidad-formula"></span>
+        <div style="font-size:.74rem;color:#64748b;line-height:1.6;" id="velocidad-atencion-formula"></div>
+      </div>
     </div>
     <div class="panel" style="margin-top:22px;border-top:4px solid #17a2b8;">
       <h3>Efectividad del Equipo</h3>
@@ -1076,7 +1100,7 @@ const TOTAL_RESPONSABLES_ERR = RESPONSABLES_ERR.reduce((s,r)=>s+r.n,0);
 // hardcodean igual que el resto de los datos del panel.
 const TIEMPO_ATENCION = {
   soporte: {
-    lbl: 'Soportes', color: '#16a34a',
+    lbl: 'Soportes', color: '#0f766e',
     monthly: [
       {mes:'Enero',n:143,mean:4.15,median:1.5},{mes:'Febrero',n:181,mean:3.41,median:1.5},
       {mes:'Marzo',n:352,mean:3.51,median:1.5},{mes:'Abril',n:193,mean:4.68,median:1.0},
@@ -1100,7 +1124,7 @@ const TIEMPO_ATENCION = {
     segunda: {lbl:'Mayo-Agosto', n:42, mean:18.88, median:13.5},
   },
   error: {
-    lbl: 'Fallos de QA (Error)', color: '#2563eb',
+    lbl: 'Fallos de QA (Error)', color: '#1e3a5f',
     monthly: [
       {mes:'Marzo',n:200,mean:4.57,median:2.79},{mes:'Abril',n:67,mean:2.63,median:1.42},
       {mes:'Mayo',n:163,mean:1.35,median:0.83},{mes:'Junio',n:89,mean:2.90,median:2.17},
@@ -1112,7 +1136,18 @@ const TIEMPO_ATENCION = {
   },
 };
 
+// Rediseño 25 Ago 2026 (a pedido del usuario, con mockup de referencia): tarjetas
+// con ícono circular por tipo, caja de tendencia con fondo de color, leyenda del
+// gráfico junto al título en vez de abajo, eje "Horas (hrs)" y explicación en
+// caja con ícono (i), en vez del info-box verde plano anterior.
 function renderVelocidadAtencion(){
+  const iconHead = document.getElementById('icon-velocidad');
+  if(iconHead) iconHead.innerHTML = ICONO_RELOJ;
+  const iconInfo = document.getElementById('icon-velocidad-info');
+  if(iconInfo) iconInfo.innerHTML = ICONO_INFO;
+  const iconFormula = document.getElementById('icon-velocidad-formula');
+  if(iconFormula) iconFormula.innerHTML = ICONO_INFO;
+
   const wrap = document.getElementById('velocidad-atencion');
   if(!wrap) return;
   const grupos = ['soporte','evolutivo','error'];
@@ -1120,21 +1155,27 @@ function renderVelocidadAtencion(){
     const g = TIEMPO_ATENCION[k];
     const delta = g.segunda.median - g.primera.median;
     const mejora = delta < 0; // menos horas registradas = más rápido
-    const arrow = Math.abs(delta) < 0.05 ? '→' : (mejora ? '▼' : '▲');
+    const arrow = Math.abs(delta) < 0.05 ? '→' : (mejora ? '↓' : '↑');
     const tendColor = Math.abs(delta) < 0.05 ? '#64748b' : (mejora ? '#16a34a' : '#dc2626');
     const tendTxt = Math.abs(delta) < 0.05 ? 'sin cambio' : (mejora ? 'más rápido' : 'más lento');
     return `
-    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;border:1px solid #e5e7eb;">
-      <div style="font-size:.78rem;font-weight:700;color:#334155;">${g.lbl}</div>
-      <div style="font-size:1.9rem;font-weight:800;color:${g.color};line-height:1;margin-top:8px;">${g.total.median.toFixed(1)} hrs</div>
-      <div style="font-size:.7rem;color:#94a3b8;margin-top:4px;">mediana de horas de trabajo por ticket &middot; promedio ${g.total.mean.toFixed(1)} hrs &middot; n=${g.total.n.toLocaleString()}</div>
-      <div style="font-size:.74rem;font-weight:700;color:${tendColor};margin-top:12px;">${arrow} ${Math.abs(delta).toFixed(1)} hrs ${tendTxt}</div>
-      <div style="font-size:.68rem;color:#94a3b8;margin-top:2px;">de ${g.primera.median.toFixed(1)} hrs (${g.primera.lbl}) a ${g.segunda.median.toFixed(1)} hrs (${g.segunda.lbl})</div>
+    <div style="background:#ffffff;border-radius:12px;padding:18px 16px;border:1px solid #e5e7eb;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;">
+        <div class="vel-card-icon" style="background:${g.color}1f;color:${g.color};">${VELOCIDAD_ICONOS[k]}</div>
+        <div style="font-size:.72rem;font-weight:800;letter-spacing:.4px;color:${g.color};text-transform:uppercase;">${g.lbl}</div>
+      </div>
+      <div style="font-size:1.9rem;font-weight:800;color:${g.color};line-height:1;">${g.total.median.toFixed(1)} hrs</div>
+      <div style="font-size:.76rem;color:#64748b;margin-top:8px;">Mediana de horas por ticket</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">Promedio ${g.total.mean.toFixed(1)} hrs &nbsp;&bull;&nbsp; n=${g.total.n.toLocaleString()}</div>
+      <div style="background:${tendColor}14;border-radius:8px;padding:8px 10px;margin-top:12px;">
+        <div style="font-size:.74rem;font-weight:700;color:${tendColor};">${arrow} ${Math.abs(delta).toFixed(1)} hrs ${tendTxt}</div>
+      </div>
+      <div style="font-size:.68rem;color:#94a3b8;margin-top:8px;">de ${g.primera.median.toFixed(1)} hrs (${g.primera.lbl}) a ${g.segunda.median.toFixed(1)} hrs (${g.segunda.lbl})</div>
     </div>`;
   }).join('');
 
   // Gráfica mensual (agregada 25 Ago 2026, a pedido del usuario: "también en un
-  // gráfico, así por mes a mes") — mismo motor (drawGroupedVBar) y estética que
+  // gráfico, así por mes a mes") — mismo motor (drawGroupedVBar) que
   // "Comparativo Mensual" de arriba, pero con la MEDIANA de horas por ticket en
   // vez de el conteo de tickets. Error no tiene datos antes de marzo 2026 (no
   // había Evolutivos activos aún) — se muestra en 0, igual que en Comparativo
@@ -1146,14 +1187,23 @@ function renderVelocidadAtencion(){
     monthly.forEach(r=>{ m[r.mes] = r.median; });
     return MESES_FULL.map(mes => m[mes] !== undefined ? Number(m[mes].toFixed(1)) : 0);
   };
-  drawGroupedVBar('chartVelocidadMensual',
-    MESES_ABBR,
-    [
-      {label:'Soportes',              data: medianasPorMes(TIEMPO_ATENCION.soporte.monthly),   color: TIEMPO_ATENCION.soporte.color},
-      {label:'Evolutivos',            data: medianasPorMes(TIEMPO_ATENCION.evolutivo.monthly), color: TIEMPO_ATENCION.evolutivo.color},
-      {label:'Fallos de QA (Error)',  data: medianasPorMes(TIEMPO_ATENCION.error.monthly),     color: TIEMPO_ATENCION.error.color},
-    ]
-  );
+  const series = [
+    {label:'Soportes',              data: medianasPorMes(TIEMPO_ATENCION.soporte.monthly),   color: TIEMPO_ATENCION.soporte.color},
+    {label:'Evolutivos',            data: medianasPorMes(TIEMPO_ATENCION.evolutivo.monthly), color: TIEMPO_ATENCION.evolutivo.color},
+    {label:'Fallos de QA (Error)',  data: medianasPorMes(TIEMPO_ATENCION.error.monthly),     color: TIEMPO_ATENCION.error.color},
+  ];
+  drawGroupedVBar('chartVelocidadMensual', MESES_ABBR, series, {legend:'none', decimals:1});
+
+  // Leyenda junto al título (en vez de abajo del gráfico) — swatches simples,
+  // sin caja, para diferenciarla de la caja de leyenda de "Comparativo Mensual".
+  const legendEl = document.getElementById('velocidad-mensual-legend');
+  if(legendEl){
+    legendEl.innerHTML = series.map(s => `
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="width:10px;height:10px;border-radius:3px;background:${s.color};flex-shrink:0;"></span>
+        <span style="font-size:.72rem;color:#334155;font-weight:600;">${s.label}</span>
+      </div>`).join('');
+  }
 
   const formula = document.getElementById('velocidad-atencion-formula');
   if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> mediana de "Tiempo Empleado (Hrs)" (horas de trabajo efectivo registradas en Jira, no días transcurridos) por ticket cerrado en 2026, por tipo. `
@@ -1375,7 +1425,7 @@ function drawGroupedVBar(id, labels, datasets, opts){
       cx.quadraticCurveTo(x,y,x+rad,y); cx.closePath(); cx.fill();
       if(v>0){
         cx.fillStyle='#1a1d29'; cx.font='bold 9px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
-        cx.fillText(v, x+(barW-1)/2, y-2);
+        cx.fillText(opts.decimals!=null ? v.toFixed(opts.decimals) : v, x+(barW-1)/2, y-2);
       }
     });
     cx.fillStyle='#64748b'; cx.font='11px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
@@ -1594,6 +1644,12 @@ const ICONO_PIE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICONO_BARRAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>';
 const ICONO_USUARIOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
 const ICONO_LINEA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>';
+const ICONO_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 15 15"></polyline><line x1="9" y1="1" x2="15" y2="1"></line></svg>';
+const ICONO_AUDIFONOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3v-7a9 9 0 0 1 18 0v7h-3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>';
+const ICONO_CODIGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>';
+const ICONO_ALERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+const ICONO_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+const VELOCIDAD_ICONOS = { soporte: ICONO_AUDIFONOS, evolutivo: ICONO_CODIGO, error: ICONO_ALERTA };
 // Formatea "EN ESPERA DE CLIENTE EXTERNO" → "En Espera de Cliente Externo"
 // SOLO para mostrar — la clave real (tal cual viene del Sheet) nunca se toca,
 // así que nunca hay riesgo de que dos variantes de mayúsculas/minúsculas del
