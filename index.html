@@ -367,17 +367,25 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
       <!-- Lista izquierda -->
       <div class="panel" style="margin-bottom:0;">
-        <h3>Tickets por Mes</h3>
-        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:10px;" id="cerrados-dev-year-label"></div>
+        <div class="panel-title-row">
+          <div class="panel-header-icon" id="icon-cerrados-dev-lista" style="background:#ede9fe;color:#7c3aed;"></div>
+          <h3>Tickets por Mes</h3>
+        </div>
+        <div style="font-size:.76rem;color:#94a3b8;margin:6px 0 10px;" id="cerrados-dev-year-label"></div>
         <div id="cerrados-dev-lista"></div>
+        <div id="cerrados-dev-total-box"></div>
       </div>
       <!-- Gráfica barras derecha -->
       <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
-        <h3>Distribución Mensual</h3>
-        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:4px;" id="cerrados-dev-year-label2"></div>
+        <div class="panel-title-row">
+          <div class="panel-header-icon" id="icon-cerrados-dev-chart" style="background:#dcfce7;color:#16a34a;"></div>
+          <h3>Distribución Mensual</h3>
+        </div>
+        <div style="font-size:.76rem;color:#94a3b8;margin:6px 0 4px;" id="cerrados-dev-year-label2"></div>
         <div style="position:relative;flex:1;min-height:280px;">
           <canvas id="chartCerradosBarsDev"></canvas>
         </div>
+        <div id="cerrados-dev-total-box2"></div>
       </div>
     </div>
     <div class="panel" style="margin-top:28px;">
@@ -1824,20 +1832,41 @@ function renderCerradosDev(){
   const lista=document.getElementById('cerrados-dev-lista');
   if(!lista) return;
   const { year: currentYear, rows: sorted, total } = getCerradosVigentesDev();
-  const colors=sorted.map(r=> /^\d{4}-/.test(r.loc) ? '#17a2b8' : '#12707d');
+  // Mismo diseño que "Atendidos (DONE)" de Soportes (25 Ago 2026): color fijo por
+  // mes del calendario (colorMes), chips de calendario, cajas de total en vez de
+  // fila de texto plano.
+  const colors=sorted.map(r=>colorMes(r.loc));
 
   const yearLabelTxt = `Año ${currentYear} · ordenado por mes · Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo)`;
   const yl1=document.getElementById('cerrados-dev-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
   const yl2=document.getElementById('cerrados-dev-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
 
+  const iconLista=document.getElementById('icon-cerrados-dev-lista'); if(iconLista) iconLista.innerHTML=ICONO_CALENDARIO;
+  const iconChart=document.getElementById('icon-cerrados-dev-chart'); if(iconChart) iconChart.innerHTML=ICONO_PIE;
+
   lista.innerHTML=sorted.map((r,i)=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #f8fafc;">
-      <span style="font-size:.85rem;color:#334155;">${r.loc}</span>
-      <span style="font-size:1rem;font-weight:800;color:${colors[i]};">${r.n}</span>
-    </div>`).join('')
-  + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#1a1d29;">
-      <span>Total ${currentYear}</span><span>${total.toLocaleString()}</span>
+    <div class="mes-row">
+      <div class="mes-icon" style="background:${colors[i]}22;color:${colors[i]};">${ICONO_CALENDARIO}</div>
+      <span class="mes-lbl">${r.loc}</span>
+      <span class="mes-val" style="color:${colors[i]};">${r.n}</span>
+    </div>`).join('');
+
+  const totalBox1=document.getElementById('cerrados-dev-total-box');
+  if(totalBox1){
+    totalBox1.innerHTML = `<div class="mes-total-box" style="background:#ede9fe;color:#6d28d9;">
+      <div class="panel-header-icon" style="color:#6d28d9;">${ICONO_BARRAS}</div>
+      <div class="mes-total-lbl">Total ${currentYear}</div>
+      <div class="mes-total-val">${total.toLocaleString()}</div>
     </div>`;
+  }
+  const totalBox2=document.getElementById('cerrados-dev-total-box2');
+  if(totalBox2){
+    totalBox2.innerHTML = `<div class="mes-total-box" style="background:#dbeafe;color:#1d4ed8;">
+      <div class="panel-header-icon" style="color:#1d4ed8;">${ICONO_USUARIOS}</div>
+      <div class="mes-total-lbl">Total general ${currentYear}</div>
+      <div class="mes-total-val">${total.toLocaleString()}</div>
+    </div>`;
+  }
 
   drawVBar('chartCerradosBarsDev',
     sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
