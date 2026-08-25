@@ -226,7 +226,8 @@
       </div>
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
-      <h3>&#x1F4CA; Universo de Estados &mdash; Soportes</h3>
+      <h3>Tickets de soporte por estado de jira</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total de ticket: <strong id="total-ticket-resumen" style="color:#17a2b8;font-size:1rem;"></strong></div>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:14px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia en {Soporte, Problema} &bull; Estado seg&uacute;n Jira</div>
       <div class="status-cardgrid" id="resumen-cards"></div>
     </div>
@@ -1527,7 +1528,7 @@ function renderEstadosTable(opts){
 }
 // Tarjetas "Universo de Estados" (sin desglose por Localidad) — usadas en
 // Soportes. Misma fuente (`universoEstados`), nunca una lista fija.
-function renderEstadosCards(containerId, data, kpiActivos){
+function renderEstadosCards(containerId, data, kpiActivos, totalTextId){
   const cardsEl = document.getElementById(containerId);
   if(!cardsEl) return null;
   const estadoOrder = universoEstados(data);
@@ -1538,7 +1539,6 @@ function renderEstadosCards(containerId, data, kpiActivos){
     estadoOrder.forEach(e=>totales[e]+=(r.estados[e]||0));
   });
   const totalReal = kpiActivos>0 ? kpiActivos : totT;
-  const sinLoc = totalReal - totT;
   cardsEl.innerHTML = estadoOrder.map((e,i)=>{
     const col = colorEstado(i);
     const n = totales[e];
@@ -1548,11 +1548,14 @@ function renderEstadosCards(containerId, data, kpiActivos){
       <div class="l">${tituloEstado(e)}</div>
       <div class="p">${pct}%</div>
     </div>`;
-  }).join('') + `<div class="status-card total">
-      <div class="n">${totalReal}</div>
-      <div class="l">Total</div>
-      <div class="p">${sinLoc>0?`incl. ${sinLoc} sin localidad`:'100%'}</div>
-    </div>`;
+  }).join('');
+  // Total ya no se muestra como tarjeta dentro del grid — se muestra como texto
+  // junto al título del panel (mismo formato que "Total localidades: N" del
+  // panel de la gráfica lollipop), con el título "Total de ticket: N".
+  if(totalTextId){
+    const totalEl = document.getElementById(totalTextId);
+    if(totalEl) totalEl.textContent = totalReal;
+  }
   return { estadoOrder, totales, totT };
 }
 
@@ -1582,7 +1585,7 @@ function renderResumen(){
   // ninguna lista fija de nombres de Estado en esta función. `renderEstadosCards`
   // descubre los Estados reales desde `SOPORTES` mismo — si mañana aparece un
   // Estado nuevo en el Sheet, aparece aquí solo, sin tocar este código.
-  const r = renderEstadosCards('resumen-cards', SOPORTES, TOTAL_ACTIVOS);
+  const r = renderEstadosCards('resumen-cards', SOPORTES, TOTAL_ACTIVOS, 'total-ticket-resumen');
   if(!r) return;
   const { totT } = r;
 
