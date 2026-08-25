@@ -57,6 +57,11 @@
   .kpi-backlog:hover{background-color:#fef2f2}
   .kpi-backlog .kpi-icon{background:#fee2e2;color:#dc2626}
   .kpi-backlog:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#7f1d1d;color:#7f1d1d;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(127,29,29,.35)}
+  .kpi-linkable{cursor:pointer}
+  .kpi-linkable:hover{transform:none;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05);background-color:#fff}
+  .kpi-linkable:hover .kpi-icon{transform:none}
+  .kpi-linkable:hover .num{font-weight:800;background:linear-gradient(180deg,#0f172a 0%,#0f172a 42%,rgba(15,23,42,.6) 50%,#0f172a 58%,#0f172a 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:initial;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+  .kpi-linkable:hover .lbl{text-decoration:underline;text-underline-offset:3px}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
   .legend-bar span{font-size:.72rem;font-weight:600;color:#6b7280;margin-right:4px}
   .pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600;white-space:nowrap}
@@ -144,7 +149,7 @@
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias</div>
     </div>
-    <div class="kpi kpi-aprobacion">
+    <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
       <div class="kpi-icon">&#x1F7E0;</div>
       <div class="num" id="kpi-aprobacion">37</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
@@ -674,6 +679,16 @@ function toggleSubtabs(e){
   const isOpen = wrap.style.display !== 'none';
   wrap.style.display = isOpen ? 'none' : 'flex';
   caret.classList.toggle('open', !isOpen);
+}
+function kpiGoTo(name){
+  const sidebarTab = document.querySelector(`.tab[onclick*="showTab('${name}'"]`);
+  if(!sidebarTab) return;
+  if(sidebarTab.classList.contains('tab-sub')){
+    const wrap = document.getElementById('subtabs-soportes');
+    const caret = document.getElementById('caret-soportes');
+    if(wrap && wrap.style.display==='none'){ wrap.style.display='flex'; if(caret) caret.classList.add('open'); }
+  }
+  showTab(name, sidebarTab);
 }
 function pill(n, css){
   return n>0 ? `<span class="pill ${css}">${n}</span>` : `<span style="color:#94a3b8">—</span>`;
