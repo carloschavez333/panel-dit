@@ -383,8 +383,8 @@
       </div>
     </div>
     <div class="panel" style="margin-top:28px;">
-      <h3>Top 10 &mdash; Tickets Evolutivos Atendidos por Persona</h3>
-      <div class="info-box" style="font-size:.78rem;" id="responsables-info-dev">A diferencia de Soportes, aqu&iacute; NO hay una lista oficial curada de responsables &mdash; este es un ranking simple por cantidad de tickets (Tipo de Incidencia: Evolutivo &Aacute;gil + CC Evolutivo), agrupado por Persona asignada. Fuente: hoja Mtto_DONE_2026.</div>
+      <h3>Top Responsables &mdash; Tickets Evolutivos Atendidos por Persona</h3>
+      <div class="info-box" style="font-size:.78rem;" id="responsables-info-dev">Misma lista fija de 11 Responsables oficiales que Soportes. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo &Aacute;gil + CC Evolutivo), agrupado por Persona asignada.</div>
       <!-- Podio top 3 -->
       <div id="top3-podio-dev" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
       <!-- Tabla + gráfica -->
@@ -631,23 +631,23 @@ function getCerradosVigentesDev(){
 }
 
 // Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia en {Evolutivo Ágil, CC Evolutivo},
-// agrupado por "Persona asignada". A diferencia de RESPONSABLES (Soportes), NO existe
-// una lista oficial curada para Evolutivos — este es simplemente el top 10 por cantidad
-// de tickets (varios nombres vienen en mayúsculas/orden distinto en el Sheet original;
-// se homologan aquí a Nombre Apellido, es la misma persona).
-const TOP10_DEV = [
+// agrupado por "Persona asignada". Usa la MISMA lista fija de 11 Responsables oficiales
+// que Soportes (ver RESPONSABLES arriba) — es el mismo personal, solo que aquí se cuentan
+// sus tickets Evolutivos en vez de sus tickets de Soporte/Asistencia Técnica.
+const RESPONSABLES_DEV = [
+  {nom:'Yoshio Adán Villegas Guevara', n:4},
+  {nom:'Omar Villalpando', n:12},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:13},
   {nom:'Leonardo Lucio Perez', n:12},
-  {nom:'Omar Villalpando', n:12},
-  {nom:'Ivan Perez Felipe', n:11},
-  {nom:'Hugo Cesar Rivero Rodriguez', n:9},
-  {nom:'Jesus Feria Ortiz', n:9},
+  {nom:'Silvestre Cerrato', n:3},
   {nom:'Jonathan Aristeo Lozano Hernandez', n:7},
-  {nom:'Sandra Estrada Lopez', n:5},
-  {nom:'Pedro Emanuel Jimenez Oscoy', n:5},
-  {nom:'Mariano Conte', n:5},
+  {nom:'Ivan Perez Felipe', n:11},
+  {nom:'Aníbal Argüelles García', n:0},
+  {nom:'Jesus Feria Ortiz', n:9},
+  {nom:'Rodrigo Gabriel Gras', n:1},
+  {nom:'Gibran Esaú Solís Valenzuela', n:1},
 ];
-const TOTAL_TOP10_DEV = TOP10_DEV.reduce((s,r)=>s+r.n,0);
+const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
@@ -1266,16 +1266,16 @@ function renderHistorialCerrados(){
   );
 }
 
-// ─── RENDER: TOP RESPONSABLES (Evolutivos) ────────────────────────────────────
+// ─── RENDER: TOP RESPONSABLES (Evolutivos, misma lista de 11 personas que Soportes) ──
 function renderHistorialCerradosDev(){
   const tb=document.getElementById('historial-cerrados-dev-tbody');
   if(!tb) return;
-  const sorted=[...TOP10_DEV].sort((a,b)=>b.n-a.n);
-  // Igual que en Soportes: el % de participación va sobre el total REAL de tickets
-  // Evolutivos atendidos (TOTAL_CERRADOS_DEV, la misma fuente que el KPI "Liberados
-  // Producción"), no sobre la suma de este top 10 — de lo contrario cada % sale
-  // inflado, porque este top 10 es solo un subconjunto y no incluye a todo el
-  // personal que cerró tickets Evolutivos.
+  const sorted=[...RESPONSABLES_DEV].sort((a,b)=>b.n-a.n);
+  // Misma lista fija de 11 Responsables oficiales que Soportes (RESPONSABLES). El % de
+  // participación va sobre el total REAL de tickets Evolutivos atendidos (TOTAL_CERRADOS_DEV,
+  // la misma fuente que el KPI "Liberados Producción"), no sobre la suma de esta lista —
+  // de lo contrario cada % sale inflado, porque esta lista es un subconjunto de 11 personas
+  // y no incluye a todo el personal que cerró tickets Evolutivos.
   const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
   const TOTAL = TOTAL_CERRADOS_DEV;
   const medals=['🥇','🥈','🥉'];
@@ -1285,8 +1285,8 @@ function renderHistorialCerradosDev(){
   const info=document.getElementById('responsables-info-dev');
   if(info){
     const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
-    info.innerHTML='A diferencia de Soportes, aquí NO hay una lista oficial curada de responsables — este es un ranking simple por cantidad de tickets (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo), agrupado por Persona asignada. Fuente: hoja Mtto_DONE_2026. '
-      + `Este top 10 concentra ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets (${coberturaPct}% del histórico total); el resto corresponde a otras personas no listadas aquí.`;
+    info.innerHTML='Misma lista fija de 11 Responsables oficiales que Soportes (no son necesariamente quienes más tickets Evolutivos tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo), agrupado por Persona asignada. '
+      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets Evolutivos del histórico total (${coberturaPct}%); el resto corresponde a otro personal que no forma parte de esta lista.`;
   }
 
   // Podio top 3
