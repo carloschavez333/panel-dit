@@ -508,23 +508,10 @@
       </div>
     </div>
     <div class="panel" style="margin-top:22px;">
-      <h3>Tabla Comparativa Mensual</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Mes</th>
-            <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
-            <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
-            <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
-            <th>Total</th>
-          </tr></thead>
-          <tbody id="equipo-tendencia-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:22px;">
-      <h3>Hallazgos &mdash; &iquest;Qu&eacute; dicen estos n&uacute;meros?</h3>
-      <div class="info-box" style="font-size:.85rem;line-height:1.65;" id="equipo-hallazgos-text"></div>
+      <h3>Productividad del Equipo</h3>
+      <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
+      <div id="equipo-productividad-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0 16px;"></div>
+      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="equipo-productividad-formula"></div>
     </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
@@ -1143,7 +1130,7 @@ function showTab(name, el){
   if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
-  if(name==='equipo'){renderEquipoTendencia(); renderEquipoRendimiento();}
+  if(name==='equipo'){renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -1757,30 +1744,6 @@ function renderEquipoTendencia(){
   const yl = document.getElementById('equipo-year-label');
   if(yl) yl.textContent = `Año ${year} · fuente: hoja Mtto_DONE_2026 (Soporte+Asistencia Técnica / Evolutivo Ágil+CC Evolutivo / Error)`;
 
-  const tb = document.getElementById('equipo-tendencia-tbody');
-  if(tb){
-    let totS=0, totD=0, totE=0;
-    let html = rows.map(r=>{
-      totS+=r.soportes; totD+=r.evolutivos; totE+=r.error;
-      const totalMes = r.soportes + r.evolutivos + r.error;
-      return `<tr>
-        <td><strong>${r.mes}</strong></td>
-        <td style="color:#16a34a;font-weight:700;">${r.soportes}</td>
-        <td style="color:#d97706;font-weight:700;">${r.evolutivos}</td>
-        <td style="color:#2563eb;font-weight:700;">${r.error}</td>
-        <td><strong>${totalMes}</strong></td>
-      </tr>`;
-    }).join('');
-    html += `<tr class="tr-total">
-      <td>Total ${year}</td>
-      <td style="color:#16a34a;">${totS}</td>
-      <td style="color:#d97706;">${totD}</td>
-      <td style="color:#2563eb;">${totE}</td>
-      <td><strong>${totS+totD+totE}</strong></td>
-    </tr>`;
-    tb.innerHTML = html;
-  }
-
   drawGroupedVBar('chartEquipoTendencia',
     rows.map(r=>r.mes),
     [
@@ -1789,6 +1752,78 @@ function renderEquipoTendencia(){
       {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
     ]
   );
+}
+
+// Un solo cálculo consolidado de "qué tan productivo es el equipo", pedido
+// explícitamente por el usuario en vez de la tabla mensual + el texto de
+// hallazgos (removidos). Se deriva 100% de getComparativoMensual() y
+// RESPONSABLES.length — nada hardcodeado. 4 métricas, todas visibles a la vez
+// (el usuario pidió ver las 4 opciones que se le ofrecieron, no elegir solo una):
+//   1) Productividad promedio = total combinado ÷ personas ÷ meses transcurridos.
+//   2) % Trabajo neto = (Soportes+Evolutivos) ÷ Total — el resto es "retrabajo" (Error).
+//   3) Tendencia = variación entre el promedio mensual de la 1ª mitad del año vs la 2ª.
+//   4) Score (0-100) = 40% volumen relativo al rango del año + 30% trabajo neto +
+//      30% tendencia normalizada (50 = sin cambio). Es el único de los 4 que combina
+//      a los otros tres, por eso es "menos transparente" pero más resumido.
+function renderEquipoProductividad(){
+  const { year, rows } = getComparativoMensual();
+  const personas = RESPONSABLES.length;
+  const meses = rows.length;
+  if(meses === 0) return;
+
+  const totS = rows.reduce((s,r)=>s+r.soportes,0);
+  const totD = rows.reduce((s,r)=>s+r.evolutivos,0);
+  const totE = rows.reduce((s,r)=>s+r.error,0);
+  const totGeneral = totS + totD + totE;
+
+  const ticketsPorPersonaMes = totGeneral / personas / meses;
+  const pctNeto = totGeneral>0 ? (totS+totD)/totGeneral*100 : 0;
+  const pctRetrabajo = 100 - pctNeto;
+
+  const mitad = Math.ceil(meses/2);
+  const primera = rows.slice(0, mitad);
+  const segunda = rows.slice(mitad);
+  const totalMes = r => r.soportes + r.evolutivos + r.error;
+  const promPrimera = primera.reduce((s,r)=>s+totalMes(r),0) / primera.length;
+  const promSegunda = segunda.length ? segunda.reduce((s,r)=>s+totalMes(r),0) / segunda.length : promPrimera;
+  const tendenciaPct = promPrimera>0 ? (promSegunda-promPrimera)/promPrimera*100 : 0;
+
+  const porPersonaPorMes = rows.map(r => totalMes(r)/personas);
+  const minPPM = Math.min(...porPersonaPorMes), maxPPM = Math.max(...porPersonaPorMes);
+  const volScore = maxPPM>minPPM ? (ticketsPorPersonaMes-minPPM)/(maxPPM-minPPM)*100 : 50;
+  const trendScore = Math.max(0, Math.min(100, 50 + tendenciaPct));
+  const score = Math.round(0.4*volScore + 0.3*pctNeto + 0.3*trendScore);
+
+  let scoreLabel, scoreColor;
+  if(score>=80){scoreLabel='Excelente'; scoreColor='#16a34a';}
+  else if(score>=60){scoreLabel='Buena'; scoreColor='#0d9488';}
+  else if(score>=40){scoreLabel='Moderada'; scoreColor='#d97706';}
+  else {scoreLabel='Baja'; scoreColor='#dc2626';}
+
+  const yl = document.getElementById('equipo-productividad-year-label');
+  if(yl) yl.textContent = `Año ${year} · calculado sobre ${meses} meses con datos (${rows[0].mes}–${rows[rows.length-1].mes}) y ${personas} Responsables oficiales`;
+
+  const tendColor = tendenciaPct>=0 ? '#16a34a' : '#dc2626';
+  const tendArrow = tendenciaPct>=0 ? '▲' : '▼';
+  const kpis = [
+    { num: ticketsPorPersonaMes.toFixed(1), lbl:'Tickets / persona / mes', sub:`${totGeneral.toLocaleString()} tickets ÷ ${personas} personas ÷ ${meses} meses`, col:'#17a2b8' },
+    { num: pctNeto.toFixed(1)+'%', lbl:'Trabajo neto (vs retrabajo)', sub:`${pctRetrabajo.toFixed(1)}% fue corregir tickets de Error`, col:'#16a34a' },
+    { num: `${tendArrow} ${Math.abs(tendenciaPct).toFixed(1)}%`, lbl:'Tendencia (1ª vs 2ª mitad del año)', sub: tendenciaPct>=0 ? 'El equipo resuelve más que al inicio del año' : 'El equipo resuelve menos que al inicio del año', col: tendColor },
+    { num: score, lbl:'Score de Productividad (0–100)', sub: scoreLabel, col: scoreColor },
+  ];
+  const kpiEl = document.getElementById('equipo-productividad-kpis');
+  if(kpiEl) kpiEl.innerHTML = kpis.map(k=>`
+    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;text-align:center;border:1px solid #e5e7eb;">
+      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
+      <div style="font-size:.75rem;font-weight:700;color:#334155;margin-top:8px;">${k.lbl}</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:3px;">${k.sub}</div>
+    </div>`).join('');
+
+  const formula = document.getElementById('equipo-productividad-formula');
+  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Productividad promedio = total combinado ÷ ${personas} personas ÷ ${meses} meses. `
+    + `Trabajo neto = (Soportes + Evolutivos) ÷ Total. Tendencia = variación del promedio mensual entre la 1ª mitad del año (${primera.map(r=>r.mes).join('-')}) y la 2ª mitad (${segunda.length?segunda.map(r=>r.mes).join('-'):'—'}). `
+    + `Score = 40% volumen relativo al rango de meses del año + 30% trabajo neto + 30% tendencia normalizada (50 = sin cambio). `
+    + `Nota: Error solo tiene datos desde marzo ${year} en el Sheet — los meses de enero/febrero pueden verse artificialmente "bajos" en el total combinado por eso, no porque el equipo trabajara menos.`;
 }
 
 // Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
@@ -1930,7 +1965,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
-   renderEquipoTendencia, renderEquipoRendimiento].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento].forEach(fn => fn());
 });
 </script>
 </body>
