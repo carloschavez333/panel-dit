@@ -420,16 +420,13 @@
       </div>
     </div>
     <div class="panel" style="border-top:4px solid #ea580c">
-      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; columnas de Estado generadas din&aacute;micamente desde los datos reales del Sheet, agrupado por Localidad</div>
-      <div class="table-wrap">
-        <table>
-          <!-- Columnas generadas por JS (renderEstadosTable) a partir de los Estados
-               reales presentes en ERROR_ACTIVOS — nunca una lista fija en el HTML. -->
-          <thead><tr id="resumen-err-thead"></tr></thead>
-          <tbody id="resumen-err-tbody"></tbody>
-        </table>
-      </div>
+      <h3>Tickets de error por estado de jira</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total de ticket: <strong id="total-ticket-resumen-err" style="color:#17a2b8;font-size:1rem;"></strong></div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:14px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; Estado seg&uacute;n Jira</div>
+      <!-- Tarjetas generadas por JS (renderEstadosCards) a partir de los Estados
+           reales presentes en ERROR_ACTIVOS — nunca una lista fija en el HTML, para
+           que un Estado nuevo en Jira aparezca solo, sin editar esta página. -->
+      <div class="status-cardgrid" id="resumen-err-cards"></div>
     </div>
   </div>
 
@@ -1869,21 +1866,25 @@ function renderKPIsErr(){
 }
 
 // ─── RENDER: TICKETS DE ERROR — RESUMEN (tabla + gráfica de En Atención) ──────
+// Homologado (25 Ago 2026) con el mismo diseño que Soportes/Evolutivos: tarjetas
+// de "universo de estados" (renderEstadosCards) en vez de la tabla-matriz Estado
+// x Localidad, + gráfica "piruleta" (lollipop) por localidad — antes usaba
+// renderEstadosTable() (tabla con una columna por Estado y una fila por Localidad).
 function renderResumenErr(){
-  // 100% dinámico (25 Ago 2026) — ver nota junto a `renderEstadosTable()`.
-  renderEstadosTable({
-    tbodyId: 'resumen-err-tbody',
-    theadId: 'resumen-err-thead',
-    data: ERROR_ACTIVOS,
-    kpiActivos: TOTAL_ACTIVOS_ERR,
-    totalLocId: 'total-loc-err',
-    totalSinLocId: 'total-sinloc-err',
-    // Gráfica "piruleta" (lollipop), homologada 25 Ago 2026 con el mismo diseño
-    // que Soportes/Evolutivos (chartId → drawLollipop con LOLLIPOP_COLORS) — antes
-    // usaba barChartId → drawStackedHBar (barra plana color único, distinta al
-    // resto del panel).
-    chartId: 'chartLocalidadErr',
-  });
+  const r = renderEstadosCards('resumen-err-cards', ERROR_ACTIVOS, TOTAL_ACTIVOS_ERR, 'total-ticket-resumen-err');
+  if(!r) return;
+  const { totT } = r;
+  const elLoc = document.getElementById('total-loc-err');
+  if(elLoc) elLoc.textContent = totT;
+  const elSin = document.getElementById('total-sinloc-err');
+  if(elSin) elSin.textContent = (TOTAL_ACTIVOS_ERR - totT > 0) ? (TOTAL_ACTIVOS_ERR - totT) : '0';
+
+  const sortedLoc = [...ERROR_ACTIVOS].sort((a,b)=>b.total-a.total);
+  drawLollipop('chartLocalidadErr',
+    sortedLoc.map(r=>r.loc),
+    sortedLoc.map(r=>r.total),
+    LOLLIPOP_COLORS
+  );
 }
 
 // ─── RENDER: TICKETS DE ERROR — RESUELTOS ─────────────────────────────────────
