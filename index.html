@@ -514,11 +514,21 @@
   <div id="tab-equipo" class="tab-content">
     <div class="info-box"><strong>Informe de desempe&ntilde;o</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
     <div class="panel" style="border-top:4px solid #4f46e5">
-      <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;" id="equipo-year-label"></div>
-      <div style="position:relative;height:380px;">
-        <canvas id="chartEquipoTendencia"></canvas>
+      <div class="panel-title-row" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="panel-header-icon" id="icon-equipo-tendencia" style="background:#eef2ff;color:#4f46e5;"></div>
+          <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
+        </div>
+        <span style="display:flex;align-items:center;justify-content:center;width:26px;height:22px;border:1px solid #e5e7eb;border-radius:7px;color:#9aa0ab;font-size:.85rem;letter-spacing:1px;line-height:1;">&#8943;</span>
       </div>
+      <div style="font-size:.78rem;color:#64748b;margin:6px 0 10px;" id="equipo-year-label"></div>
+      <div style="display:flex;gap:6px;height:380px;">
+        <div style="writing-mode:vertical-rl;transform:rotate(180deg);color:#94a3b8;font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">Tickets</div>
+        <div style="position:relative;flex:1;min-width:0;">
+          <canvas id="chartEquipoTendencia"></canvas>
+        </div>
+      </div>
+      <div id="equipo-tendencia-legend" style="display:flex;justify-content:center;gap:36px;flex-wrap:wrap;border:1px solid #e5e7eb;border-radius:12px;padding:14px 20px;margin-top:16px;"></div>
     </div>
     <div class="panel" style="margin-top:22px;border-top:4px solid #d97706;">
       <h3>Velocidad de Atenci&oacute;n</h3>
@@ -1322,7 +1332,8 @@ function drawVBar(id, labels, data, colors){
 
 // Barras agrupadas por categoría dentro de cada mes (varias series lado a lado,
 // no apiladas) — usado para comparar Soportes/Evolutivos/Error mes a mes.
-function drawGroupedVBar(id, labels, datasets){
+function drawGroupedVBar(id, labels, datasets, opts){
+  opts = opts || {};
   const canvas = document.getElementById(id);
   if(!canvas) return;
   const parent = canvas.parentElement;
@@ -1366,13 +1377,18 @@ function drawGroupedVBar(id, labels, datasets){
     cx.fillStyle='#64748b'; cx.font='11px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
     cx.fillText(lbl, padL + groupGap*i + groupGap/2, padT+chartH+8);
   });
-  const ly=H-26; let lx=padL;
-  datasets.forEach(ds=>{
-    cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
-    cx.fillStyle='#334155'; cx.font='11px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
-    cx.fillText(ds.label, lx+14, ly-1);
-    lx += 14 + cx.measureText(ds.label).width + 26;
-  });
+  // opts.legend==='none' → se omite la leyenda dibujada dentro del canvas porque
+  // el panel dibuja su propia caja de leyenda en HTML debajo (con totales y %,
+  // rediseño 25 Ago 2026) — ver renderEquipoTendencia().
+  if(opts.legend !== 'none'){
+    const ly=H-26; let lx=padL;
+    datasets.forEach(ds=>{
+      cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
+      cx.fillStyle='#334155'; cx.font='11px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
+      cx.fillText(ds.label, lx+14, ly-1);
+      lx += 14 + cx.measureText(ds.label).width + 26;
+    });
+  }
 }
 
 function drawStackedHBar(id, labels, datasets){
@@ -1573,6 +1589,7 @@ const ICONO_CALENDARIO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const ICONO_PIE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>';
 const ICONO_BARRAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>';
 const ICONO_USUARIOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+const ICONO_LINEA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>';
 // Formatea "EN ESPERA DE CLIENTE EXTERNO" → "En Espera de Cliente Externo"
 // SOLO para mostrar — la clave real (tal cual viene del Sheet) nunca se toca,
 // así que nunca hay riesgo de que dos variantes de mayúsculas/minúsculas del
@@ -2072,14 +2089,34 @@ function renderEquipoTendencia(){
   const yl = document.getElementById('equipo-year-label');
   if(yl) yl.textContent = `Año ${year} · fuente: hoja Mtto_DONE_2026 (Soporte+Asistencia Técnica / Evolutivo Ágil+CC Evolutivo / Error)`;
 
-  drawGroupedVBar('chartEquipoTendencia',
-    rows.map(r=>r.mes),
-    [
-      {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#16a34a'},
-      {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#d97706'},
-      {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
-    ]
-  );
+  const icon = document.getElementById('icon-equipo-tendencia');
+  if(icon) icon.innerHTML = ICONO_LINEA;
+
+  const series = [
+    {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#16a34a'},
+    {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#d97706'},
+    {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
+  ];
+  drawGroupedVBar('chartEquipoTendencia', rows.map(r=>r.mes), series, {legend:'none'});
+
+  // Caja de leyenda con totales y % (rediseño 25 Ago 2026, a pedido del usuario)
+  // — el % es la participación de cada tipo sobre el total combinado de los 3
+  // (Soportes+Evolutivos+Error del año), por eso los 3 % siempre suman 100%.
+  const legendEl = document.getElementById('equipo-tendencia-legend');
+  if(legendEl){
+    const totales = series.map(s => s.data.reduce((a,b)=>a+b,0));
+    const totAll = totales.reduce((a,b)=>a+b,0);
+    legendEl.innerHTML = series.map((s,i)=>{
+      const pct = totAll>0 ? (totales[i]/totAll*100).toFixed(1) : '0.0';
+      return `<div style="display:flex;align-items:flex-start;gap:9px;">
+        <span style="width:12px;height:12px;border-radius:3px;background:${s.color};margin-top:3px;flex-shrink:0;"></span>
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:#1a1d29;">${s.label}</div>
+          <div style="font-size:.74rem;color:#94a3b8;margin-top:2px;">${totales[i].toLocaleString()} &nbsp;|&nbsp; ${pct}%</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
 }
 
 // Un solo cálculo consolidado de "qué tan productivo es el equipo", pedido
