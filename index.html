@@ -382,6 +382,24 @@
         </div>
       </div>
     </div>
+    <div class="panel" style="margin-top:28px;">
+      <h3>Top 10 &mdash; Tickets Evolutivos Atendidos por Persona</h3>
+      <div class="info-box" style="font-size:.78rem;" id="responsables-info-dev">A diferencia de Soportes, aqu&iacute; NO hay una lista oficial curada de responsables &mdash; este es un ranking simple por cantidad de tickets (Tipo de Incidencia: Evolutivo &Aacute;gil + CC Evolutivo), agrupado por Persona asignada. Fuente: hoja Mtto_DONE_2026.</div>
+      <!-- Podio top 3 -->
+      <div id="top3-podio-dev" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
+      <!-- Tabla + gráfica -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
+            <tbody id="historial-cerrados-dev-tbody"></tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:320px;height:100%;">
+          <canvas id="chartTopRespDev"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- TAB: BITACORA -->
@@ -611,6 +629,25 @@ function getCerradosVigentesDev(){
   const rows = enAnio.concat(sinMes);
   return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
 }
+
+// Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia en {Evolutivo Ágil, CC Evolutivo},
+// agrupado por "Persona asignada". A diferencia de RESPONSABLES (Soportes), NO existe
+// una lista oficial curada para Evolutivos — este es simplemente el top 10 por cantidad
+// de tickets (varios nombres vienen en mayúsculas/orden distinto en el Sheet original;
+// se homologan aquí a Nombre Apellido, es la misma persona).
+const TOP10_DEV = [
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:13},
+  {nom:'Leonardo Lucio Perez', n:12},
+  {nom:'Omar Villalpando', n:12},
+  {nom:'Ivan Perez Felipe', n:11},
+  {nom:'Hugo Cesar Rivero Rodriguez', n:9},
+  {nom:'Jesus Feria Ortiz', n:9},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:7},
+  {nom:'Sandra Estrada Lopez', n:5},
+  {nom:'Pedro Emanuel Jimenez Oscoy', n:5},
+  {nom:'Mariano Conte', n:5},
+];
+const TOTAL_TOP10_DEV = TOP10_DEV.reduce((s,r)=>s+r.n,0);
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
@@ -842,7 +879,7 @@ function showTab(name, el){
   el.classList.add('active');
   // Re-renderizar gráficas de tabs que estaban ocultos al cargar
   if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
-  if(name==='cerrados_dev'){renderCerradosDev();}
+  if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -1229,6 +1266,69 @@ function renderHistorialCerrados(){
   );
 }
 
+// ─── RENDER: TOP RESPONSABLES (Evolutivos) ────────────────────────────────────
+function renderHistorialCerradosDev(){
+  const tb=document.getElementById('historial-cerrados-dev-tbody');
+  if(!tb) return;
+  const sorted=[...TOP10_DEV].sort((a,b)=>b.n-a.n);
+  // Igual que en Soportes: el % de participación va sobre el total REAL de tickets
+  // Evolutivos atendidos (TOTAL_CERRADOS_DEV, la misma fuente que el KPI "Liberados
+  // Producción"), no sobre la suma de este top 10 — de lo contrario cada % sale
+  // inflado, porque este top 10 es solo un subconjunto y no incluye a todo el
+  // personal que cerró tickets Evolutivos.
+  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
+  const TOTAL = TOTAL_CERRADOS_DEV;
+  const medals=['🥇','🥈','🥉'];
+  const podioColors=['#eab308','#64748b','#c98a52'];
+  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+
+  const info=document.getElementById('responsables-info-dev');
+  if(info){
+    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
+    info.innerHTML='A diferencia de Soportes, aquí NO hay una lista oficial curada de responsables — este es un ranking simple por cantidad de tickets (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo), agrupado por Persona asignada. Fuente: hoja Mtto_DONE_2026. '
+      + `Este top 10 concentra ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets (${coberturaPct}% del histórico total); el resto corresponde a otras personas no listadas aquí.`;
+  }
+
+  // Podio top 3
+  const podio=document.getElementById('top3-podio-dev');
+  if(podio){
+    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
+      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
+        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
+        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
+        <div style="font-size:.75rem;color:#64748b;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
+      </div>`).join('');
+  }
+
+  // Tabla
+  tb.innerHTML=sorted.map((r,i)=>{
+    const pct=(r.n/TOTAL*100).toFixed(1);
+    const barW=Math.round(r.n/sorted[0].n*100);
+    const rowStyle=i<3?`font-weight:700;`:'';
+    const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
+    return `<tr style="${rowStyle}">
+      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
+      <td>${r.nom}</td>
+      <td style="color:${numColor};font-weight:700;">${r.n}</td>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px;">
+          <div style="width:${barW}%;height:100%;background:${i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8'};border-radius:4px;"></div>
+        </div>
+        <span style="font-size:.75rem;color:#64748b;min-width:34px;">${pct}%</span>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  // Gráfica horizontal top 10 (Canvas nativo)
+  const barColors=sorted.map((_,i)=>i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8');
+  drawHBar('chartTopRespDev',
+    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
+    sorted.map(r=>r.n),
+    barColors
+  );
+}
+
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
 function renderBitacora(){
   const tb=document.getElementById('bitacora-tbody');
@@ -1299,7 +1399,7 @@ document.addEventListener('DOMContentLoaded', function(){
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
-   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev].forEach(fn => fn());
+   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev].forEach(fn => fn());
 });
 </script>
 </body>
