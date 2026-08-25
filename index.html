@@ -20,6 +20,9 @@
   .tab-ico{font-size:.95rem}
   .tab:hover{background:#eaf1fe;color:#1a1d29}
   .tab.active{background:#e6f0fe;color:#2563eb;border-color:#bcd4fb}
+  .tab-sub{padding-left:32px;font-size:.79rem;position:relative}
+  .tab-sub .tab-ico{font-size:.85rem}
+  .tab-sub::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:1px;background:#e2e6ec}
   .sidebar-foot{font-size:.65rem;color:#8a8f9c;border-top:1px solid #eceef1;padding-top:14px;padding-left:6px}
   .main{flex:1;min-width:0}
   .topbar{display:flex;justify-content:space-between;align-items:center;padding:22px 32px 4px;color:#6b7280;font-size:.82rem}
@@ -110,9 +113,9 @@
   </div>
   <div class="tabs">
     <div class="tab active" onclick="showTab('resumen',this)"><span class="tab-ico">&#x1F527;</span> Tickets de Soportes</div>
-    <div class="tab" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
+    <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
+    <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x2705;</span> Atendidos (DONE)</div>
     <div class="tab" onclick="showTab('backlog',this)"><span class="tab-ico">&#x1F4CC;</span> Backlog</div>
-    <div class="tab" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x2705;</span> Atendidos (DONE)</div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
   <div class="sidebar-foot">Actualizaci&oacute;n autom&aacute;tica cada hora</div>
