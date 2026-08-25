@@ -437,33 +437,27 @@
   <div id="tab-cerrados_err" class="tab-content">
     <div class="info-box"><strong>Resueltos</strong> son tickets de Error completados y entregados. Cada mes acumula el total cerrado en ese periodo. Estos tickets de tipo <strong>Error</strong> son fallos levantados por <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; son distintos de <strong>Soporte</strong>, que son incidentes ya en producci&oacute;n.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+      <!-- Lista izquierda -->
       <div class="panel" style="margin-bottom:0;">
-        <h3>Tickets por Mes</h3>
-        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:10px;" id="cerrados-err-year-label"></div>
+        <div class="panel-title-row">
+          <div class="panel-header-icon" id="icon-cerrados-err-lista" style="background:#ede9fe;color:#7c3aed;"></div>
+          <h3>Tickets por Mes</h3>
+        </div>
+        <div style="font-size:.76rem;color:#94a3b8;margin:6px 0 10px;" id="cerrados-err-year-label"></div>
         <div id="cerrados-err-lista"></div>
+        <div id="cerrados-err-total-box"></div>
       </div>
+      <!-- Gráfica barras derecha -->
       <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
-        <h3>Distribución Mensual</h3>
-        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:4px;" id="cerrados-err-year-label2"></div>
+        <div class="panel-title-row">
+          <div class="panel-header-icon" id="icon-cerrados-err-chart" style="background:#dcfce7;color:#16a34a;"></div>
+          <h3>Distribución Mensual</h3>
+        </div>
+        <div style="font-size:.76rem;color:#94a3b8;margin:6px 0 4px;" id="cerrados-err-year-label2"></div>
         <div style="position:relative;flex:1;min-height:280px;">
           <canvas id="chartCerradosBarsErr"></canvas>
         </div>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:28px;">
-      <h3>Top Responsables &mdash; Tickets de Error Atendidos por Persona</h3>
-      <div class="info-box" style="font-size:.78rem;" id="responsables-info-err">Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error), agrupado por Persona asignada.</div>
-      <div id="top3-podio-err" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
-            <tbody id="historial-cerrados-err-tbody"></tbody>
-          </table>
-        </div>
-        <div style="position:relative;min-height:320px;height:100%;">
-          <canvas id="chartTopRespErr"></canvas>
-        </div>
+        <div id="cerrados-err-total-box2"></div>
       </div>
     </div>
   </div>
@@ -1404,7 +1398,7 @@ function showTab(name, el){
   if(name==='resumen_dev'){renderResumenDev();}
   if(name==='cerrados_dev'){renderCerradosDev();}
   if(name==='resumen_err'){renderResumenErr();}
-  if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
+  if(name==='cerrados_err'){renderCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
   if(name==='equipo'){renderEfectividadEquipo(); renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
@@ -1897,80 +1891,46 @@ function renderCerradosErr(){
   const lista=document.getElementById('cerrados-err-lista');
   if(!lista) return;
   const { year: currentYear, rows: sorted, total } = getCerradosVigentesErr();
-  const colors=sorted.map(()=>'#2563eb');
+  // Homologado (25 Ago 2026) con el mismo diseño que "Atendidos (DONE)" de
+  // Soportes/Evolutivos: color fijo por mes del calendario (colorMes), chips de
+  // calendario, cajas de total en vez de fila de texto plano.
+  const colors=sorted.map(r=>colorMes(r.loc));
 
   const yearLabelTxt = `Año ${currentYear} · ordenado por mes · Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error)`;
   const yl1=document.getElementById('cerrados-err-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
   const yl2=document.getElementById('cerrados-err-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
 
+  const iconLista=document.getElementById('icon-cerrados-err-lista'); if(iconLista) iconLista.innerHTML=ICONO_CALENDARIO;
+  const iconChart=document.getElementById('icon-cerrados-err-chart'); if(iconChart) iconChart.innerHTML=ICONO_PIE;
+
   lista.innerHTML=sorted.map((r,i)=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #f8fafc;">
-      <span style="font-size:.85rem;color:#334155;">${r.loc}</span>
-      <span style="font-size:1rem;font-weight:800;color:${colors[i]};">${r.n}</span>
-    </div>`).join('')
-  + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#1a1d29;">
-      <span>Total ${currentYear}</span><span>${total.toLocaleString()}</span>
+    <div class="mes-row">
+      <div class="mes-icon" style="background:${colors[i]}22;color:${colors[i]};">${ICONO_CALENDARIO}</div>
+      <span class="mes-lbl">${r.loc}</span>
+      <span class="mes-val" style="color:${colors[i]};">${r.n}</span>
+    </div>`).join('');
+
+  const totalBox1=document.getElementById('cerrados-err-total-box');
+  if(totalBox1){
+    totalBox1.innerHTML = `<div class="mes-total-box" style="background:#ede9fe;color:#6d28d9;">
+      <div class="panel-header-icon" style="color:#6d28d9;">${ICONO_BARRAS}</div>
+      <div class="mes-total-lbl">Total ${currentYear}</div>
+      <div class="mes-total-val">${total.toLocaleString()}</div>
     </div>`;
+  }
+  const totalBox2=document.getElementById('cerrados-err-total-box2');
+  if(totalBox2){
+    totalBox2.innerHTML = `<div class="mes-total-box" style="background:#dbeafe;color:#1d4ed8;">
+      <div class="panel-header-icon" style="color:#1d4ed8;">${ICONO_USUARIOS}</div>
+      <div class="mes-total-lbl">Total general ${currentYear}</div>
+      <div class="mes-total-val">${total.toLocaleString()}</div>
+    </div>`;
+  }
 
   drawVBar('chartCerradosBarsErr',
     sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
     sorted.map(r=>r.n),
     sorted.map((_,i)=>colors[i])
-  );
-}
-
-// ─── RENDER: TOP RESPONSABLES (Error, misma lista de 11 personas que Soportes/Evolutivos) ──
-function renderHistorialCerradosErr(){
-  const tb=document.getElementById('historial-cerrados-err-tbody');
-  if(!tb) return;
-  const sorted=[...RESPONSABLES_ERR].sort((a,b)=>b.n-a.n);
-  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
-  const TOTAL = TOTAL_CERRADOS_ERR;
-  const medals=['🥇','🥈','🥉'];
-  const podioColors=['#eab308','#64748b','#c98a52'];
-  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
-
-  const info=document.getElementById('responsables-info-err');
-  if(info){
-    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
-    info.innerHTML='Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos (no son necesariamente quienes más tickets de Error tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Error), agrupado por Persona asignada. '
-      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets de Error del histórico total (${coberturaPct}%); el resto corresponde a otro personal que no forma parte de esta lista.`;
-  }
-
-  const podio=document.getElementById('top3-podio-err');
-  if(podio){
-    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
-      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
-        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
-        <div style="font-size:.75rem;color:#64748b;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
-      </div>`).join('');
-  }
-
-  tb.innerHTML=sorted.map((r,i)=>{
-    const pct=(r.n/TOTAL*100).toFixed(1);
-    const barW=Math.round(r.n/sorted[0].n*100);
-    const rowStyle=i<3?`font-weight:700;`:'';
-    const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-    return `<tr style="${rowStyle}">
-      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
-      <td>${r.nom}</td>
-      <td style="color:${numColor};font-weight:700;">${r.n}</td>
-      <td><div style="display:flex;align-items:center;gap:8px;">
-        <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px;">
-          <div style="width:${barW}%;height:100%;background:${i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8'};border-radius:4px;"></div>
-        </div>
-        <span style="font-size:.75rem;color:#64748b;min-width:34px;">${pct}%</span>
-      </div></td>
-    </tr>`;
-  }).join('');
-
-  const barColors=sorted.map((_,i)=>i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8');
-  drawHBar('chartTopRespErr',
-    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
-    sorted.map(r=>r.n),
-    barColors
   );
 }
 
@@ -2347,7 +2307,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
-   renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
+   renderKPIsErr, renderResumenErr, renderCerradosErr,
    renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion].forEach(fn => fn());
 });
 </script>
