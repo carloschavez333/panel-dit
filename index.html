@@ -140,6 +140,8 @@
   .panel-title-row h3{margin:0}
   .panel-header-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .panel-header-icon svg{width:17px;height:17px}
+  #icon-equipo-tendencia{width:48px;height:48px;border-radius:13px}
+  #icon-equipo-tendencia svg{width:25px;height:25px}
   .mes-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f8fafc}
   .mes-row .mes-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .mes-row .mes-icon svg{width:14px;height:14px}
@@ -514,14 +516,16 @@
   <div id="tab-equipo" class="tab-content">
     <div class="info-box"><strong>Informe de desempe&ntilde;o</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
     <div class="panel" style="border-top:4px solid #4f46e5">
-      <div class="panel-title-row" style="justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:10px;">
+      <div class="panel-title-row" style="justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:12px;">
           <div class="panel-header-icon" id="icon-equipo-tendencia" style="background:#eef2ff;color:#4f46e5;"></div>
-          <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
+          <div>
+            <h3 style="margin:0;">Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
+            <div style="font-size:.78rem;color:#64748b;margin-top:4px;" id="equipo-year-label"></div>
+          </div>
         </div>
-        <span style="display:flex;align-items:center;justify-content:center;width:26px;height:22px;border:1px solid #e5e7eb;border-radius:7px;color:#9aa0ab;font-size:.85rem;letter-spacing:1px;line-height:1;">&#8943;</span>
+        <span style="display:flex;align-items:center;justify-content:center;width:26px;height:22px;border:1px solid #e5e7eb;border-radius:7px;color:#9aa0ab;font-size:.85rem;letter-spacing:1px;line-height:1;flex-shrink:0;">&#8943;</span>
       </div>
-      <div style="font-size:.78rem;color:#64748b;margin:6px 0 10px;" id="equipo-year-label"></div>
       <div style="display:flex;gap:6px;height:380px;">
         <div style="writing-mode:vertical-rl;transform:rotate(180deg);color:#94a3b8;font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">Tickets</div>
         <div style="position:relative;flex:1;min-width:0;">
