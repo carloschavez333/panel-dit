@@ -144,7 +144,7 @@
       <div class="kpi-icon">&#x1F7E2;</div>
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
-      <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias</div>
+      <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias del año en curso</div>
     </div>
     <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
       <div class="kpi-icon">&#x1F7E0;</div>
@@ -667,7 +667,7 @@ function renderKPIs(){
   const cerradosVigentes = getCerradosVigentes();
   if(elCerrados) elCerrados.textContent = cerradosVigentes.total.toLocaleString();
   const elCerradosSub = document.getElementById('kpi-cerrados-sub');
-  if(elCerradosSub) elCerradosSub.textContent = 'Soportes + Asistencias · Año ' + cerradosVigentes.year;
+  if(elCerradosSub) elCerradosSub.textContent = 'Soportes + Asistencias del año en curso (' + cerradosVigentes.year + ')';
   const elAprobacion = document.getElementById('kpi-aprobacion');
   if(elAprobacion) elAprobacion.textContent = TOTAL_APROBACION.toLocaleString();
   const elBacklog = document.getElementById('kpi-backlog');
