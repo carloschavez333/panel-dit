@@ -131,12 +131,12 @@
       <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias</div>
     </div>
     <div class="kpi kpi-aprobacion">
-      <div class="num" id="kpi-aprobacion">34</div>
+      <div class="num" id="kpi-aprobacion">37</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
-      <div class="num" id="kpi-backlog">84</div>
+      <div class="num" id="kpi-backlog">82</div>
       <div class="lbl">Backlog</div>
       <div class="sub">En desarrollo</div>
     </div>
@@ -333,16 +333,16 @@ const SOPORTES = [
 ];
 const TOTAL_ACTIVOS = 77;
 const APROBACION = [
-  {loc:'Quintana Roo', n:8},
+  {loc:'Quintana Roo', n:10},
   {loc:'Guanajuato', n:6},
-  {loc:'Hidalgo', n:5},
-  {loc:'Jalisco', n:3},
-  {loc:'Colima', n:3},
+  {loc:'Hidalgo', n:4},
+  {loc:'Jalisco', n:4},
+  {loc:'Colima', n:4},
   {loc:'Baja California', n:3},
   {loc:'Sonora', n:2},
   {loc:'Zacatecas', n:2},
+  {loc:'Cancún', n:1},
   {loc:'CDMX', n:1},
-  {loc:'Chiapas', n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
@@ -374,20 +374,21 @@ const CERRADOS = [
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
 const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos', n:12},
-  {nom:'Sin asignar', n:8},
+  {nom:'Eunice Anais Arevalo Avalos', n:13},
   {nom:'Gibran Esaú Solís Valenzuela', n:7},
   {nom:'Leonardo Lucio Perez', n:6},
   {nom:'Mariano Conte', n:6},
+  {nom:'Sin asignar', n:6},
+  {nom:'Omar Villalpando', n:4},
   {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:4},
-  {nom:'Omar Villalpando', n:3},
-  {nom:'Ivan Perez Felipe', n:3},
+  {nom:'Hugo Cesar Rivero Rodriguez', n:3},
   {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
   {nom:'Angel Ulises Velasquez Hernandez', n:3},
   {nom:'Jonathan Levi Márquez García', n:2},
+  {nom:'Ivan Perez Felipe', n:2},
   {nom:'Jesus Feria Ortiz', n:2},
-  {nom:'salvador.fernandez', n:2},
-  {nom:'Hugo Cesar Rivero Rodriguez', n:2},
+  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:2},
+  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:2},
   {nom:'Arturo Cedeño Ortíz', n:2},
   {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
   {nom:'Silvestre Cerrato', n:1},
@@ -400,21 +401,17 @@ const BACKLOG_RESP = [
   {nom:'Miguel Angel Velasco Castañeda', n:1},
   {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
   {nom:'Berenice Zavala Jiménez', n:1},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:1},
   {nom:'Juan Manuel Olguin Colin', n:1},
   {nom:'Luis Antonio Jimenez Matus', n:1},
-  {nom:'EDGAR ELIAS CUERO DE LA CRUZ', n:1},
   {nom:'Jesus Jonathan Ramos Nuñez', n:1},
-  {nom:'César Leonardo Rodríguez Martínez', n:1},
   {nom:'Andrea Ixchel Tejeda Rayas', n:1},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:1},
 ];
 const BACKLOG = [
-  {loc:'Quintana Roo', n:22},
-  {loc:'Guanajuato', n:15},
-  {loc:'Hidalgo', n:12},
+  {loc:'Quintana Roo', n:21},
+  {loc:'Guanajuato', n:16},
+  {loc:'Hidalgo', n:13},
   {loc:'Colima', n:11},
-  {loc:'Jalisco', n:7},
+  {loc:'Jalisco', n:5},
   {loc:'Seguritech', n:5},
   {loc:'Baja California', n:4},
   {loc:'Sonora', n:3},
