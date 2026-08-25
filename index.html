@@ -138,7 +138,7 @@
       <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
     </div>
     <div class="tab" onclick="showTab('resumen_dev',this)" style="padding-right:9px">
-      <span class="tab-ico">&#x1F4BB;</span><span style="white-space:nowrap">Tickets de Nuevos Desarrollos</span>
+      <span class="tab-ico">&#x1F4BB;</span><span style="white-space:nowrap">Tickets Evolutivos</span>
       <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')">&#x25B8;</span>
     </div>
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
@@ -328,7 +328,7 @@
   <!-- TAB: NUEVOS DESARROLLOS — APROBACION CLIENTE -->
   <div id="tab-aprobacion_dev" class="tab-content">
     <div style="background:#fdeeea;color:#a83b1d;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
-      &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Nuevos Desarrollos por Localidad
+      &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Evolutivos por Localidad
     </div>
     <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Aprobaci&oacute;n por Cliente"</strong> (no incluye "Pendiente de Firma" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen). Fuente: hoja CC Evolutivos (1hr activo).</div>
     <div id="aprobacion-dev-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
@@ -348,7 +348,7 @@
 
   <!-- TAB: NUEVOS DESARROLLOS — ATENDIDOS DONE -->
   <div id="tab-cerrados_dev" class="tab-content">
-    <div class="info-box"><strong>Atendidos (DONE)</strong> son tickets de Nuevos Desarrollos (Evolutivos) completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div class="info-box"><strong>Atendidos (DONE)</strong> son tickets Evolutivos completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
       <!-- Lista izquierda -->
       <div class="panel" style="margin-bottom:0;">
