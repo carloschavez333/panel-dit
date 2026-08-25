@@ -210,7 +210,7 @@
     </div>
   </div>
     <div class="panel" style="border-top:4px solid #dc2626">
-      <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
+      <h3>Distribuci&oacute;n de tickets de soportes en atenci&oacute;n por cliente</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc" style="color:#ef4444;font-size:1rem;"></strong></div>
       <div style="position:relative;height:410px;">
         <canvas id="chartLocalidad"></canvas>
@@ -1123,6 +1123,65 @@ function drawHBar(id, labels, data, colors){
   });
 }
 
+// Paleta cíclica para gráficas "piruleta" (lollipop) — un color distinto por
+// fila/categoría, a diferencia de las barras de una sola serie que usan un
+// solo color. Se repite si hay más categorías que colores.
+const LOLLIPOP_COLORS = ['#2563eb','#0d9488','#65a30d','#eab308','#f97316','#e11d48','#8b5cf6','#a855f7','#0ea5e9','#84cc16','#f59e0b','#94a3b8'];
+
+// Gráfica de "piruleta" (lollipop): línea delgada desde el eje hasta el valor,
+// con un punto de color al final y el número a la derecha. Más limpia que
+// barras cuando hay muchas categorías de valores bajos — cada fila tiene su
+// propio color en vez de una sola serie de un solo color.
+function drawLollipop(id, labels, data, colors){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 400;
+  canvas.height = Math.max(parent.offsetHeight||320, labels.length*34+70);
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const maxV = Math.max(...data, 1);
+  const niceMax = Math.ceil(maxV/5)*5 || 5;
+  const padL=150, padR=50, padT=16, padB=36;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const step = chartH/labels.length;
+
+  const ticks = 5;
+  for(let g=0; g<=ticks; g++){
+    const v = niceMax*g/ticks;
+    const x = padL + chartW*(v/niceMax);
+    cx.strokeStyle='#eef1f5'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(x,padT); cx.lineTo(x,padT+chartH); cx.stroke();
+    cx.fillStyle='#94a3b8'; cx.font='10px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
+    cx.fillText(Math.round(v), x, padT+chartH+6);
+  }
+  cx.fillStyle='#94a3b8'; cx.font='10px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
+  cx.fillText('Tickets', padL+chartW/2, padT+chartH+20);
+
+  labels.forEach((lbl,i)=>{
+    const y = padT + i*step + step/2;
+    const col = (colors && colors[i%colors.length]) || LOLLIPOP_COLORS[i%LOLLIPOP_COLORS.length];
+    const x0 = padL, x1 = padL + chartW*(data[i]/niceMax);
+
+    cx.fillStyle='#1e293b'; cx.font='600 12px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    const shortLbl = lbl.length>20 ? lbl.substring(0,19)+'…' : lbl;
+    cx.fillText(shortLbl, padL-14, y);
+
+    cx.strokeStyle=col; cx.lineWidth=2;
+    cx.beginPath(); cx.moveTo(x0,y); cx.lineTo(x1,y); cx.stroke();
+
+    cx.beginPath(); cx.arc(x1,y,7,0,2*Math.PI);
+    cx.fillStyle=col; cx.fill();
+
+    cx.fillStyle='#1e293b'; cx.font='bold 12px Segoe UI'; cx.textAlign='left'; cx.textBaseline='middle';
+    cx.fillText(data[i], x1+14, y);
+  });
+
+  cx.strokeStyle='#cbd5e1'; cx.lineWidth=1;
+  cx.beginPath(); cx.moveTo(padL,padT); cx.lineTo(padL,padT+chartH); cx.stroke();
+}
+
 function drawVBar(id, labels, data, colors){
   const canvas = document.getElementById(id);
   if(!canvas) return;
@@ -1457,14 +1516,15 @@ function renderResumen(){
     ['#17a2b8','#f2793a','#22c55e','#ef4444','#eab308','#7c6fd0']
   );
 
-  // Gráfica de barras por localidad: total de tickets en atención (sin desglose por
-  // estado de Jira, ya que ese detalle vive en la tabla de abajo).
+  // Gráfica "piruleta" (lollipop) por localidad/cliente: total de tickets en
+  // atención (sin desglose por estado de Jira, ya que ese detalle vive en la
+  // tabla de abajo). Un color distinto por fila — pedido del usuario 25 Ago
+  // 2026 para reemplazar la barra de un solo color, con este mismo diseño.
   const sortedLoc = [...SOPORTES].sort((a,b)=>b.total-a.total);
-  drawStackedHBar('chartLocalidad',
+  drawLollipop('chartLocalidad',
     sortedLoc.map(r=>r.loc),
-    [
-      {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'},
-    ]
+    sortedLoc.map(r=>r.total),
+    LOLLIPOP_COLORS
   );
 
   // Tarjetas por localidad
