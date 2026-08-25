@@ -143,7 +143,7 @@
     </div>
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
       <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E0;</span> Espera de Firma</div>
-      <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
+      <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F7E2;</span> Liberados Producci&oacute;n</div>
     </div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -269,10 +269,10 @@
   <!-- TAB: NUEVOS DESARROLLOS (RESUMEN) -->
   <div id="tab-resumen_dev" class="tab-content">
   <div class="kpi-grid">
-    <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
+    <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Liberados Producci&oacute;n">
       <div class="kpi-icon">&#x1F7E2;</div>
       <div class="num" id="kpi-cerrados-dev">0</div>
-      <div class="lbl">Atendidos (DONE)</div>
+      <div class="lbl">Liberados Producci&oacute;n</div>
       <div class="sub" id="kpi-cerrados-dev-sub">Evolutivos del año en curso</div>
     </div>
     <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Espera de Firma">
@@ -348,7 +348,7 @@
 
   <!-- TAB: NUEVOS DESARROLLOS — ATENDIDOS DONE -->
   <div id="tab-cerrados_dev" class="tab-content">
-    <div class="info-box"><strong>Atendidos (DONE)</strong> son tickets Evolutivos completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div class="info-box"><strong>Liberados Producci&oacute;n</strong> son tickets Evolutivos completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
       <!-- Lista izquierda -->
       <div class="panel" style="margin-bottom:0;">
