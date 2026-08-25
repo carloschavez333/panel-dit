@@ -230,7 +230,7 @@
     </div>
     <div class="panel" style="margin-top:28px;">
       <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
-      <div class="info-box" id="responsables-info" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
+      <div class="info-box" id="responsables-info" style="font-size:.78rem;">Lista fija de 11 Responsables de Soporte reconocidos oficialmente. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
       <!-- Podio top 3 -->
       <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
       <!-- Tabla + gráfica -->
@@ -355,24 +355,37 @@ const APROBACION = [
   {loc:'Chiapas', n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
+// IMPORTANTE: "Top Responsables" NO es "las 11 personas con más tickets" — es una
+// LISTA FIJA de 11 personas reconocidas oficialmente como Responsables de Soporte
+// (documentada en CLAUDE.md, sección "Filtro crítico — RESPONSABLES"). El resto del
+// personal que aparece en la columna "Persona asignada" (supervisores, coordinadores,
+// etc.) queda fuera de este listado a propósito, aunque tenga más tickets asignados.
+// Fuente: hoja "Mtto_DONE_2026". Filtro: Tipo de Incidencia en {Soporte, Asistencia
+// Técnica}, restringido a estas 11 personas (varias tienen su nombre escrito de más
+// de una forma en el Sheet — mayúsculas/orden distinto — y se unifican bajo un solo
+// registro): Yoshio Adán Villegas Guevara, Omar Villalpando, Manuel Alejandro
+// Domínguez Enríquez, Leonardo Lucio Perez, Silvestre Cerrato, Jonathan Aristeo Lozano
+// Hernandez, Ivan Perez Felipe, Aníbal Argüelles García, Jesus Feria Ortiz, Rodrigo
+// Gabriel Gras, Gibran Esaú Solís Valenzuela.
 const RESPONSABLES = [
-  {nom:'Carlos Zavala López', n:225},
-  {nom:'Mariano Conte', n:210},
-  {nom:'Jesus Jonathan Ramos Nuñez', n:185},
-  {nom:'Jorge Octavio Paz Hernandez', n:117},
   {nom:'Yoshio Adán Villegas Guevara', n:112},
   {nom:'Leonardo Lucio Perez', n:93},
-  {nom:'Juan Manuel Ce/Acatl Salazar Castro', n:86},
-  {nom:'Hugo Cesar Rivero Rodriguez', n:85},
   {nom:'Omar Villalpando', n:81},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:78},
-  {nom:'Luis Antonio Jimenez Matus', n:67},
+  {nom:'Ivan Perez Felipe', n:63},
+  {nom:'Jesus Feria Ortiz', n:50},
+  {nom:'Jonathan Aristeo Lozano Hernandez', n:47},
+  {nom:'Silvestre Cerrato', n:39},
+  {nom:'Aníbal Argüelles García', n:25},
+  {nom:'Gibran Esaú Solís Valenzuela', n:16},
+  {nom:'Rodrigo Gabriel Gras', n:10},
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 // Fuente: hoja "Mtto_DONE_2026". Filtro: Tipo de Incidencia en {Soporte, Asistencia
 // Técnica}. Agrupado por la columna "Mes" (calculada en el propio Sheet a partir de
-// la fecha "Resuelta"). RESPONSABLES arriba viene de la misma hoja, agrupado en su
-// caso por "Persona asignada" en lugar de por Mes.
+// la fecha "Resuelta"). A diferencia de RESPONSABLES, aquí SÍ se cuenta a todo el
+// personal (no solo a los 11 de la lista fija) — por eso TOTAL_CERRADOS es mayor que
+// TOTAL_RESPONSABLES.
 const CERRADOS = [
   {loc:'2025-01 · Enero', n:1},
   {loc:'2025-11 · Noviembre', n:2},
@@ -843,8 +856,9 @@ function renderHistorialCerrados(){
   const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
   // El % de participación de cada responsable debe ser sobre el total REAL de tickets
   // atendidos (TOTAL_CERRADOS, la misma fuente que el KPI "Atendidos (DONE)"), no sobre
-  // la suma de este top 11 — de lo contrario cada % sale inflado, porque este listado es
-  // solo un recorte (top 11) y no incluye a todos los responsables que cerraron tickets.
+  // la suma de esta lista — de lo contrario cada % sale inflado, porque RESPONSABLES es
+  // una lista fija de 11 personas (ver comentario junto al array) y no incluye a todo
+  // el personal que cerró tickets.
   const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
   const TOTAL = TOTAL_CERRADOS;
   const medals=['🥇','🥈','🥉'];
@@ -854,8 +868,8 @@ function renderHistorialCerrados(){
   const info=document.getElementById('responsables-info');
   if(info){
     const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
-    info.innerHTML='Muestra quién ha atendido más tickets en el histórico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia Técnica), agrupado por Persona asignada. '
-      + `Este top 11 concentra ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets (${coberturaPct}% del histórico total); el resto corresponde a otros responsables no listados aquí.`;
+    info.innerHTML='Lista fija de 11 Responsables de Soporte reconocidos oficialmente (no son necesariamente quienes más tickets tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia Técnica), agrupado por Persona asignada. '
+      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets del histórico total (${coberturaPct}%); el resto corresponde a otro personal (supervisión, coordinación, etc.) que no forma parte de esta lista.`;
   }
 
   // Podio top 3
