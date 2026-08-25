@@ -568,6 +568,11 @@
         <div style="font-size:.74rem;color:#64748b;line-height:1.6;" id="velocidad-atencion-formula"></div>
       </div>
     </div>
+    <div class="panel" style="margin-top:22px;border-top:4px solid #7c3aed;">
+      <h3>Panorama General &mdash; Volumen vs. Velocidad</h3>
+      <div class="info-box" style="font-size:.78rem;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos arriba) se movieron en la misma direcci&oacute;n al comparar la 1&ordf; mitad del a&ntilde;o contra la 2&ordf; &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
+      <div id="volumen-velocidad"></div>
+    </div>
     <div class="panel" style="margin-top:22px;border-top:4px solid #17a2b8;">
       <h3>Efectividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;">S&iacute;ntesis de Calidad de Desarrollo + Ritmo de Atenci&oacute;n &mdash; no es un n&uacute;mero compuesto (ver por qu&eacute; abajo), es un sem&aacute;foro de 2 se&ntilde;ales que ya se calculan en sus propios paneles.</div>
@@ -1573,7 +1578,7 @@ function showTab(name, el){
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
-  if(name==='equipo'){renderEfectividadEquipo(); renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
+  if(name==='equipo'){renderEfectividadEquipo(); renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento(); renderVolumenVelocidad();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -2301,6 +2306,114 @@ function renderEquipoProductividad(){
     + `Nota: aún no existe SLA/tiempo de atención medido para Soportes, así que este panel no evalúa tiempos de respuesta — solo volumen y calidad de desarrollo.`;
 }
 
+// ─── RENDER: PANORAMA GENERAL — VOLUMEN vs. VELOCIDAD (síntesis) ─────────────
+// Pedido del usuario 25 Ago 2026: un "indicador maestro" que combine Comparativo
+// Mensual (volumen) + Velocidad de Atención en un solo veredicto. Se descartó un
+// Score 0-100 (mismo problema que ya se evitó 2 veces el mismo día en este
+// archivo: Productividad del Equipo y Efectividad del Equipo — mezclar unidades
+// distintas con pesos inventados) y también un semáforo de 2 señales
+// independientes (Volumen no tiene una meta acordada — el mismo motivo por el
+// que "Efectividad del Equipo" ya excluye Volumen de su semáforo). En vez de
+// eso, esta función SOLO cruza la DIRECCIÓN de ambas tendencias entre sí (1ª
+// mitad del año con datos vs 2ª mitad) — nunca contra un umbral absoluto — y da
+// una de 4 conclusiones cualitativas posibles. Se apoya 100% en
+// getComparativoMensual() y TIEMPO_ATENCION (las mismas 2 fuentes que ya usan
+// "Comparativo Mensual" y "Velocidad de Atención"), cero datos duplicados.
+function computeVolumenVelocidad(){
+  const { year, rows } = getComparativoMensual();
+  if(rows.length < 2) return null;
+
+  const MES_A_NOMBRE = {Ene:'Enero',Feb:'Febrero',Mar:'Marzo',Abr:'Abril',May:'Mayo',Jun:'Junio',Jul:'Julio',Ago:'Agosto',Sep:'Septiembre',Oct:'Octubre',Nov:'Noviembre',Dic:'Diciembre'};
+  const medianaDelMes = (tipo, mesNombre) => {
+    const f = TIEMPO_ATENCION[tipo].monthly.find(m=>m.mes===mesNombre);
+    return f ? f.median : null;
+  };
+
+  const mitad = Math.ceil(rows.length/2);
+  const primera = rows.slice(0, mitad);
+  const segunda = rows.slice(mitad);
+
+  const sumaVol = (grupo) => grupo.reduce((s,r)=>s+r.soportes+r.evolutivos+r.error,0);
+  const volPrimera = sumaVol(primera), volSegunda = sumaVol(segunda);
+
+  // Horas ponderadas por ticket = Σ(volumen_tipo × mediana_tipo del mes) ÷
+  // Σvolumen_tipo, sumado sobre todos los meses de la mitad (no promedio de
+  // promedios mensuales) — mismo criterio que ya usa computeCalidadDesarrollo()
+  // para su "Tendencia de Calidad", para no mezclar 2 formas distintas de
+  // comparar mitades del año en el mismo dashboard.
+  const horasPonderadas = (grupo) => {
+    let numer = 0, denom = 0;
+    grupo.forEach(r=>{
+      const mesNombre = MES_A_NOMBRE[r.mes] || r.mes;
+      [['soportes','soporte'],['evolutivos','evolutivo'],['error','error']].forEach(([campo,tipo])=>{
+        const vol = r[campo];
+        if(vol>0){
+          const med = medianaDelMes(tipo, mesNombre);
+          if(med!=null){ numer += vol*med; denom += vol; }
+        }
+      });
+    });
+    return denom>0 ? numer/denom : null;
+  };
+  const horasPrimera = horasPonderadas(primera), horasSegunda = horasPonderadas(segunda);
+  if(horasPrimera==null || horasSegunda==null) return null;
+
+  const volSubio = volSegunda > volPrimera;
+  const veloMejoro = horasSegunda < horasPrimera; // menos horas por ticket = más rápido
+
+  let estado, color;
+  if(volSubio && veloMejoro){ estado = 'Creciendo bien'; color = '#16a34a'; }
+  else if(volSubio && !veloMejoro){ estado = 'Posible saturación'; color = '#dc2626'; }
+  else if(!volSubio && veloMejoro){ estado = 'Bajó demanda, más eficientes'; color = '#2563eb'; }
+  else { estado = 'En declive'; color = '#dc2626'; }
+
+  return {
+    year, volPrimera, volSegunda, horasPrimera, horasSegunda, volSubio, veloMejoro, estado, color,
+    primeraLbl: primera.map(r=>r.mes).join('-'), segundaLbl: segunda.map(r=>r.mes).join('-'),
+  };
+}
+
+function renderVolumenVelocidad(){
+  const v = computeVolumenVelocidad();
+  const wrap = document.getElementById('volumen-velocidad');
+  if(!wrap) return;
+  if(!v){
+    wrap.innerHTML = `<div style="font-size:.82rem;color:#94a3b8;">Todavía no hay suficientes meses de datos para cruzar Volumen y Velocidad.</div>`;
+    return;
+  }
+
+  const volPct = v.volPrimera>0 ? Math.abs((v.volSegunda-v.volPrimera)/v.volPrimera*100) : null;
+  const veloPct = v.horasPrimera>0 ? Math.abs((v.horasSegunda-v.horasPrimera)/v.horasPrimera*100) : null;
+  const emoji = v.estado==='Creciendo bien' ? '🟢' : v.estado==='Posible saturación' ? '🟠' : v.estado==='Bajó demanda, más eficientes' ? '🔵' : '🔴';
+
+  const explicacion = {
+    'Creciendo bien': `El equipo cerró más tickets (${v.primeraLbl} → ${v.segundaLbl}) sin perder velocidad — de hecho mejoró. Es la combinación más sana de las 4: más volumen atendido y más rápido a la vez.`,
+    'Posible saturación': `El equipo cerró más tickets, pero cada uno está tomando más horas que antes. Puede ser señal de que el volumen ya está por encima de lo que se puede sostener al mismo ritmo — vale la pena vigilarlo.`,
+    'Bajó demanda, más eficientes': `Se cerraron menos tickets, pero cada uno se resolvió más rápido. Puede ser una temporada de menor demanda o una mejora real de proceso — conviene revisar cuál de las dos es.`,
+    'En declive': `Se cerraron menos tickets y cada uno está tomando más horas que antes — es la única de las 4 combinaciones donde ambas señales van en contra. Vale la pena revisar qué está pasando.`,
+  }[v.estado];
+
+  wrap.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+      <div style="background:${v.volSubio?'#f0fdf4':'#fef2f2'};border:1px solid ${v.volSubio?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Volumen</div>
+        <div style="font-size:1.3rem;font-weight:800;color:${v.volSubio?'#16a34a':'#dc2626'};margin-top:4px;">${v.volSubio?'▲':'▼'} ${volPct!=null?volPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.volPrimera.toLocaleString()} (${v.primeraLbl}) a ${v.volSegunda.toLocaleString()} (${v.segundaLbl}) tickets cerrados</div>
+      </div>
+      <div style="background:${v.veloMejoro?'#f0fdf4':'#fef2f2'};border:1px solid ${v.veloMejoro?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Velocidad</div>
+        <div style="font-size:1.3rem;font-weight:800;color:${v.veloMejoro?'#16a34a':'#dc2626'};margin-top:4px;">${v.veloMejoro?'▼':'▲'} ${veloPct!=null?veloPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.horasPrimera.toFixed(1)} hrs/ticket (${v.primeraLbl}) a ${v.horasSegunda.toFixed(1)} hrs/ticket (${v.segundaLbl})</div>
+      </div>
+    </div>
+    <div style="font-size:.85rem;font-weight:600;color:#1a1d29;background:#f8fafc;border-left:3px solid ${v.color};border-radius:8px;padding:12px 16px;line-height:1.5;">
+      ${emoji} <strong>${v.estado}.</strong> ${explicacion}
+    </div>
+    <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
+      Volumen = total combinado (Soportes+Evolutivos+Error) por mitad del año. Velocidad = horas ponderadas por ticket (mediana de cada tipo × su volumen real ese mes, mismo criterio que "Tendencia de Calidad"). Ninguna de las 2 se compara contra una meta absoluta — solo entre sí.
+    </div>`;
+}
+
 // ─── RENDER: EFECTIVIDAD DEL EQUIPO (síntesis) ────────────────────────────────
 // Pedido del usuario 25 Ago 2026: "dame un cálculo para decir miren con todo esto
 // somos efectivos en conjunto". Se le explicó (y aceptó) que combinar Volumen +
@@ -2517,7 +2630,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr,
-   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
 });
 </script>
 </body>
