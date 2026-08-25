@@ -323,28 +323,13 @@
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>CC Evolutivos (1hr activo)</strong> &bull; Tipo de Incidencia en {CC Evolutivo, Evolutivo &Aacute;gil} &bull; cada Estado de Jira es su propia columna (no se agrupan), agrupado por Localidad</div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>CC Evolutivos (1hr activo)</strong> &bull; Tipo de Incidencia en {CC Evolutivo, Evolutivo &Aacute;gil} &bull; columnas de Estado generadas din&aacute;micamente desde los datos reales del Sheet, agrupado por Localidad</div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>Localidad</th>
-            <th><span class="pill pill-firma">Pend. Firma</span></th>
-            <th><span class="pill pill-progreso">En Progreso</span></th>
-            <th><span class="pill pill-backlog">Product Backlog</span></th>
-            <th><span class="pill pill-presup">Validaci&oacute;n Presup.</span></th>
-            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
-            <th><span class="pill pill-listo">Listo p/Desplegar</span></th>
-            <th><span class="pill pill-qa">En QA</span></th>
-            <th><span class="pill pill-aprobacion">Aprobaci&oacute;n Cliente</span></th>
-            <th><span class="pill pill-consulta">Consulta c/Cliente</span></th>
-            <th><span class="pill pill-control">Control Versi&oacute;n</span></th>
-            <th><span class="pill pill-reabierto">Reabierto</span></th>
-            <th><span class="pill pill-certqa">Certificado QA</span></th>
-            <th><span class="pill pill-ready">Ready to Merge</span></th>
-            <th><span class="pill pill-estim">Estim. T&eacute;cnica</span></th>
-            <th><span class="pill pill-otro">Otro</span></th>
-            <th>Total</th>
-          </tr></thead>
+          <!-- Columnas generadas por JS (renderEstadosTable) a partir de los Estados
+               reales presentes en EVOL_ACTIVOS — nunca una lista fija en el HTML, para
+               que un Estado nuevo en Jira aparezca solo, sin editar esta página. -->
+          <thead><tr id="resumen-dev-thead"></tr></thead>
           <tbody id="resumen-dev-tbody"></tbody>
         </table>
       </div>
@@ -436,21 +421,12 @@
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; cada Estado de Jira es su propia columna (no se agrupan), agrupado por Localidad</div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; columnas de Estado generadas din&aacute;micamente desde los datos reales del Sheet, agrupado por Localidad</div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>Localidad</th>
-            <th><span class="pill pill-nobug">No Bug</span></th>
-            <th><span class="pill pill-qa">En QA</span></th>
-            <th><span class="pill pill-ready">Ready to Merge</span></th>
-            <th><span class="pill pill-backlog">Sprint Backlog</span></th>
-            <th><span class="pill pill-progreso">En Progreso</span></th>
-            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
-            <th><span class="pill pill-reabierto">Reabierto</span></th>
-            <th><span class="pill pill-otro">Otro</span></th>
-            <th>Total</th>
-          </tr></thead>
+          <!-- Columnas generadas por JS (renderEstadosTable) a partir de los Estados
+               reales presentes en ERROR_ACTIVOS — nunca una lista fija en el HTML. -->
+          <thead><tr id="resumen-err-thead"></tr></thead>
           <tbody id="resumen-err-tbody"></tbody>
         </table>
       </div>
@@ -632,35 +608,39 @@ const BITACORA = [
 ];
 // Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
 // Filtro: Tipo de Incidencia en {Soporte, Problema} (coincide con el conteo total
-// de filas de la hoja). Agrupado por Localidad y por Estado de Jira (columna
-// "Estado"), un campo por cada Estado REAL tal cual existe en el Sheet — SIN
-// agrupar en categorías inventadas (mismo criterio que ya se usaba en
-// Evolutivos/Error: "cada Estado de Jira es su propia columna").
-// CORREGIDO 25 Ago 2026: la versión anterior agrupaba varios Estados bajo
-// nombres inventados ("Aprobación" = Espera Cliente Externo, "Backlog Dev" =
-// Listo p/Desplegar + Ready to Merge + Backlog Desarrollo Centralizado +
-// Product Backlog). El usuario reportó que "Aprobación" no debería tener
-// tickets — se verificó contra el Sheet en vivo y NO existe ningún Estado
-// literal llamado "Aprobación" en esta hoja; era un mapeo inventado y
-// equivocado. Confirmado con el usuario vía AskUserQuestion: se dejan TODOS
-// los Estados tal cual, sin agrupar. Estados reales encontrados (25 Ago
-// 2026): EN PROGRESO, LISTO PARA DESPLEGAR, READY TO MERGE, BLOQUEADO,
-// BACKLOG DE DESARROLLO CENTRALIZADO, PRODUCT BACKLOG, Reabierto, EN ESPERA
-// DE CLIENTE EXTERNO. "otro" se conserva como red de seguridad (0 por ahora)
-// para cualquier Estado nuevo que aparezca en Jira y todavía no esté aquí.
+// de filas de la hoja). Agrupado por Localidad; dentro de cada Localidad, el
+// campo `estados` es un MAPA LIBRE {Estado literal del Sheet: cantidad} — NO
+// una lista fija de campos con nombre. Esto es intencional (pedido explícito
+// del usuario 25 Ago 2026): "muy dinámico... puede aparecer un nuevo estatus
+// mañana y el arreglo debe ser capaz de mostrarlo y contabilizarlo, si algo lo
+// dejas casado a un título, ya fuiste". Con un mapa libre, cualquier Estado
+// nuevo que aparezca en un futuro refresco del Sheet se agrega como una
+// entrada más del objeto — el código de render (`renderEstadosTable()`) NO
+// tiene una lista de nombres esperados, así que un Estado nuevo se muestra y
+// se contabiliza automáticamente sin tocar código, no se necesita ni "otro"
+// como red de seguridad (ya no hay forma de que un Estado quede "sin mapear").
+// CORREGIDO 25 Ago 2026: la versión anterior (antes de esto) agrupaba Estados
+// bajo nombres inventados ("Aprobación" = Espera Cliente Externo, "Backlog
+// Dev" = 4 Estados distintos combinados) — el usuario reportó que "Aprobación"
+// no debería tener tickets; no existe ningún Estado literal así en el Sheet.
+// `.total` se calcula una sola vez abajo (`SOPORTES.forEach(r=>r.total=...)`),
+// nunca se hardcodea — así no se puede desincronizar del detalle por Estado.
 const SOPORTES = [
-  {loc:'Quintana Roo', progreso:4, listo:5, ready:3, bloqueado:6, backlogc:1, pbacklog:3, reabierto:0, espera:0, otro:0, total:22},
-  {loc:'Guanajuato', progreso:5, listo:2, ready:1, bloqueado:6, backlogc:3, pbacklog:1, reabierto:0, espera:0, otro:0, total:18},
-  {loc:'Colima', progreso:2, listo:6, ready:1, bloqueado:0, backlogc:2, pbacklog:1, reabierto:0, espera:1, otro:0, total:13},
-  {loc:'Hidalgo', progreso:2, listo:2, ready:0, bloqueado:0, backlogc:3, pbacklog:1, reabierto:1, espera:0, otro:0, total:9},
-  {loc:'Jalisco', progreso:1, listo:2, ready:2, bloqueado:0, backlogc:1, pbacklog:0, reabierto:0, espera:0, otro:0, total:6},
-  {loc:'Baja California', progreso:1, listo:1, ready:0, bloqueado:2, backlogc:0, pbacklog:0, reabierto:0, espera:0, otro:0, total:4},
-  {loc:'Seguritech', progreso:1, listo:0, ready:0, bloqueado:0, backlogc:2, pbacklog:0, reabierto:0, espera:0, otro:0, total:3},
-  {loc:'Sonora', progreso:1, listo:0, ready:0, bloqueado:0, backlogc:1, pbacklog:1, reabierto:0, espera:0, otro:0, total:3},
-  {loc:'Chihuahua', progreso:2, listo:0, ready:0, bloqueado:0, backlogc:0, pbacklog:0, reabierto:0, espera:0, otro:0, total:2},
-  {loc:'Sinaloa', progreso:0, listo:0, ready:0, bloqueado:0, backlogc:0, pbacklog:0, reabierto:1, espera:0, otro:0, total:1},
-  {loc:'Chiapas', progreso:0, listo:0, ready:0, bloqueado:0, backlogc:1, pbacklog:0, reabierto:0, espera:0, otro:0, total:1},
+  {loc:'Quintana Roo', estados:{'EN PROGRESO':4,'LISTO PARA DESPLEGAR':5,'READY TO MERGE':3,'BLOQUEADO':6,'PRODUCT BACKLOG':3,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Guanajuato', estados:{'EN PROGRESO':5,'LISTO PARA DESPLEGAR':2,'BLOQUEADO':6,'READY TO MERGE':1,'BACKLOG DE DESARROLLO CENTRALIZADO':3,'PRODUCT BACKLOG':1}},
+  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6,'READY TO MERGE':1,'BACKLOG DE DESARROLLO CENTRALIZADO':2,'EN PROGRESO':2,'EN ESPERA DE CLIENTE EXTERNO':1,'PRODUCT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2,'Reabierto':1,'BACKLOG DE DESARROLLO CENTRALIZADO':3,'EN PROGRESO':2,'PRODUCT BACKLOG':1}},
+  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2,'READY TO MERGE':2,'EN PROGRESO':1,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Baja California', estados:{'LISTO PARA DESPLEGAR':1,'BLOQUEADO':2,'EN PROGRESO':1}},
+  {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2,'EN PROGRESO':1}},
+  {loc:'Sonora', estados:{'EN PROGRESO':1,'PRODUCT BACKLOG':1,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Chihuahua', estados:{'EN PROGRESO':2}},
+  {loc:'Sinaloa', estados:{'Reabierto':1}},
+  {loc:'Chiapas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
 ];
+// `.total` derivado del detalle por Estado — nunca hardcodeado, así nunca se
+// puede desincronizar (mismo criterio ya usado para TOTAL_ACTIVOS abajo).
+SOPORTES.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 // Se calcula sumando el array (no un número fijo) para que el KPI, la gráfica y
 // la tabla sean matemáticamente imposibles de desincronizar entre sí.
 const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
@@ -822,28 +802,34 @@ function renderRitmoAtencion(){
 
 // ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
 // Fuente: hoja "CC Evolutivos (1hr activo)". Filtro: Tipo de Incidencia en {CC
-// Evolutivo, Evolutivo Ágil}. A diferencia de Soportes, aquí NO se agrupan varios
-// Estados de Jira en un mismo bucket — cada Estado es su propia columna (decisión
-// explícita: los Estados son distintos entre sí y no deben mezclarse). "otro" sigue
-// siendo la red de seguridad para cualquier Estado futuro no mapeado todavía.
+// Evolutivo, Evolutivo Ágil}. Igual que Soportes (corregido 25 Ago 2026): cada
+// fila usa un mapa libre `estados` {Estado literal: cantidad} — NO una lista
+// fija de campos con nombre. Un Estado nuevo que aparezca en Jira se agrega
+// solo, sin tocar código (ver nota junto a `const SOPORTES` arriba para el
+// razonamiento completo). `.total` se deriva abajo, nunca se hardcodea.
 const EVOL_ACTIVOS = [
-  {loc:'Quintana Roo',    firma:8, prog:5, backlog:3, presup:3, bloq:2, listo:1, qa:4, aprob:2, consulta:2, control:0, reabierto:0, certqa:0, ready:1, estim:0, otro:0, total:31},
-  {loc:'Jalisco',         firma:3, prog:4, backlog:7, presup:0, bloq:4, listo:4, qa:0, aprob:1, consulta:0, control:0, reabierto:2, certqa:0, ready:0, estim:0, otro:0, total:25},
-  {loc:'Sonora',          firma:7, prog:0, backlog:1, presup:1, bloq:1, listo:0, qa:3, aprob:1, consulta:0, control:1, reabierto:0, certqa:1, ready:0, estim:2, otro:0, total:18},
-  {loc:'Colima',          firma:4, prog:1, backlog:0, presup:4, bloq:0, listo:1, qa:0, aprob:1, consulta:2, control:1, reabierto:0, certqa:1, ready:0, estim:0, otro:0, total:15},
-  {loc:'Guanajuato',      firma:2, prog:3, backlog:1, presup:0, bloq:0, listo:0, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:1, estim:0, otro:0, total:7},
-  {loc:'Hidalgo',         firma:0, prog:0, backlog:0, presup:4, bloq:0, listo:0, qa:0, aprob:0, consulta:1, control:2, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:7},
-  {loc:'Baja California', firma:2, prog:0, backlog:0, presup:0, bloq:1, listo:1, qa:0, aprob:0, consulta:0, control:0, reabierto:1, certqa:0, ready:0, estim:0, otro:0, total:5},
-  {loc:'Zacatecas',       firma:0, prog:0, backlog:0, presup:0, bloq:0, listo:1, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:1},
-  {loc:'Chiapas',         firma:0, prog:1, backlog:0, presup:0, bloq:0, listo:0, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:1},
+  {loc:'Quintana Roo',    estados:{'PENDIENTE DE FIRMA':8,'EN PROGRESO':5,'PRODUCT BACKLOG':3,'Validación presupuestal':3,'BLOQUEADO':2,'LISTO PARA DESPLEGAR':1,'EN QA':4,'APROBACIÓN POR CLIENTE':2,'Consulta Con Cliente':2,'READY TO MERGE':1}},
+  {loc:'Jalisco',         estados:{'PENDIENTE DE FIRMA':3,'EN PROGRESO':4,'PRODUCT BACKLOG':7,'BLOQUEADO':4,'LISTO PARA DESPLEGAR':4,'APROBACIÓN POR CLIENTE':1,'Reabierto':2}},
+  {loc:'Sonora',          estados:{'PENDIENTE DE FIRMA':7,'PRODUCT BACKLOG':1,'Validación presupuestal':1,'BLOQUEADO':1,'EN QA':3,'APROBACIÓN POR CLIENTE':1,'Control de Version':1,'CERTIFICADO POR QA':1,'Estimación Técnica':2}},
+  {loc:'Colima',          estados:{'PENDIENTE DE FIRMA':4,'EN PROGRESO':1,'Validación presupuestal':4,'LISTO PARA DESPLEGAR':1,'APROBACIÓN POR CLIENTE':1,'Consulta Con Cliente':2,'Control de Version':1,'CERTIFICADO POR QA':1}},
+  {loc:'Guanajuato',      estados:{'PENDIENTE DE FIRMA':2,'EN PROGRESO':3,'PRODUCT BACKLOG':1,'READY TO MERGE':1}},
+  {loc:'Hidalgo',         estados:{'Validación presupuestal':4,'Consulta Con Cliente':1,'Control de Version':2}},
+  {loc:'Baja California', estados:{'PENDIENTE DE FIRMA':2,'BLOQUEADO':1,'LISTO PARA DESPLEGAR':1,'Reabierto':1}},
+  {loc:'Zacatecas',       estados:{'LISTO PARA DESPLEGAR':1}},
+  {loc:'Chiapas',         estados:{'EN PROGRESO':1}},
 ];
+EVOL_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
 // Corrección 25 Ago 2026: el usuario aclaró que el backlog de "Ritmo de Atención"
 // debe incluir tanto Soportes como Evolutivos (antes solo tenía Soportes). Igual que
 // "Aprobación Cliente" se excluye del backlog de Soportes (depende del cliente, no
-// del equipo), aquí se excluye "Espera de Firma" (columna `firma`) del backlog de
-// Evolutivos por el mismo criterio — confirmado con el usuario vía AskUserQuestion.
-const TOTAL_FIRMA_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.firma,0);
+// del equipo), aquí se excluye "Espera de Firma" del backlog de Evolutivos por el
+// mismo criterio — confirmado con el usuario vía AskUserQuestion. A diferencia del
+// resto del panel (que ahora es 100% dinámico), ESTA suma sí referencia un Estado
+// literal específico a propósito — es una regla de negocio real ("no contar lo que
+// depende del cliente"), no una categoría inventada, así que debe seguir apuntando
+// exactamente a 'PENDIENTE DE FIRMA' aunque el resto de Estados sean dinámicos.
+const TOTAL_FIRMA_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+(r.estados['PENDIENTE DE FIRMA']||0),0);
 const TOTAL_ACTIVOS_DEV_ACCIONABLE = TOTAL_ACTIVOS_DEV - TOTAL_FIRMA_DEV;
 
 // Fuente: la MISMA hoja "CC Evolutivos (1hr activo)", pero solo el Estado exacto
@@ -909,19 +895,21 @@ const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 
 // ─── TICKETS DE ERROR ──────────────────────────────────────────────────────
 // Fuente: hoja "Error (1hr activo)" (activos) y "Mtto_DONE_2026" filtrado a Tipo
-// de Incidencia == "Error" (resueltos). Mismo patrón que Soportes/Evolutivos: cada
-// Estado de Jira es su propia columna en la tabla de resumen (no se agrupan);
-// "otro" es la red de seguridad para cualquier Estado futuro no mapeado todavía.
+// de Incidencia == "Error" (resueltos). Mismo patrón dinámico que Soportes/
+// Evolutivos (corregido 25 Ago 2026): `estados` es un mapa libre {Estado
+// literal: cantidad}, no una lista fija de campos — un Estado nuevo se agrega
+// solo, sin tocar código. `.total` se deriva, nunca se hardcodea.
 const ERROR_ACTIVOS = [
-  {loc:'Guanajuato',      nobug:4, qa:21, ready:2,  backlog:11, prog:0, bloq:6, reabierto:1, otro:0, total:45},
-  {loc:'Colima',          nobug:8, qa:0,  ready:18, backlog:3,  prog:4, bloq:1, reabierto:1, otro:0, total:35},
-  {loc:'Jalisco',         nobug:7, qa:1,  ready:0,  backlog:1,  prog:2, bloq:1, reabierto:0, otro:0, total:12},
-  {loc:'Hidalgo',         nobug:7, qa:1,  ready:0,  backlog:1,  prog:1, bloq:0, reabierto:0, otro:0, total:10},
-  {loc:'Quintana Roo',    nobug:3, qa:3,  ready:0,  backlog:0,  prog:1, bloq:0, reabierto:0, otro:0, total:7},
-  {loc:'Sonora',          nobug:4, qa:0,  ready:0,  backlog:2,  prog:0, bloq:1, reabierto:0, otro:0, total:7},
-  {loc:'Baja California', nobug:0, qa:0,  ready:2,  backlog:2,  prog:1, bloq:0, reabierto:0, otro:0, total:5},
-  {loc:'Chiapas',         nobug:0, qa:0,  ready:2,  backlog:1,  prog:0, bloq:0, reabierto:0, otro:0, total:3},
+  {loc:'Guanajuato',      estados:{'No Bug':4, 'En QA':21, 'Ready to Merge':2,  'Sprint Backlog':11, 'Bloqueado':6, 'Reabierto':1}},
+  {loc:'Colima',          estados:{'No Bug':8, 'Ready to Merge':18, 'Sprint Backlog':3,  'En Progreso':4, 'Bloqueado':1, 'Reabierto':1}},
+  {loc:'Jalisco',         estados:{'No Bug':7, 'En QA':1,  'Sprint Backlog':1,  'En Progreso':2, 'Bloqueado':1}},
+  {loc:'Hidalgo',         estados:{'No Bug':7, 'En QA':1,  'Sprint Backlog':1,  'En Progreso':1}},
+  {loc:'Quintana Roo',    estados:{'No Bug':3, 'En QA':3,  'En Progreso':1}},
+  {loc:'Sonora',          estados:{'No Bug':4, 'Sprint Backlog':2,  'Bloqueado':1}},
+  {loc:'Baja California', estados:{'Ready to Merge':2,  'Sprint Backlog':2,  'En Progreso':1}},
+  {loc:'Chiapas',         estados:{'Ready to Merge':2,  'Sprint Backlog':1}},
 ];
+ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
 
 // Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia == "Error", agrupado por Mes.
@@ -1444,6 +1432,130 @@ function pbar(n, total, color){
   return `<div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div><span class="pct-lbl">${pct}%</span></div>`;
 }
 
+// ─── UNIVERSO DE ESTADOS — TABLA/TARJETAS 100% DINÁMICAS ──────────────────────
+// Agregado 25 Ago 2026 a pedido del usuario: "puede aparecer un nuevo estatus
+// mañana y el arreglo debe ser capaz de mostrarlo y contabilizarlo... si algo
+// lo dejas casado a un título, ya fuiste". Antes, las tablas de Soportes,
+// Evolutivos y Error tenían columnas <th> hardcodeadas en el HTML + listas
+// fijas de "keys" esperadas en el JS — si el Sheet traía un Estado que no
+// estaba en esa lista, se perdía silenciosamente dentro de "Otro" (contado,
+// pero nunca visible por su nombre real). Esta función NO tiene ninguna lista
+// de nombres esperados: descubre el universo de Estados a partir de los datos
+// mismos (`row.estados`, un mapa libre {Estado literal: cantidad}), así que
+// cualquier Estado nuevo se muestra y se cuenta automáticamente la próxima vez
+// que se regeneren los datos — no hay que tocar ni HTML ni JS.
+const ESTADO_COLORS = ['#2a9d8f','#2563eb','#7c6fd0','#ef4444','#8b5cf6','#eab308','#f2793a','#22c55e','#0d9488','#dc2626','#84cc16','#0ea5e9','#a855f7','#f59e0b','#64748b','#ec4899'];
+function colorEstado(i){ return ESTADO_COLORS[i % ESTADO_COLORS.length]; }
+// Formatea "EN ESPERA DE CLIENTE EXTERNO" → "En Espera de Cliente Externo"
+// SOLO para mostrar — la clave real (tal cual viene del Sheet) nunca se toca,
+// así que nunca hay riesgo de que dos variantes de mayúsculas/minúsculas del
+// mismo Estado se cuenten como si fueran dos Estados distintos.
+const ESTADO_MINUSC = new Set(['de','del','la','el','en','y','a','to','por','con','para']);
+function tituloEstado(s){
+  return s.toLowerCase().split(' ').map((w,i)=>
+    (i>0 && ESTADO_MINUSC.has(w)) ? w : (w.charAt(0).toUpperCase()+w.slice(1))
+  ).join(' ');
+}
+function pillColor(n, color){
+  return n>0 ? `<span class="pill" style="background:${color}22;color:${color}">${n}</span>` : `<span style="color:#94a3b8">—</span>`;
+}
+// Descubre el universo de Estados de un array de filas {loc, estados:{...}},
+// en el orden en que cada Estado aparece por primera vez (no se reordena por
+// cantidad — mismo criterio ya pedido por el usuario para Soportes).
+function universoEstados(data){
+  const order = [], seen = new Set();
+  data.forEach(r=>Object.keys(r.estados).forEach(k=>{ if(!seen.has(k)){ seen.add(k); order.push(k); } }));
+  return order;
+}
+// Renderiza una tabla "Todos los Estados por Localidad" completamente dinámica:
+// las columnas (<thead>) y los totales se calculan a partir de `data`, nunca de
+// una lista fija. opts: {theadId, tbodyId, data, kpiActivos, totalLocId,
+// totalSinLocId, chartId}.
+function renderEstadosTable(opts){
+  const tbody = document.getElementById(opts.tbodyId);
+  if(!tbody) return;
+  const thead = opts.theadId ? document.getElementById(opts.theadId) : null;
+  const estadoOrder = universoEstados(opts.data);
+
+  if(thead){
+    thead.innerHTML = '<th>Localidad</th>'
+      + estadoOrder.map((e,i)=>`<th><span class="pill" style="background:${colorEstado(i)}22;color:${colorEstado(i)}">${tituloEstado(e)}</span></th>`).join('')
+      + '<th>Total</th>';
+  }
+
+  const totales = {}; estadoOrder.forEach(e=>totales[e]=0);
+  let totT = 0, html = '';
+  opts.data.forEach(r=>{
+    const rowTotal = Object.values(r.estados).reduce((a,b)=>a+b,0);
+    totT += rowTotal;
+    estadoOrder.forEach(e=>totales[e]+=(r.estados[e]||0));
+    html += `<tr><td><strong>${r.loc}</strong></td>`
+      + estadoOrder.map((e,i)=>`<td>${pillColor(r.estados[e]||0, colorEstado(i))}</td>`).join('')
+      + `<td><strong>${rowTotal}</strong></td></tr>`;
+  });
+
+  const kpiActivos = opts.kpiActivos||0;
+  const sinLoc = kpiActivos - totT;
+  if(sinLoc > 0){
+    html += `<tr style="background:rgba(229,85,90,.16);">
+      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
+      <td colspan="${estadoOrder.length}" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
+      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
+    </tr>`;
+  }
+  html += `<tr class="tr-total"><td>TOTAL REAL (Sheet)</td>`
+    + estadoOrder.map((e,i)=>`<td>${pillColor(totales[e], colorEstado(i))}</td>`).join('')
+    + `<td><strong>${kpiActivos>0?kpiActivos:totT}</strong></td></tr>`;
+  tbody.innerHTML = html;
+
+  if(opts.totalLocId){ const el=document.getElementById(opts.totalLocId); if(el) el.textContent=totT; }
+  if(opts.totalSinLocId){ const el=document.getElementById(opts.totalSinLocId); if(el) el.textContent = sinLoc>0?sinLoc:'0'; }
+
+  if(opts.chartId){
+    const sortedLoc = [...opts.data]
+      .map(r=>({loc:r.loc, total: Object.values(r.estados).reduce((a,b)=>a+b,0)}))
+      .sort((a,b)=>b.total-a.total);
+    drawLollipop(opts.chartId, sortedLoc.map(r=>r.loc), sortedLoc.map(r=>r.total), LOLLIPOP_COLORS);
+  } else if(opts.barChartId){
+    const sortedLoc = [...opts.data]
+      .map(r=>({loc:r.loc, total: Object.values(r.estados).reduce((a,b)=>a+b,0)}))
+      .sort((a,b)=>b.total-a.total);
+    drawStackedHBar(opts.barChartId, sortedLoc.map(r=>r.loc),
+      [{label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'}]);
+  }
+  return { estadoOrder, totales, totT };
+}
+// Tarjetas "Universo de Estados" (sin desglose por Localidad) — usadas en
+// Soportes. Misma fuente (`universoEstados`), nunca una lista fija.
+function renderEstadosCards(containerId, data, kpiActivos){
+  const cardsEl = document.getElementById(containerId);
+  if(!cardsEl) return null;
+  const estadoOrder = universoEstados(data);
+  const totales = {}; estadoOrder.forEach(e=>totales[e]=0);
+  let totT = 0;
+  data.forEach(r=>{
+    totT += Object.values(r.estados).reduce((a,b)=>a+b,0);
+    estadoOrder.forEach(e=>totales[e]+=(r.estados[e]||0));
+  });
+  const totalReal = kpiActivos>0 ? kpiActivos : totT;
+  const sinLoc = totalReal - totT;
+  cardsEl.innerHTML = estadoOrder.map((e,i)=>{
+    const col = colorEstado(i);
+    const n = totales[e];
+    const pct = totalReal>0 ? ((n/totalReal)*100).toFixed(1) : 0;
+    return `<div class="status-card" style="background:${col}1f;border-color:${col}33;">
+      <div class="n" style="color:${col};">${n}</div>
+      <div class="l">${tituloEstado(e)}</div>
+      <div class="p">${pct}%</div>
+    </div>`;
+  }).join('') + `<div class="status-card total">
+      <div class="n">${totalReal}</div>
+      <div class="l">Total</div>
+      <div class="p">${sinLoc>0?`incl. ${sinLoc} sin localidad`:'100%'}</div>
+    </div>`;
+  return { estadoOrder, totales, totT };
+}
+
 // ─── RENDER: TARJETAS KPI (calculadas en vivo desde los arreglos, nunca quedan fijas) ──
 function renderKPIs(){
   const elCerrados = document.getElementById('kpi-cerrados');
@@ -1466,59 +1578,22 @@ function filtrarTabla(tbodyId, val){
 
 // ─── RENDER: RESUMEN (tarjetas + gráficas) ────────────────────────────────────
 function renderResumen(){
-  const cardsEl = document.getElementById('resumen-cards');
-  if(!cardsEl) return;
-  let totProgreso=0,totListo=0,totReady=0,totBloqueado=0,totBacklogc=0,totPbacklog=0,totReabierto=0,totEspera=0,totOtro=0,totT=0;
-  SOPORTES.forEach(r=>{
-    totProgreso+=r.progreso; totListo+=r.listo; totReady+=r.ready; totBloqueado+=r.bloqueado;
-    totBacklogc+=r.backlogc; totPbacklog+=r.pbacklog; totReabierto+=r.reabierto;
-    totEspera+=r.espera; totOtro+=(r.otro||0); totT+=r.total;
-  });
-  const kpiActivos = TOTAL_ACTIVOS;
-  const sinLoc = kpiActivos - totT;
-  const totalReal = kpiActivos > 0 ? kpiActivos : totT;
-
-  // Tarjetas de "Universo de Estados" — 25 Ago 2026: reemplaza la tabla por
-  // Localidad (pedido del usuario: sin desglose por localidad, solo el total
-  // de cada Estado). CORREGIDO el mismo día: se dejan los Estados REALES tal
-  // cual existen en el Sheet, sin agrupar bajo nombres inventados (ver nota
-  // junto a `const SOPORTES` arriba) — confirmado con el usuario vía
-  // AskUserQuestion. "Otro" se conserva como red de seguridad para Estados
-  // futuros no mapeados.
-  const ESTADOS_RESUMEN = [
-    { n: totProgreso,  lbl: 'En Progreso',                        bg: 'rgba(42,157,143,0.12)',  col: '#2a9d8f' },
-    { n: totListo,     lbl: 'Listo para Desplegar',                bg: 'rgba(37,99,235,0.10)',   col: '#2563eb' },
-    { n: totReady,     lbl: 'Ready to Merge',                      bg: 'rgba(124,111,208,0.12)', col: '#7c6fd0' },
-    { n: totBloqueado, lbl: 'Bloqueado',                           bg: 'rgba(239,68,68,0.10)',   col: '#ef4444' },
-    { n: totBacklogc,  lbl: 'Backlog de Desarrollo Centralizado',  bg: 'rgba(139,92,246,0.12)',  col: '#8b5cf6' },
-    { n: totPbacklog,  lbl: 'Product Backlog',                     bg: 'rgba(100,116,139,0.12)', col: '#64748b' },
-    { n: totReabierto, lbl: 'Reabierto',                           bg: 'rgba(234,179,8,0.14)',   col: '#eab308' },
-    { n: totEspera,    lbl: 'En Espera de Cliente Externo',        bg: 'rgba(242,121,58,0.12)',  col: '#f2793a' },
-    { n: totOtro,      lbl: 'Otro',                                bg: 'rgba(100,116,139,0.08)', col: '#94a3b8' },
-  ];
-  cardsEl.innerHTML = ESTADOS_RESUMEN.map(e=>{
-    const pct = totalReal>0 ? ((e.n/totalReal)*100).toFixed(1) : 0;
-    return `<div class="status-card" style="background:${e.bg};border-color:${e.col}33;">
-      <div class="n" style="color:${e.col};">${e.n}</div>
-      <div class="l">${e.lbl}</div>
-      <div class="p">${pct}%</div>
-    </div>`;
-  }).join('') + `<div class="status-card total">
-      <div class="n">${totalReal}</div>
-      <div class="l">Total</div>
-      <div class="p">${sinLoc>0?`incl. ${sinLoc} sin localidad`:'100%'}</div>
-    </div>`;
+  // Tarjetas "Universo de Estados" — 100% dinámicas (25 Ago 2026): no hay
+  // ninguna lista fija de nombres de Estado en esta función. `renderEstadosCards`
+  // descubre los Estados reales desde `SOPORTES` mismo — si mañana aparece un
+  // Estado nuevo en el Sheet, aparece aquí solo, sin tocar este código.
+  const r = renderEstadosCards('resumen-cards', SOPORTES, TOTAL_ACTIVOS);
+  if(!r) return;
+  const { totT } = r;
 
   // Mostrar totales sobre las gráficas
   const elLoc = document.getElementById('total-loc');
   if(elLoc) elLoc.textContent = totT;
   const elSin = document.getElementById('total-sinloc');
-  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
+  if(elSin) elSin.textContent = (TOTAL_ACTIVOS - totT > 0) ? (TOTAL_ACTIVOS - totT) : '0';
 
   // Gráfica "piruleta" (lollipop) por localidad/cliente: total de tickets en
-  // atención (sin desglose por estado de Jira, ya que ese detalle vive en la
-  // tabla de abajo). Un color distinto por fila — pedido del usuario 25 Ago
-  // 2026 para reemplazar la barra de un solo color, con este mismo diseño.
+  // atención. Un color distinto por fila — pedido del usuario 25 Ago 2026.
   const sortedLoc = [...SOPORTES].sort((a,b)=>b.total-a.total);
   drawLollipop('chartLocalidad',
     sortedLoc.map(r=>r.loc),
@@ -1526,25 +1601,21 @@ function renderResumen(){
     LOLLIPOP_COLORS
   );
 
-  // Tarjetas por localidad
+  // Tarjetas por localidad (oculto, `#loc-cards{display:none}` — legacy sin uso
+  // visible actualmente). Igual de dinámico que arriba: enumera `r.estados` en
+  // vez de una lista fija de campos, así no se rompe si el Estado cambia.
   const wrap = document.getElementById('loc-cards');
   if(!wrap) return;
-  const defs=[
-    {key:'progreso', label:'En Progreso',                       css:'pill-progreso'},
-    {key:'listo',    label:'Listo para Desplegar',               css:'pill-backlog'},
-    {key:'ready',    label:'Ready to Merge',                     css:'pill-qa'},
-    {key:'bloqueado',label:'Bloqueado',                          css:'pill-bloqueado'},
-    {key:'backlogc', label:'Backlog de Desarrollo Centralizado', css:'pill-aprobacion'},
-    {key:'pbacklog', label:'Product Backlog',                    css:'pill-otro'},
-    {key:'reabierto',label:'Reabierto',                          css:'pill-reabierto'},
-    {key:'espera',   label:'En Espera de Cliente Externo',       css:'pill-aprobacion'},
-  ];
   let cards='';
-  SOPORTES.forEach(r=>{
-    let rows=defs.filter(d=>r[d.key]>0)
-      .map(d=>`<div class="loc-row"><span class="lc-label">${d.label}</span><span class="pill ${d.css}">${r[d.key]}</span></div>`).join('');
+  SOPORTES.forEach((row,ri)=>{
+    const estadoOrder = Object.keys(row.estados);
+    let rows = estadoOrder.filter(e=>row.estados[e]>0).map((e)=>{
+      const globalIdx = universoEstados(SOPORTES).indexOf(e);
+      const col = colorEstado(globalIdx);
+      return `<div class="loc-row"><span class="lc-label">${tituloEstado(e)}</span><span class="pill" style="background:${col}22;color:${col}">${row.estados[e]}</span></div>`;
+    }).join('');
     if(!rows) rows=`<div style="font-size:.78rem;color:#94a3b8">Sin tickets activos</div>`;
-    cards+=`<div class="loc-card"><h4>📍 ${r.loc} <span style="color:#94a3b8;font-weight:400;font-size:.8rem">(${r.total})</span></h4>${rows}</div>`;
+    cards+=`<div class="loc-card"><h4>📍 ${row.loc} <span style="color:#94a3b8;font-weight:400;font-size:.8rem">(${row.total})</span></h4>${rows}</div>`;
   });
   wrap.innerHTML = cards;
 }
@@ -1633,42 +1704,18 @@ function renderKPIsDev(){
 
 // ─── RENDER: NUEVOS DESARROLLOS — RESUMEN (tabla + gráfica) ───────────────────
 function renderResumenDev(){
-  const tb = document.getElementById('resumen-dev-tbody');
-  if(!tb) return;
-  const keys=['firma','prog','backlog','presup','bloq','listo','qa','aprob','consulta','control','reabierto','certqa','ready','estim'];
-  const css={firma:'pill-firma',prog:'pill-progreso',backlog:'pill-backlog',presup:'pill-presup',bloq:'pill-bloqueado',listo:'pill-listo',qa:'pill-qa',aprob:'pill-aprobacion',consulta:'pill-consulta',control:'pill-control',reabierto:'pill-reabierto',certqa:'pill-certqa',ready:'pill-ready',estim:'pill-estim'};
-  const tot={}; keys.forEach(k=>tot[k]=0); let totO=0, totT=0, html='';
-  EVOL_ACTIVOS.forEach(r=>{
-    keys.forEach(k=>tot[k]+=r[k]);
-    totO+=(r.otro||0); totT+=r.total;
-    html+=`<tr><td><strong>${r.loc}</strong></td>`
-      + keys.map(k=>`<td>${pill(r[k],css[k])}</td>`).join('')
-      + `<td>${pill(r.otro||0,'pill-otro')}</td><td><strong>${r.total}</strong></td></tr>`;
+  // 100% dinámico (25 Ago 2026) — ver nota junto a `renderEstadosTable()`.
+  // Sin lista fija de Estados: si aparece uno nuevo en el Sheet, se agrega
+  // solo como columna nueva la próxima vez que se regeneren los datos.
+  renderEstadosTable({
+    tbodyId: 'resumen-dev-tbody',
+    theadId: 'resumen-dev-thead',
+    data: EVOL_ACTIVOS,
+    kpiActivos: TOTAL_ACTIVOS_DEV,
+    totalLocId: 'total-loc-dev',
+    totalSinLocId: 'total-sinloc-dev',
+    barChartId: 'chartLocalidadDev',
   });
-  const kpiActivos = TOTAL_ACTIVOS_DEV;
-  const sinLoc = kpiActivos - totT;
-  if(sinLoc > 0){
-    html+=`<tr style="background:rgba(229,85,90,.16);">
-      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
-      <td colspan="${keys.length+1}" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
-      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
-    </tr>`;
-  }
-  html+=`<tr class="tr-total"><td>TOTAL REAL (Sheet)</td>`
-    + keys.map(k=>`<td>${pill(tot[k],css[k])}</td>`).join('')
-    + `<td>${pill(totO,'pill-otro')}</td><td><strong>${kpiActivos>0?kpiActivos:totT}</strong></td></tr>`;
-  tb.innerHTML = html;
-
-  const elLoc = document.getElementById('total-loc-dev');
-  if(elLoc) elLoc.textContent = totT;
-  const elSin = document.getElementById('total-sinloc-dev');
-  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
-
-  const sortedLoc = [...EVOL_ACTIVOS].sort((a,b)=>b.total-a.total);
-  drawStackedHBar('chartLocalidadDev',
-    sortedLoc.map(r=>r.loc),
-    [ {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'} ]
-  );
 }
 
 // ─── RENDER: NUEVOS DESARROLLOS — APROBACIÓN CLIENTE ──────────────────────────
@@ -1872,42 +1919,16 @@ function renderKPIsErr(){
 
 // ─── RENDER: TICKETS DE ERROR — RESUMEN (tabla + gráfica de En Atención) ──────
 function renderResumenErr(){
-  const tb = document.getElementById('resumen-err-tbody');
-  if(!tb) return;
-  const keys=['nobug','qa','ready','backlog','prog','bloq','reabierto'];
-  const css={nobug:'pill-nobug',qa:'pill-qa',ready:'pill-ready',backlog:'pill-backlog',prog:'pill-progreso',bloq:'pill-bloqueado',reabierto:'pill-reabierto'};
-  const tot={}; keys.forEach(k=>tot[k]=0); let totO=0, totT=0, html='';
-  ERROR_ACTIVOS.forEach(r=>{
-    keys.forEach(k=>tot[k]+=r[k]);
-    totO+=(r.otro||0); totT+=r.total;
-    html+=`<tr><td><strong>${r.loc}</strong></td>`
-      + keys.map(k=>`<td>${pill(r[k],css[k])}</td>`).join('')
-      + `<td>${pill(r.otro||0,'pill-otro')}</td><td><strong>${r.total}</strong></td></tr>`;
+  // 100% dinámico (25 Ago 2026) — ver nota junto a `renderEstadosTable()`.
+  renderEstadosTable({
+    tbodyId: 'resumen-err-tbody',
+    theadId: 'resumen-err-thead',
+    data: ERROR_ACTIVOS,
+    kpiActivos: TOTAL_ACTIVOS_ERR,
+    totalLocId: 'total-loc-err',
+    totalSinLocId: 'total-sinloc-err',
+    barChartId: 'chartLocalidadErr',
   });
-  const kpiActivos = TOTAL_ACTIVOS_ERR;
-  const sinLoc = kpiActivos - totT;
-  if(sinLoc > 0){
-    html+=`<tr style="background:rgba(229,85,90,.16);">
-      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
-      <td colspan="${keys.length+1}" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
-      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
-    </tr>`;
-  }
-  html+=`<tr class="tr-total"><td>TOTAL REAL (Sheet)</td>`
-    + keys.map(k=>`<td>${pill(tot[k],css[k])}</td>`).join('')
-    + `<td>${pill(totO,'pill-otro')}</td><td><strong>${kpiActivos>0?kpiActivos:totT}</strong></td></tr>`;
-  tb.innerHTML = html;
-
-  const elLoc = document.getElementById('total-loc-err');
-  if(elLoc) elLoc.textContent = totT;
-  const elSin = document.getElementById('total-sinloc-err');
-  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
-
-  const sortedLoc = [...ERROR_ACTIVOS].sort((a,b)=>b.total-a.total);
-  drawStackedHBar('chartLocalidadErr',
-    sortedLoc.map(r=>r.loc),
-    [ {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'} ]
-  );
 }
 
 // ─── RENDER: TICKETS DE ERROR — RESUELTOS ─────────────────────────────────────
