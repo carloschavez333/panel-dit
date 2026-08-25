@@ -279,7 +279,7 @@
       <div class="kpi-icon">&#x1F7E0;</div>
       <div class="num" id="kpi-aprobacion-dev">0</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
-      <div class="sub">Estado: Aprobaci&oacute;n por Cliente</div>
+      <div class="sub">Estado: Pendiente de Firma</div>
     </div>
     <div class="kpi kpi-backlog">
       <div class="kpi-icon">&#x1F534;</div>
@@ -330,7 +330,7 @@
     <div style="background:#fdeeea;color:#a83b1d;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
       &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Evolutivos por Localidad
     </div>
-    <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Aprobaci&oacute;n por Cliente"</strong> (no incluye "Pendiente de Firma" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen). Fuente: hoja CC Evolutivos (1hr activo).</div>
+    <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Pendiente de Firma"</strong> (la espera de aprobaci&oacute;n/firma del cliente en este flujo). No incluye "Aprobaci&oacute;n por Cliente" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen. Fuente: hoja CC Evolutivos (1hr activo).</div>
     <div id="aprobacion-dev-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
     <div class="panel">
       <div class="t-header">
@@ -554,13 +554,17 @@ const EVOL_ACTIVOS = [
 const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
 
 // Fuente: la MISMA hoja "CC Evolutivos (1hr activo)", pero solo el Estado exacto
-// "APROBACIÓN POR CLIENTE" — no se mezcla con "PENDIENTE DE FIRMA" ni "Consulta Con
-// Cliente" (son Estados distintos y así se pidió mantenerlos, ver EVOL_ACTIVOS arriba).
+// "PENDIENTE DE FIRMA" — corregido el 25 Ago 2026: el usuario aclaró que en este
+// flujo "Pendiente de Firma" ES la espera de aprobación/firma del cliente, no el
+// Estado literal "APROBACIÓN POR CLIENTE" (que es algo distinto). No se mezcla con
+// "Consulta Con Cliente" (Estado aparte, ver EVOL_ACTIVOS arriba).
 const APROBACION_DEV = [
-  {loc:'Quintana Roo', n:2},
-  {loc:'Jalisco', n:1},
-  {loc:'Sonora', n:1},
-  {loc:'Colima', n:1},
+  {loc:'Quintana Roo', n:8},
+  {loc:'Sonora', n:7},
+  {loc:'Colima', n:4},
+  {loc:'Jalisco', n:3},
+  {loc:'Guanajuato', n:2},
+  {loc:'Baja California', n:2},
 ];
 const TOTAL_APROBACION_DEV = APROBACION_DEV.reduce((s,r)=>s+r.n,0);
 
