@@ -524,7 +524,12 @@
   <!-- TAB: EVALUACIÓN DE EQUIPO -->
   <div id="tab-equipo" class="tab-content">
     <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
-    <div class="panel">
+    <div class="panel" style="border-top:4px solid #17a2b8;">
+      <h3>Efectividad del Equipo</h3>
+      <div class="info-box" style="font-size:.78rem;">S&iacute;ntesis de Calidad de Desarrollo + Ritmo de Atenci&oacute;n &mdash; no es un n&uacute;mero compuesto (ver por qu&eacute; abajo), es un sem&aacute;foro de 2 se&ntilde;ales que ya se calculan en sus propios paneles.</div>
+      <div id="efectividad-equipo"></div>
+    </div>
+    <div class="panel" style="margin-top:22px;">
       <h3>Productividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
       <div id="equipo-productividad-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
@@ -735,19 +740,34 @@ function getCerradosVigentes(){
 // eligió usar el promedio de los 8 meses de 2026 con datos (no solo los últimos 3),
 // así que el resultado SÍ incluye el pico de marzo (384 cierres).
 const DIAS_HABILES_MES = 21;
-function renderRitmoAtencion(){
+// META_DIAS_RITMO = "2 semanas hábiles" (2×5 días) — el mismo umbral que ya se usa
+// en la gráfica "Ritmo Actual vs. Metas de Cierre" (barra "2 sem"). Se reutiliza
+// como referencia de "backlog bajo control" en el panel de Efectividad del Equipo,
+// para no inventar un segundo umbral distinto sin que el usuario lo pida.
+const META_DIAS_RITMO = 2*5;
+
+// Única fuente de verdad para "Ritmo de Atención" — consumida por renderRitmoAtencion()
+// (panel propio) y por renderEfectividadEquipo() (síntesis), para que ambos paneles
+// sean matemáticamente imposibles de desincronizar entre sí.
+function computeRitmoAtencion(){
   const { year, rows } = getCerradosVigentes();
   const mesesConDatos = rows.filter(r=>/^\d{4}-/.test(r.loc));
   const totCerrado = mesesConDatos.reduce((s,r)=>s+r.n,0);
   const numMeses = mesesConDatos.length;
-  if(numMeses===0) return;
-
+  if(numMeses===0) return null;
   const ritmoDiario = totCerrado / (numMeses*DIAS_HABILES_MES);
   const backlogActual = TOTAL_ACTIVOS;
   const diasParaCerrar = ritmoDiario>0 ? backlogActual/ritmoDiario : null;
   const semanasParaCerrar = diasParaCerrar!==null ? diasParaCerrar/5 : null;
   const ritmo1sem = backlogActual/5;
-  const ritmo2sem = backlogActual/10;
+  const ritmo2sem = backlogActual/META_DIAS_RITMO;
+  return { year, mesesConDatos, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem };
+}
+
+function renderRitmoAtencion(){
+  const r = computeRitmoAtencion();
+  if(!r) return;
+  const { year, mesesConDatos, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem } = r;
 
   const yl = document.getElementById('ritmo-year-label');
   if(yl) yl.textContent = `Año ${year} · ritmo calculado sobre ${numMeses} meses con datos (${mesesConDatos[0].loc.split(' · ')[1]}–${mesesConDatos[numMeses-1].loc.split(' · ')[1]}) · backlog actual (En Atención): ${backlogActual.toLocaleString()} tickets`;
@@ -1212,7 +1232,7 @@ function showTab(name, el){
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
-  if(name==='equipo'){renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
+  if(name==='equipo'){renderEfectividadEquipo(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -1865,11 +1885,15 @@ function renderEquipoTendencia(){
 // vez del % — se cambió de "Error÷(Evolutivos+Error) en %" a un RATIO simple: Error
 // total ÷ Evolutivos total = "fallos de QA por cada Evolutivo liberado" (ej. 6.8).
 // Se explica solo, sin tener que interpretar qué significa un % de un pool combinado.
-function renderEquipoProductividad(){
+// Única fuente de verdad para "Calidad de Desarrollo" — consumida por
+// renderEquipoProductividad() (panel propio) y por renderEfectividadEquipo()
+// (síntesis), para que ambos paneles sean matemáticamente imposibles de
+// desincronizar entre sí.
+function computeCalidadDesarrollo(){
   const { year, rows } = getComparativoMensual();
   const personas = RESPONSABLES.length;
   const meses = rows.length;
-  if(meses === 0) return;
+  if(meses === 0) return null;
 
   const totGeneral = rows.reduce((s,r)=>s+r.soportes+r.evolutivos+r.error,0);
   const ticketsPorPersonaMes = totGeneral / personas / meses;
@@ -1907,6 +1931,13 @@ function renderEquipoProductividad(){
       segundaLbl = segundaMeses.map(r=>r.mes).join('-');
     }
   }
+  return { year, rows, personas, meses, totGeneral, ticketsPorPersonaMes, mesesCalidad, totDCalidad, totECalidad, fallosPorEvolutivo, tendenciaRatio, primeraLbl, segundaLbl, primeraRatio, segundaRatio };
+}
+
+function renderEquipoProductividad(){
+  const c = computeCalidadDesarrollo();
+  if(!c) return;
+  const { year, rows, personas, meses, totGeneral, ticketsPorPersonaMes, mesesCalidad, totDCalidad, totECalidad, fallosPorEvolutivo, tendenciaRatio, primeraLbl, segundaLbl, primeraRatio, segundaRatio } = c;
 
   const yl = document.getElementById('equipo-productividad-year-label');
   if(yl) yl.textContent = `Año ${year} · calculado sobre ${meses} meses con datos (${rows[0].mes}–${rows[rows.length-1].mes}) y ${personas} Responsables oficiales`;
@@ -1940,6 +1971,83 @@ function renderEquipoProductividad(){
     + `<strong>Importante:</strong> los tickets de Error son fallos que levanta QA durante el control de calidad de los Evolutivos, no incidentes que el cliente reporta en producción (eso es Soporte) — un ratio alto aquí mide retrabajo interno del ciclo de desarrollo/QA, no calidad de servicio al cliente. `
     + `Tendencia de Calidad = variación de ese mismo ratio (fallos ÷ evolutivo) comparando los totales de la 1ª mitad (${primeraLbl||'—'}) contra la 2ª mitad (${segundaLbl||'—'}) de esos meses — se suman los tickets de cada mitad antes de dividir, para que un mes con pocos Evolutivos liberados no distorsione el promedio con un ratio disparado ese mes solo. Negativo/▼ = bajó el número de fallos por evolutivo = mejoró la calidad. `
     + `Nota: aún no existe SLA/tiempo de atención medido para Soportes, así que este panel no evalúa tiempos de respuesta — solo volumen y calidad de desarrollo.`;
+}
+
+// ─── RENDER: EFECTIVIDAD DEL EQUIPO (síntesis) ────────────────────────────────
+// Pedido del usuario 25 Ago 2026: "dame un cálculo para decir miren con todo esto
+// somos efectivos en conjunto". Se le explicó (y aceptó) que combinar Volumen +
+// Calidad + Ritmo en un solo número matemático repetiría el problema del viejo
+// Score 0-100 (unidades distintas, pesos inventados). En vez de eso, este panel usa
+// un SEMÁFORO por dimensión con los MISMOS umbrales que ya existen y ya están
+// justificados en otros paneles — no se inventa ningún umbral nuevo aquí:
+//   - Calidad → verde si tendenciaRatio < 0 (el ratio de fallos/evolutivo bajó,
+//     mismo criterio que la tarjeta "Tendencia de Calidad" de Productividad del Equipo).
+//   - Ritmo → verde si diasParaCerrar <= META_DIAS_RITMO (10 días = 2 semanas hábiles,
+//     el mismo umbral que la barra "2 sem" del panel Ritmo de Atención).
+//   - Volumen NO tiene semáforo: es una cifra de escala/contexto, no hay meta de
+//     volumen acordada con el usuario todavía — mostrarla en verde/rojo sería
+//     inventar un juicio que nadie pidió.
+// Se apoya 100% en computeCalidadDesarrollo() y computeRitmoAtencion() — cero
+// cálculos nuevos, cero datos duplicados; si esas 2 funciones cambian, esta síntesis
+// cambia sola con ellas.
+function renderEfectividadEquipo(){
+  const cal = computeCalidadDesarrollo();
+  const rit = computeRitmoAtencion();
+  const wrap = document.getElementById('efectividad-equipo');
+  if(!wrap) return;
+  if(!cal || !rit || cal.tendenciaRatio===null || rit.diasParaCerrar===null){
+    wrap.innerHTML = `<div style="font-size:.82rem;color:#94a3b8;">Todavía no hay suficientes meses de datos para calcular la síntesis de Calidad + Ritmo.</div>`;
+    return;
+  }
+
+  const calidadOk = cal.tendenciaRatio < 0;
+  const ritmoOk = rit.diasParaCerrar <= META_DIAS_RITMO;
+  const señales = [calidadOk, ritmoOk];
+  const totalOk = señales.filter(Boolean).length;
+
+  const chips = [
+    {
+      ok: calidadOk,
+      lbl: 'Calidad de Desarrollo',
+      txt: calidadOk
+        ? `Mejorando: fallos por Evolutivo bajaron de ${cal.primeraRatio.toFixed(1)} a ${cal.segundaRatio.toFixed(1)}`
+        : `Empeorando: fallos por Evolutivo subieron de ${cal.primeraRatio.toFixed(1)} a ${cal.segundaRatio.toFixed(1)}`
+    },
+    {
+      ok: ritmoOk,
+      lbl: 'Ritmo de Atención',
+      txt: ritmoOk
+        ? `Backlog de Soportes bajo control: se vacía en ${rit.diasParaCerrar.toFixed(1)} días hábiles (meta: ${META_DIAS_RITMO})`
+        : `Backlog de Soportes por encima de la meta: tardaría ${rit.diasParaCerrar.toFixed(1)} días hábiles en vaciarse (meta: ${META_DIAS_RITMO})`
+    },
+  ];
+
+  let conclusion;
+  if(totalOk===2){
+    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo está siendo efectivo: mejora su calidad de desarrollo y mantiene el backlog de Soportes bajo control, sin acumular pendientes.`;
+  } else if(totalOk===1){
+    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo va bien en una dimensión pero necesita atención en la otra — no es un veredicto de "efectivo" ni de "no efectivo" completo todavía.`;
+  } else {
+    conclusion = `Con ${totalOk} de 2 señales en verde, ninguna de las 2 dimensiones medidas está en buen camino ahora mismo — conviene revisar qué está pasando antes de sumar más volumen.`;
+  }
+
+  wrap.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+      ${chips.map(c=>`
+        <div style="display:flex;align-items:flex-start;gap:10px;background:${c.ok?'#f0fdf4':'#fef2f2'};border:1px solid ${c.ok?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
+          <div style="font-size:1.3rem;line-height:1;">${c.ok?'🟢':'🔴'}</div>
+          <div>
+            <div style="font-size:.8rem;font-weight:700;color:#1a1d29;">${c.lbl}</div>
+            <div style="font-size:.75rem;color:#475569;margin-top:2px;">${c.txt}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="font-size:.85rem;font-weight:600;color:#1a1d29;background:#f8fafc;border-left:3px solid ${totalOk===2?'#16a34a':totalOk===1?'#d97706':'#dc2626'};border-radius:8px;padding:12px 16px;line-height:1.5;">
+      ${conclusion}
+    </div>
+    <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
+      Volumen (${cal.ticketsPorPersonaMes.toFixed(1)} tickets/persona/mes) no entra en este semáforo: es una cifra de escala, no hay meta de volumen definida todavía. Calidad y Ritmo usan los mismos umbrales ya explicados en sus propios paneles ("Productividad del Equipo" y "Ritmo de Atención") — nada se inventó aquí.
+    </div>`;
 }
 
 // Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
@@ -2081,7 +2189,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
-   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo].forEach(fn => fn());
 });
 </script>
 </body>
