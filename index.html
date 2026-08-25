@@ -175,6 +175,7 @@
     <div class="subtabs-wrap" id="subtabs-err" style="display:none">
       <div class="tab tab-sub" onclick="showTab('cerrados_err',this)"><span class="tab-ico">&#x1F535;</span> Resueltos</div>
     </div>
+    <div class="tab" onclick="showTab('equipo',this)"><span class="tab-ico">&#x1F4CA;</span> Evaluaci&oacute;n de Equipo</div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
   <div class="sidebar-foot">Actualizaci&oacute;n autom&aacute;tica cada hora</div>
@@ -492,6 +493,33 @@
         <div style="position:relative;min-height:320px;height:100%;">
           <canvas id="chartTopRespErr"></canvas>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: EVALUACIÓN DE EQUIPO -->
+  <div id="tab-equipo" class="tab-content">
+    <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo.</div>
+    <div class="panel">
+      <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;" id="equipo-year-label"></div>
+      <div style="position:relative;height:380px;">
+        <canvas id="chartEquipoTendencia"></canvas>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:22px;">
+      <h3>Tabla Comparativa Mensual</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Mes</th>
+            <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
+            <th><span class="pill" style="background:rgba(13,148,136,.14);color:#0d9488;">Evolutivos</span></th>
+            <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody id="equipo-tendencia-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -909,6 +937,61 @@ function drawVBar(id, labels, data, colors){
     const lbl = labels[i].length>7?labels[i].substring(0,6)+'…':labels[i];
     cx.save(); cx.translate(x+bw/2, padT+chartH+6);
     cx.rotate(Math.PI*0.35); cx.fillText(lbl, 0, 0); cx.restore();
+  });
+}
+
+// Barras agrupadas por categoría dentro de cada mes (varias series lado a lado,
+// no apiladas) — usado para comparar Soportes/Evolutivos/Error mes a mes.
+function drawGroupedVBar(id, labels, datasets){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 500;
+  canvas.height = parent.offsetHeight || 320;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+  const maxV = Math.max(...datasets.flatMap(ds=>ds.data), 1);
+  const padL=44, padR=16, padT=20, padB=66;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const n = labels.length;
+  const groupGap = chartW/n;
+  const barsPerGroup = datasets.length;
+  const barW = Math.min(22, (groupGap*0.72)/barsPerGroup);
+  for(let g=0;g<=4;g++){
+    const y = padT + chartH*(1-g/4);
+    cx.strokeStyle='#e5e7eb'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(padL,y); cx.lineTo(padL+chartW,y); cx.stroke();
+    cx.fillStyle='#94a3b8'; cx.font='10px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    cx.fillText(Math.round(maxV*g/4), padL-4, y);
+  }
+  labels.forEach((lbl,i)=>{
+    const groupX = padL + groupGap*i + groupGap/2 - (barW*barsPerGroup)/2;
+    datasets.forEach((ds,j)=>{
+      const v = ds.data[i]||0;
+      const bh = (v/maxV)*chartH;
+      const x = groupX + j*barW;
+      const y = padT + chartH - bh;
+      cx.fillStyle = ds.color;
+      cx.beginPath();
+      const rad=3;
+      cx.moveTo(x+rad,y); cx.lineTo(x+barW-1-rad,y); cx.quadraticCurveTo(x+barW-1,y,x+barW-1,y+rad);
+      cx.lineTo(x+barW-1,y+bh); cx.lineTo(x,y+bh); cx.lineTo(x,y+rad);
+      cx.quadraticCurveTo(x,y,x+rad,y); cx.closePath(); cx.fill();
+      if(v>0){
+        cx.fillStyle='#1a1d29'; cx.font='bold 9px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
+        cx.fillText(v, x+(barW-1)/2, y-2);
+      }
+    });
+    cx.fillStyle='#64748b'; cx.font='11px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
+    cx.fillText(lbl, padL + groupGap*i + groupGap/2, padT+chartH+8);
+  });
+  const ly=H-26; let lx=padL;
+  datasets.forEach(ds=>{
+    cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
+    cx.fillStyle='#334155'; cx.font='11px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
+    cx.fillText(ds.label, lx+14, ly-1);
+    lx += 14 + cx.measureText(ds.label).width + 26;
   });
 }
 
@@ -1613,6 +1696,71 @@ function renderHistorialCerradosErr(){
   );
 }
 
+// ─── EVALUACIÓN DE EQUIPO — Tendencia Mensual ─────────────────────────────────
+// No duplica datos: se arma dinámicamente a partir de CERRADOS, CERRADOS_DEV y
+// CERRADOS_ERR (las MISMAS 3 fuentes que ya alimentan cada módulo por separado),
+// filtrando al año en curso. Así es imposible que este reporte se desincronice
+// de los números que ya se muestran en cada pestaña individual.
+function getComparativoMensual(){
+  const year = String(new Date().getFullYear());
+  const mesNombre = {'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun','07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
+  const toMap = (arr) => {
+    const m = {};
+    arr.forEach(r=>{
+      const match = r.loc.match(/^(\d{4})-(\d{2})/);
+      if(match && match[1]===year) m[match[2]] = r.n;
+    });
+    return m;
+  };
+  const sop = toMap(CERRADOS), dev = toMap(CERRADOS_DEV), err = toMap(CERRADOS_ERR);
+  const meses = Array.from(new Set([...Object.keys(sop), ...Object.keys(dev), ...Object.keys(err)])).sort();
+  return { year, rows: meses.map(mm => ({
+    mes: mesNombre[mm] || mm,
+    soportes: sop[mm] || 0,
+    evolutivos: dev[mm] || 0,
+    error: err[mm] || 0,
+  })) };
+}
+
+function renderEquipoTendencia(){
+  const { year, rows } = getComparativoMensual();
+  const yl = document.getElementById('equipo-year-label');
+  if(yl) yl.textContent = `Año ${year} · fuente: hoja Mtto_DONE_2026 (Soporte+Asistencia Técnica / Evolutivo Ágil+CC Evolutivo / Error)`;
+
+  const tb = document.getElementById('equipo-tendencia-tbody');
+  if(tb){
+    let totS=0, totD=0, totE=0;
+    let html = rows.map(r=>{
+      totS+=r.soportes; totD+=r.evolutivos; totE+=r.error;
+      const totalMes = r.soportes + r.evolutivos + r.error;
+      return `<tr>
+        <td><strong>${r.mes}</strong></td>
+        <td style="color:#16a34a;font-weight:700;">${r.soportes}</td>
+        <td style="color:#0d9488;font-weight:700;">${r.evolutivos}</td>
+        <td style="color:#2563eb;font-weight:700;">${r.error}</td>
+        <td><strong>${totalMes}</strong></td>
+      </tr>`;
+    }).join('');
+    html += `<tr class="tr-total">
+      <td>Total ${year}</td>
+      <td style="color:#16a34a;">${totS}</td>
+      <td style="color:#0d9488;">${totD}</td>
+      <td style="color:#2563eb;">${totE}</td>
+      <td><strong>${totS+totD+totE}</strong></td>
+    </tr>`;
+    tb.innerHTML = html;
+  }
+
+  drawGroupedVBar('chartEquipoTendencia',
+    rows.map(r=>r.mes),
+    [
+      {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#16a34a'},
+      {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#0d9488'},
+      {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
+    ]
+  );
+}
+
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
 function renderBitacora(){
   const tb=document.getElementById('bitacora-tbody');
@@ -1684,7 +1832,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
-   renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr].forEach(fn => fn());
+   renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
+   renderEquipoTendencia].forEach(fn => fn());
 });
 </script>
 </body>
