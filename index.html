@@ -573,17 +573,6 @@
       <div class="info-box" style="font-size:.78rem;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos arriba) se movieron en la misma direcci&oacute;n al comparar la 1&ordf; mitad del a&ntilde;o contra la 2&ordf; &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
       <div id="volumen-velocidad"></div>
     </div>
-    <div class="panel" style="margin-top:22px;border-top:4px solid #17a2b8;">
-      <h3>Efectividad del Equipo</h3>
-      <div class="info-box" style="font-size:.78rem;">S&iacute;ntesis de Calidad de Desarrollo + Ritmo de Atenci&oacute;n &mdash; no es un n&uacute;mero compuesto (ver por qu&eacute; abajo), es un sem&aacute;foro de 2 se&ntilde;ales que ya se calculan en sus propios paneles.</div>
-      <div id="efectividad-equipo"></div>
-    </div>
-    <div class="panel" style="margin-top:22px;">
-      <h3>Productividad del Equipo</h3>
-      <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
-      <div id="equipo-productividad-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
-      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="equipo-productividad-formula"></div>
-    </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
       <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs.</div>
@@ -854,14 +843,10 @@ function getCerradosVigentes(){
 // así que el resultado SÍ incluye el pico de marzo (384 cierres de Soportes).
 const DIAS_HABILES_MES = 21;
 // META_DIAS_RITMO = "2 semanas hábiles" (2×5 días) — el mismo umbral que ya se usa
-// en la gráfica "Ritmo Actual vs. Metas de Cierre" (barra "2 sem"). Se reutiliza
-// como referencia de "backlog bajo control" en el panel de Efectividad del Equipo,
-// para no inventar un segundo umbral distinto sin que el usuario lo pida.
+// en la gráfica "Ritmo Actual vs. Metas de Cierre" (barra "2 sem").
 const META_DIAS_RITMO = 2*5;
 
-// Única fuente de verdad para "Ritmo de Atención" — consumida por renderRitmoAtencion()
-// (panel propio) y por renderEfectividadEquipo() (síntesis), para que ambos paneles
-// sean matemáticamente imposibles de desincronizar entre sí.
+// Única fuente de verdad para "Ritmo de Atención" — consumida por renderRitmoAtencion().
 function computeRitmoAtencion(){
   const sop = getCerradosVigentes();
   const dev = getCerradosVigentesDev();
@@ -1578,7 +1563,7 @@ function showTab(name, el){
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
-  if(name==='equipo'){renderEfectividadEquipo(); renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento(); renderVolumenVelocidad();}
+  if(name==='equipo'){renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoRendimiento(); renderVolumenVelocidad();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -2189,123 +2174,6 @@ function renderEquipoTendencia(){
   }
 }
 
-// Un solo cálculo consolidado de "qué tan productivo es el equipo", pedido
-// explícitamente por el usuario en vez de la tabla mensual + el texto de
-// hallazgos (removidos). Se deriva 100% de getComparativoMensual() y
-// REDISEÑO 25-Ago-2026 — ver CLAUDE.md sección "Rediseño Índice de Calidad de
-// Desarrollo (25 Ago 2026)" para el detalle completo de por qué se reemplazó el
-// Score (0-100) + % Trabajo neto + Tendencia por volumen del año anterior.
-// Motivo resumido: el usuario (gerente real del equipo) confirmó 3 límites de negocio
-// que el Score anterior no respetaba:
-//   1) El tamaño/complejidad de un ticket es subjetivo — cada persona lo define a su
-//      criterio, así que NINGUNA métrica de este panel pesa por tamaño; todo es
-//      conteo bruto de tickets (volumen, no esfuerzo).
-//   2) Los tickets de Error SÍ son causados por el propio trabajo de Evolutivos (no
-//      por Soportes) — por eso Error no existía antes de marzo 2026 (aún no había
-//      desarrollo activo), no es un hueco de captura de datos. Esto hace que Error
-//      solo tenga sentido comparado contra Evolutivos, nunca mezclado con Soportes.
-//      Aclaración adicional del usuario (25 Ago 2026): Soporte = incidentes ya en
-//      producción; Error = fallos que levanta QA durante el control de calidad de
-//      los Evolutivos (no necesariamente llegaron al cliente). Por eso un índice alto
-//      aquí no equivale a "el cliente recibe software roto" — es una métrica del
-//      ciclo interno de desarrollo/QA, distinta de la calidad de servicio en producción.
-//   3) Todavía no existe SLA/tiempo de atención para Soportes — este panel NO
-//      inventa esa dimensión; simplemente no se mide todavía.
-// Con esos 3 límites, las 2 métricas de calidad quedan aisladas a Evolutivos+Error
-// (excluyendo Soportes por completo) y solo desde marzo (primer mes con Error real),
-// para no diluir el ratio con meses donde la métrica de Error ni siquiera aplicaba.
-// 2º ajuste, mismo día: el usuario pidió una forma "concreta y fácil de entender" en
-// vez del % — se cambió de "Error÷(Evolutivos+Error) en %" a un RATIO simple: Error
-// total ÷ Evolutivos total = "fallos de QA por cada Evolutivo liberado" (ej. 6.8).
-// Se explica solo, sin tener que interpretar qué significa un % de un pool combinado.
-// Única fuente de verdad para "Calidad de Desarrollo" — consumida por
-// renderEquipoProductividad() (panel propio) y por renderEfectividadEquipo()
-// (síntesis), para que ambos paneles sean matemáticamente imposibles de
-// desincronizar entre sí.
-function computeCalidadDesarrollo(){
-  const { year, rows } = getComparativoMensual();
-  const personas = RESPONSABLES.length;
-  const meses = rows.length;
-  if(meses === 0) return null;
-
-  const totGeneral = rows.reduce((s,r)=>s+r.soportes+r.evolutivos+r.error,0);
-  const ticketsPorPersonaMes = totGeneral / personas / meses;
-
-  // Fallos de QA por Evolutivo liberado: solo Evolutivos + Error, solo desde el
-  // primer mes con Error>0 (antes de eso no había desarrollo activo generando
-  // Errores, según confirmó el usuario) — así no se diluye el ratio con meses donde
-  // la métrica no aplicaba todavía. Se expresa como RATIO (fallos ÷ evolutivo), no
-  // como porcentaje: es la forma más concreta de leerlo — "cada Evolutivo liberado
-  // generó en promedio X hallazgos de QA antes de quedar listo" — sin tener que
-  // interpretar qué significa un % de un pool combinado.
-  const firstErrIdx = rows.findIndex(r=>r.error>0);
-  const mesesCalidad = firstErrIdx>=0 ? rows.slice(firstErrIdx) : [];
-  const totDCalidad = mesesCalidad.reduce((s,r)=>s+r.evolutivos,0);
-  const totECalidad = mesesCalidad.reduce((s,r)=>s+r.error,0);
-  const fallosPorEvolutivo = totDCalidad>0 ? totECalidad/totDCalidad : null;
-
-  // Tendencia de Calidad: variación de ese mismo ratio (fallos/evolutivo) entre la
-  // 1ª y 2ª mitad de esos meses "con desarrollo activo" — se comparan los TOTALES
-  // de cada mitad (no el promedio de ratios mensuales), para no dejar que un mes con
-  // pocos Evolutivos liberados (ej. mayo, con solo 6) distorsione el promedio con un
-  // ratio disparado ese mes.
-  let tendenciaRatio = null, primeraLbl = '', segundaLbl = '', primeraRatio = null, segundaRatio = null;
-  if(mesesCalidad.length >= 2){
-    const mitadC = Math.ceil(mesesCalidad.length/2);
-    const primeraMeses = mesesCalidad.slice(0, mitadC);
-    const segundaMeses = mesesCalidad.slice(mitadC);
-    const dP = primeraMeses.reduce((s,r)=>s+r.evolutivos,0), eP = primeraMeses.reduce((s,r)=>s+r.error,0);
-    const dS = segundaMeses.reduce((s,r)=>s+r.evolutivos,0), eS = segundaMeses.reduce((s,r)=>s+r.error,0);
-    if(dP>0 && dS>0){
-      primeraRatio = eP/dP;
-      segundaRatio = eS/dS;
-      tendenciaRatio = segundaRatio - primeraRatio;
-      primeraLbl = primeraMeses.map(r=>r.mes).join('-');
-      segundaLbl = segundaMeses.map(r=>r.mes).join('-');
-    }
-  }
-  return { year, rows, personas, meses, totGeneral, ticketsPorPersonaMes, mesesCalidad, totDCalidad, totECalidad, fallosPorEvolutivo, tendenciaRatio, primeraLbl, segundaLbl, primeraRatio, segundaRatio };
-}
-
-function renderEquipoProductividad(){
-  const c = computeCalidadDesarrollo();
-  if(!c) return;
-  const { year, rows, personas, meses, totGeneral, ticketsPorPersonaMes, mesesCalidad, totDCalidad, totECalidad, fallosPorEvolutivo, tendenciaRatio, primeraLbl, segundaLbl, primeraRatio, segundaRatio } = c;
-
-  const yl = document.getElementById('equipo-productividad-year-label');
-  if(yl) yl.textContent = `Año ${year} · calculado sobre ${meses} meses con datos (${rows[0].mes}–${rows[rows.length-1].mes}) y ${personas} Responsables oficiales`;
-
-  const kpis = [
-    { num: ticketsPorPersonaMes.toFixed(1), lbl:'Volumen por persona / mes', sub:`${totGeneral.toLocaleString()} tickets (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses · conteo bruto, sin ajuste por tamaño/complejidad`, col:'#17a2b8' },
-  ];
-  if(fallosPorEvolutivo!==null){
-    kpis.push({ num: fallosPorEvolutivo.toFixed(1), lbl:'Fallos de QA por Evolutivo liberado', sub:`${totECalidad.toLocaleString()} fallos de QA ÷ ${totDCalidad.toLocaleString()} Evolutivos liberados desde ${mesesCalidad[0].mes} · no incluye Soportes (producción)`, col:'#8b5cf6' });
-  }
-  if(tendenciaRatio!==null){
-    const mejora = tendenciaRatio<0; // menos fallos por evolutivo = mejor calidad
-    const tendColor = mejora ? '#16a34a' : '#dc2626';
-    const tendArrow = mejora ? '▼' : '▲';
-    kpis.push({ num: `${tendArrow} ${Math.abs(tendenciaRatio).toFixed(1)}`, lbl:'Tendencia de Calidad', sub: `Fallos por evolutivo ${mejora?'bajó':'subió'} de ${primeraRatio.toFixed(1)} (${primeraLbl}) a ${segundaRatio.toFixed(1)} (${segundaLbl})`, col: tendColor });
-  }
-  const kpiEl = document.getElementById('equipo-productividad-kpis');
-  if(kpiEl){
-    kpiEl.style.gridTemplateColumns = `repeat(${kpis.length},1fr)`;
-    kpiEl.innerHTML = kpis.map(k=>`
-    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;text-align:center;border:1px solid #e5e7eb;">
-      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
-      <div style="font-size:.75rem;font-weight:700;color:#334155;margin-top:8px;">${k.lbl}</div>
-      <div style="font-size:.7rem;color:#94a3b8;margin-top:3px;">${k.sub}</div>
-    </div>`).join('');
-  }
-
-  const formula = document.getElementById('equipo-productividad-formula');
-  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Volumen = total combinado (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses — es conteo de tickets, no esfuerzo; el tamaño de cada ticket es subjetivo y no se pesa. `
-    + `Fallos de QA por Evolutivo liberado = total de tickets Error ÷ total de tickets Evolutivo, calculado SOLO con esas dos categorías desde ${mesesCalidad.length?mesesCalidad[0].mes:'—'} (primer mes con Error registrado) — se excluye Soportes porque los tickets de Error los genera el propio trabajo de desarrollo Evolutivo, no Soportes; y se excluyen enero/febrero porque antes de marzo no había desarrollo activo generando Errores (no es un hueco de datos). Es un ratio, no un porcentaje: significa &quot;por cada Evolutivo que se libera a producción, QA levantó en promedio este número de hallazgos antes de que quedara listo&quot;. `
-    + `<strong>Importante:</strong> los tickets de Error son fallos que levanta QA durante el control de calidad de los Evolutivos, no incidentes que el cliente reporta en producción (eso es Soporte) — un ratio alto aquí mide retrabajo interno del ciclo de desarrollo/QA, no calidad de servicio al cliente. `
-    + `Tendencia de Calidad = variación de ese mismo ratio (fallos ÷ evolutivo) comparando los totales de la 1ª mitad (${primeraLbl||'—'}) contra la 2ª mitad (${segundaLbl||'—'}) de esos meses — se suman los tickets de cada mitad antes de dividir, para que un mes con pocos Evolutivos liberados no distorsione el promedio con un ratio disparado ese mes solo. Negativo/▼ = bajó el número de fallos por evolutivo = mejoró la calidad. `
-    + `Nota: aún no existe SLA/tiempo de atención medido para Soportes, así que este panel no evalúa tiempos de respuesta — solo volumen y calidad de desarrollo.`;
-}
-
 // ─── RENDER: PANORAMA GENERAL — VOLUMEN vs. VELOCIDAD (síntesis) ─────────────
 // Pedido del usuario 25 Ago 2026: un "indicador maestro" que combine Comparativo
 // Mensual (volumen) + Velocidad de Atención en un solo veredicto. Se descartó un
@@ -2338,9 +2206,8 @@ function computeVolumenVelocidad(){
 
   // Horas ponderadas por ticket = Σ(volumen_tipo × mediana_tipo del mes) ÷
   // Σvolumen_tipo, sumado sobre todos los meses de la mitad (no promedio de
-  // promedios mensuales) — mismo criterio que ya usa computeCalidadDesarrollo()
-  // para su "Tendencia de Calidad", para no mezclar 2 formas distintas de
-  // comparar mitades del año en el mismo dashboard.
+  // promedios mensuales) — para no dejar que un mes con poco volumen de un tipo
+  // distorsione el promedio con un valor atípico ese mes solo.
   const horasPonderadas = (grupo) => {
     let numer = 0, denom = 0;
     grupo.forEach(r=>{
@@ -2411,83 +2278,6 @@ function renderVolumenVelocidad(){
     </div>
     <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
       Volumen = total combinado (Soportes+Evolutivos+Error) por mitad del año. Velocidad = horas ponderadas por ticket (mediana de cada tipo × su volumen real ese mes, mismo criterio que "Tendencia de Calidad"). Ninguna de las 2 se compara contra una meta absoluta — solo entre sí.
-    </div>`;
-}
-
-// ─── RENDER: EFECTIVIDAD DEL EQUIPO (síntesis) ────────────────────────────────
-// Pedido del usuario 25 Ago 2026: "dame un cálculo para decir miren con todo esto
-// somos efectivos en conjunto". Se le explicó (y aceptó) que combinar Volumen +
-// Calidad + Ritmo en un solo número matemático repetiría el problema del viejo
-// Score 0-100 (unidades distintas, pesos inventados). En vez de eso, este panel usa
-// un SEMÁFORO por dimensión con los MISMOS umbrales que ya existen y ya están
-// justificados en otros paneles — no se inventa ningún umbral nuevo aquí:
-//   - Calidad → verde si tendenciaRatio < 0 (el ratio de fallos/evolutivo bajó,
-//     mismo criterio que la tarjeta "Tendencia de Calidad" de Productividad del Equipo).
-//   - Ritmo → verde si diasParaCerrar <= META_DIAS_RITMO (10 días = 2 semanas hábiles,
-//     el mismo umbral que la barra "2 sem" del panel Ritmo de Atención).
-//   - Volumen NO tiene semáforo: es una cifra de escala/contexto, no hay meta de
-//     volumen acordada con el usuario todavía — mostrarla en verde/rojo sería
-//     inventar un juicio que nadie pidió.
-// Se apoya 100% en computeCalidadDesarrollo() y computeRitmoAtencion() — cero
-// cálculos nuevos, cero datos duplicados; si esas 2 funciones cambian, esta síntesis
-// cambia sola con ellas.
-function renderEfectividadEquipo(){
-  const cal = computeCalidadDesarrollo();
-  const rit = computeRitmoAtencion();
-  const wrap = document.getElementById('efectividad-equipo');
-  if(!wrap) return;
-  if(!cal || !rit || cal.tendenciaRatio===null || rit.diasParaCerrar===null){
-    wrap.innerHTML = `<div style="font-size:.82rem;color:#94a3b8;">Todavía no hay suficientes meses de datos para calcular la síntesis de Calidad + Ritmo.</div>`;
-    return;
-  }
-
-  const calidadOk = cal.tendenciaRatio < 0;
-  const ritmoOk = rit.diasParaCerrar <= META_DIAS_RITMO;
-  const señales = [calidadOk, ritmoOk];
-  const totalOk = señales.filter(Boolean).length;
-
-  const chips = [
-    {
-      ok: calidadOk,
-      lbl: 'Calidad de Desarrollo',
-      txt: calidadOk
-        ? `Mejorando: fallos por Evolutivo bajaron de ${cal.primeraRatio.toFixed(1)} a ${cal.segundaRatio.toFixed(1)}`
-        : `Empeorando: fallos por Evolutivo subieron de ${cal.primeraRatio.toFixed(1)} a ${cal.segundaRatio.toFixed(1)}`
-    },
-    {
-      ok: ritmoOk,
-      lbl: 'Ritmo de Atención',
-      txt: ritmoOk
-        ? `Backlog de Soportes + Evolutivos bajo control: se vacía en ${rit.diasParaCerrar.toFixed(1)} días hábiles (meta: ${META_DIAS_RITMO})`
-        : `Backlog de Soportes + Evolutivos por encima de la meta: tardaría ${rit.diasParaCerrar.toFixed(1)} días hábiles en vaciarse (meta: ${META_DIAS_RITMO})`
-    },
-  ];
-
-  let conclusion;
-  if(totalOk===2){
-    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo está siendo efectivo: mejora su calidad de desarrollo y mantiene el backlog de Soportes + Evolutivos bajo control, sin acumular pendientes.`;
-  } else if(totalOk===1){
-    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo va bien en una dimensión pero necesita atención en la otra — no es un veredicto de "efectivo" ni de "no efectivo" completo todavía.`;
-  } else {
-    conclusion = `Con ${totalOk} de 2 señales en verde, ninguna de las 2 dimensiones medidas está en buen camino ahora mismo — conviene revisar qué está pasando antes de sumar más volumen.`;
-  }
-
-  wrap.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-      ${chips.map(c=>`
-        <div style="display:flex;align-items:flex-start;gap:10px;background:${c.ok?'#f0fdf4':'#fef2f2'};border:1px solid ${c.ok?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
-          <div style="font-size:1.3rem;line-height:1;">${c.ok?'🟢':'🔴'}</div>
-          <div>
-            <div style="font-size:.8rem;font-weight:700;color:#1a1d29;">${c.lbl}</div>
-            <div style="font-size:.75rem;color:#475569;margin-top:2px;">${c.txt}</div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div style="font-size:.85rem;font-weight:600;color:#1a1d29;background:#f8fafc;border-left:3px solid ${totalOk===2?'#16a34a':totalOk===1?'#d97706':'#dc2626'};border-radius:8px;padding:12px 16px;line-height:1.5;">
-      ${conclusion}
-    </div>
-    <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
-      Volumen (${cal.ticketsPorPersonaMes.toFixed(1)} tickets/persona/mes) no entra en este semáforo: es una cifra de escala, no hay meta de volumen definida todavía. Calidad y Ritmo usan los mismos umbrales ya explicados en sus propios paneles ("Productividad del Equipo" y "Ritmo de Atención") — nada se inventó aquí.
     </div>`;
 }
 
@@ -2630,7 +2420,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr,
-   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
 });
 </script>
 </body>
