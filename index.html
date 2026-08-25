@@ -230,7 +230,7 @@
     </div>
     <div class="panel" style="margin-top:28px;">
       <h3>Top Responsables &mdash; Tickets Atendidos por Persona</h3>
-      <div class="info-box" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
+      <div class="info-box" id="responsables-info" style="font-size:.78rem;">Muestra qui&eacute;n ha atendido m&aacute;s tickets en el hist&oacute;rico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia T&eacute;cnica), agrupado por Persona asignada.</div>
       <!-- Podio top 3 -->
       <div id="top3-podio" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
       <!-- Tabla + gráfica -->
@@ -841,10 +841,22 @@ function renderHistorialCerrados(){
   const tb=document.getElementById('historial-cerrados-tbody');
   if(!tb) return;
   const sorted=[...RESPONSABLES].sort((a,b)=>b.n-a.n);
-  const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
+  // El % de participación de cada responsable debe ser sobre el total REAL de tickets
+  // atendidos (TOTAL_CERRADOS, la misma fuente que el KPI "Atendidos (DONE)"), no sobre
+  // la suma de este top 11 — de lo contrario cada % sale inflado, porque este listado es
+  // solo un recorte (top 11) y no incluye a todos los responsables que cerraron tickets.
+  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
+  const TOTAL = TOTAL_CERRADOS;
   const medals=['🥇','🥈','🥉'];
   const podioColors=['#eab308','#64748b','#c98a52'];
   const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+
+  const info=document.getElementById('responsables-info');
+  if(info){
+    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
+    info.innerHTML='Muestra quién ha atendido más tickets en el histórico total. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Soporte + Asistencia Técnica), agrupado por Persona asignada. '
+      + `Este top 11 concentra ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets (${coberturaPct}% del histórico total); el resto corresponde a otros responsables no listados aquí.`;
+  }
 
   // Podio top 3
   const podio=document.getElementById('top3-podio');
