@@ -633,15 +633,17 @@ const BITACORA = [
 // no debería tener tickets; no existe ningún Estado literal así en el Sheet.
 // `.total` se calcula una sola vez abajo (`SOPORTES.forEach(r=>r.total=...)`),
 // nunca se hardcodea — así no se puede desincronizar del detalle por Estado.
+// Refrescado 25 Ago 2026 desde el Sheet en vivo (openpyxl sobre "Product Backlog
+// Soportes DEV (1hr activo)"), mismo filtro/criterio documentado arriba.
 const SOPORTES = [
-  {loc:'Quintana Roo', estados:{'EN PROGRESO':4,'LISTO PARA DESPLEGAR':5,'READY TO MERGE':3,'BLOQUEADO':6,'PRODUCT BACKLOG':3,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Guanajuato', estados:{'EN PROGRESO':5,'LISTO PARA DESPLEGAR':2,'BLOQUEADO':6,'READY TO MERGE':1,'BACKLOG DE DESARROLLO CENTRALIZADO':3,'PRODUCT BACKLOG':1}},
-  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6,'READY TO MERGE':1,'BACKLOG DE DESARROLLO CENTRALIZADO':2,'EN PROGRESO':2,'EN ESPERA DE CLIENTE EXTERNO':1,'PRODUCT BACKLOG':1}},
-  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2,'Reabierto':1,'BACKLOG DE DESARROLLO CENTRALIZADO':3,'EN PROGRESO':2,'PRODUCT BACKLOG':1}},
-  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2,'READY TO MERGE':2,'EN PROGRESO':1,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Baja California', estados:{'LISTO PARA DESPLEGAR':1,'BLOQUEADO':2,'EN PROGRESO':1}},
-  {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2,'EN PROGRESO':1}},
-  {loc:'Sonora', estados:{'EN PROGRESO':1,'PRODUCT BACKLOG':1,'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Quintana Roo', estados:{'EN PROGRESO':4, 'READY TO MERGE':3, 'LISTO PARA DESPLEGAR':5, 'BLOQUEADO':6, 'PRODUCT BACKLOG':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Guanajuato', estados:{'EN PROGRESO':5, 'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'PRODUCT BACKLOG':1}},
+  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':2, 'EN ESPERA DE CLIENTE EXTERNO':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2, 'Reabierto':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
+  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2, 'READY TO MERGE':2, 'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Baja California', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':2, 'EN PROGRESO':1}},
+  {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':1}},
+  {loc:'Sonora', estados:{'EN PROGRESO':1, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':2}},
   {loc:'Sinaloa', estados:{'Reabierto':1}},
   {loc:'Chiapas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
@@ -659,9 +661,9 @@ const APROBACION = [
   {loc:'Colima', n:4},
   {loc:'Baja California', n:3},
   {loc:'Sonora', n:2},
-  {loc:'Hidalgo', n:2},
   {loc:'Zacatecas', n:2},
   {loc:'Cancún', n:1},
+  {loc:'Hidalgo', n:1},
   {loc:'CDMX', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -680,11 +682,11 @@ const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 // Gabriel Gras, Gibran Esaú Solís Valenzuela.
 const RESPONSABLES = [
   {nom:'Yoshio Adán Villegas Guevara', n:112},
-  {nom:'Leonardo Lucio Perez', n:93},
+  {nom:'Leonardo Lucio Perez', n:94},
   {nom:'Omar Villalpando', n:81},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:78},
   {nom:'Ivan Perez Felipe', n:63},
-  {nom:'Jesus Feria Ortiz', n:50},
+  {nom:'Jesus Feria Ortiz', n:51},
   {nom:'Jonathan Aristeo Lozano Hernandez', n:47},
   {nom:'Silvestre Cerrato', n:39},
   {nom:'Aníbal Argüelles García', n:25},
@@ -708,8 +710,7 @@ const CERRADOS = [
   {loc:'2026-05 · Mayo', n:273},
   {loc:'2026-06 · Junio', n:340},
   {loc:'2026-07 · Julio', n:320},
-  {loc:'2026-08 · Agosto', n:197},
-  {loc:'Sin mes asignado', n:13},
+  {loc:'2026-08 · Agosto', n:218},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0); // histórico completo (todos los años)
 
@@ -815,16 +816,17 @@ function renderRitmoAtencion(){
 // fija de campos con nombre. Un Estado nuevo que aparezca en Jira se agrega
 // solo, sin tocar código (ver nota junto a `const SOPORTES` arriba para el
 // razonamiento completo). `.total` se deriva abajo, nunca se hardcodea.
+// Refrescado 25 Ago 2026 desde el Sheet en vivo ("CC Evolutivos (1hr activo)").
 const EVOL_ACTIVOS = [
-  {loc:'Quintana Roo',    estados:{'PENDIENTE DE FIRMA':8,'EN PROGRESO':5,'PRODUCT BACKLOG':3,'Validación presupuestal':3,'BLOQUEADO':2,'LISTO PARA DESPLEGAR':1,'EN QA':4,'APROBACIÓN POR CLIENTE':2,'Consulta Con Cliente':2,'READY TO MERGE':1}},
-  {loc:'Jalisco',         estados:{'PENDIENTE DE FIRMA':3,'EN PROGRESO':4,'PRODUCT BACKLOG':7,'BLOQUEADO':4,'LISTO PARA DESPLEGAR':4,'APROBACIÓN POR CLIENTE':1,'Reabierto':2}},
-  {loc:'Sonora',          estados:{'PENDIENTE DE FIRMA':7,'PRODUCT BACKLOG':1,'Validación presupuestal':1,'BLOQUEADO':1,'EN QA':3,'APROBACIÓN POR CLIENTE':1,'Control de Version':1,'CERTIFICADO POR QA':1,'Estimación Técnica':2}},
-  {loc:'Colima',          estados:{'PENDIENTE DE FIRMA':4,'EN PROGRESO':1,'Validación presupuestal':4,'LISTO PARA DESPLEGAR':1,'APROBACIÓN POR CLIENTE':1,'Consulta Con Cliente':2,'Control de Version':1,'CERTIFICADO POR QA':1}},
-  {loc:'Guanajuato',      estados:{'PENDIENTE DE FIRMA':2,'EN PROGRESO':3,'PRODUCT BACKLOG':1,'READY TO MERGE':1}},
-  {loc:'Hidalgo',         estados:{'Validación presupuestal':4,'Consulta Con Cliente':1,'Control de Version':2}},
-  {loc:'Baja California', estados:{'PENDIENTE DE FIRMA':2,'BLOQUEADO':1,'LISTO PARA DESPLEGAR':1,'Reabierto':1}},
-  {loc:'Zacatecas',       estados:{'LISTO PARA DESPLEGAR':1}},
-  {loc:'Chiapas',         estados:{'EN PROGRESO':1}},
+  {loc:'Quintana Roo', estados:{'BLOQUEADO':2, 'APROBACIÓN POR CLIENTE':2, 'EN PROGRESO':5, 'PRODUCT BACKLOG':3, 'Validación presupuestal':3, 'PENDIENTE DE FIRMA':8, 'Consulta Con Cliente':2, 'READY TO MERGE':1, 'LISTO PARA DESPLEGAR':1, 'EN QA':4}},
+  {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':3, 'PRODUCT BACKLOG':7, 'BLOQUEADO':4, 'EN PROGRESO':4, 'LISTO PARA DESPLEGAR':3, 'Reabierto':2, 'READY TO MERGE':1, 'APROBACIÓN POR CLIENTE':1}},
+  {loc:'Sonora', estados:{'PRODUCT BACKLOG':1, 'CERTIFICADO POR QA':1, 'Validación presupuestal':1, 'EN QA':3, 'PENDIENTE DE FIRMA':7, 'Control de Version':1, 'Estimación Técnica':2, 'APROBACIÓN POR CLIENTE':1, 'BLOQUEADO':1}},
+  {loc:'Colima', estados:{'PENDIENTE DE FIRMA':4, 'Control de Version':1, 'Validación presupuestal':4, 'Consulta Con Cliente':2, 'APROBACIÓN POR CLIENTE':1, 'EN PROGRESO':1, 'CERTIFICADO POR QA':1, 'LISTO PARA DESPLEGAR':1}},
+  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'Control de Version':2, 'Consulta Con Cliente':1, 'Validación presupuestal':4}},
+  {loc:'Baja California', estados:{'BLOQUEADO':1, 'LISTO PARA DESPLEGAR':1, 'PENDIENTE DE FIRMA':2, 'Reabierto':1}},
+  {loc:'Zacatecas', estados:{'LISTO PARA DESPLEGAR':1}},
+  {loc:'Chiapas', estados:{'EN PROGRESO':1}},
 ];
 EVOL_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
@@ -907,15 +909,21 @@ const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 // Evolutivos (corregido 25 Ago 2026): `estados` es un mapa libre {Estado
 // literal: cantidad}, no una lista fija de campos — un Estado nuevo se agrega
 // solo, sin tocar código. `.total` se deriva, nunca se hardcodea.
+// Refrescado 25 Ago 2026 desde el Sheet en vivo ("Error (1hr activo)"). Las claves
+// ahora son el literal EXACTO del campo Estado (ej. "SPRINT BACKLOG", "EN QA"),
+// no una versión re-capitalizada a mano — corrige una inconsistencia heredada
+// (SOPORTES/EVOL_ACTIVOS ya usaban el literal exacto, este arreglo no). La
+// capitalización que se ve en pantalla la pone `tituloEstado()` solo para
+// mostrar, nunca se toca la clave real.
 const ERROR_ACTIVOS = [
-  {loc:'Guanajuato',      estados:{'No Bug':4, 'En QA':21, 'Ready to Merge':2,  'Sprint Backlog':11, 'Bloqueado':6, 'Reabierto':1}},
-  {loc:'Colima',          estados:{'No Bug':8, 'Ready to Merge':18, 'Sprint Backlog':3,  'En Progreso':4, 'Bloqueado':1, 'Reabierto':1}},
-  {loc:'Jalisco',         estados:{'No Bug':7, 'En QA':1,  'Sprint Backlog':1,  'En Progreso':2, 'Bloqueado':1}},
-  {loc:'Hidalgo',         estados:{'No Bug':7, 'En QA':1,  'Sprint Backlog':1,  'En Progreso':1}},
-  {loc:'Quintana Roo',    estados:{'No Bug':3, 'En QA':3,  'En Progreso':1}},
-  {loc:'Sonora',          estados:{'No Bug':4, 'Sprint Backlog':2,  'Bloqueado':1}},
-  {loc:'Baja California', estados:{'Ready to Merge':2,  'Sprint Backlog':2,  'En Progreso':1}},
-  {loc:'Chiapas',         estados:{'Ready to Merge':2,  'Sprint Backlog':1}},
+  {loc:'Guanajuato', estados:{'EN QA':21, 'SPRINT BACKLOG':11, 'No Bug':4, 'Reabierto':1, 'BLOQUEADO':6, 'READY TO MERGE':2}},
+  {loc:'Colima', estados:{'SPRINT BACKLOG':5, 'EN QA':7, 'READY TO MERGE':12, 'EN PROGRESO':5, 'BLOQUEADO':1, 'No Bug':8, 'Reabierto':1}},
+  {loc:'Jalisco', estados:{'SPRINT BACKLOG':1, 'EN PROGRESO':2, 'EN QA':1, 'No Bug':7, 'BLOQUEADO':1}},
+  {loc:'Hidalgo', estados:{'No Bug':7, 'EN PROGRESO':1, 'EN QA':1, 'SPRINT BACKLOG':1}},
+  {loc:'Quintana Roo', estados:{'EN QA':3, 'EN PROGRESO':1, 'No Bug':3}},
+  {loc:'Sonora', estados:{'No Bug':4, 'BLOQUEADO':1, 'SPRINT BACKLOG':2}},
+  {loc:'Baja California', estados:{'READY TO MERGE':3, 'EN PROGRESO':1, 'EN QA':1}},
+  {loc:'Chiapas', estados:{'READY TO MERGE':2, 'SPRINT BACKLOG':1}},
 ];
 ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
