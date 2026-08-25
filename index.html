@@ -29,7 +29,7 @@
   
   .kpi{background:#fff;border-radius:16px;padding:20px 16px 18px;text-align:left;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05);transition:transform .18s,box-shadow .18s,background-color .18s;border-top:8px solid;position:relative;cursor:default}
   .kpi:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(15,23,42,.08),0 14px 28px rgba(15,23,42,.12)}
-  .kpi .kpi-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px;transition:transform .18s}
+  .kpi .kpi-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px;transition:transform .18s}
   .kpi:hover .kpi-icon{transform:scale(1.1)}
   .kpi .num{font-family:'Segoe UI Rounded','SF Pro Rounded',system-ui,-apple-system,sans-serif;font-size:2.3rem;font-weight:800;line-height:1;margin-bottom:6px;letter-spacing:.3px;
     background:linear-gradient(180deg,#0f172a 0%,#0f172a 42%,rgba(15,23,42,.6) 50%,#0f172a 58%,#0f172a 100%);
@@ -124,7 +124,7 @@
   <div id="tab-resumen" class="tab-content active">
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados">
-      <div class="kpi-icon">&#x2705;</div>
+      <div class="kpi-icon" style="font-weight:800;font-size:1.15rem">&#x2713;</div>
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias</div>
