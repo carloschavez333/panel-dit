@@ -1141,8 +1141,23 @@ function renderVelocidadAtencion(){
   const wrap = document.getElementById('velocidad-atencion');
   if(!wrap) return;
   const grupos = ['soporte','evolutivo','error'];
+
+  // Totales reales por tipo (mismos que usa "Comparativo Mensual") — se muestran
+  // junto al n= de cada tarjeta porque TIEMPO_ATENCION.*.total.n es un SUBCONJUNTO
+  // (solo tickets con hora registrada en el Sheet): sin este dato al lado, el n=
+  // de esta gráfica no coincide a simple vista con el total de Comparativo Mensual
+  // y parece un error — el usuario lo notó el 25 Ago 2026 comparando ambos paneles.
+  const { rows: cmRows } = getComparativoMensual();
+  const totalesReales = {
+    soporte: cmRows.reduce((s,r)=>s+r.soportes,0),
+    evolutivo: cmRows.reduce((s,r)=>s+r.evolutivos,0),
+    error: cmRows.reduce((s,r)=>s+r.error,0),
+  };
+
   wrap.innerHTML = grupos.map(k=>{
     const g = TIEMPO_ATENCION[k];
+    const totalReal = totalesReales[k];
+    const coberturaPct = totalReal>0 ? (g.total.n/totalReal*100) : null;
     const delta = g.segunda.median - g.primera.median;
     const mejora = delta < 0; // menos horas registradas = más rápido
     const arrow = Math.abs(delta) < 0.05 ? '→' : (mejora ? '↓' : '↑');
@@ -1156,7 +1171,7 @@ function renderVelocidadAtencion(){
       </div>
       <div style="font-size:1.9rem;font-weight:800;color:${g.color};line-height:1;">${g.total.median.toFixed(1)} hrs</div>
       <div style="font-size:.76rem;color:#64748b;margin-top:8px;">Mediana de horas por ticket</div>
-      <div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">Promedio ${g.total.mean.toFixed(1)} hrs &nbsp;&bull;&nbsp; n=${g.total.n.toLocaleString()}</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">Promedio ${g.total.mean.toFixed(1)} hrs &nbsp;&bull;&nbsp; n=${g.total.n.toLocaleString()}${coberturaPct!=null?` de ${totalReal.toLocaleString()} (${coberturaPct.toFixed(0)}%)`:''}</div>
       <div style="background:${tendColor}14;border-radius:8px;padding:8px 10px;margin-top:12px;">
         <div style="font-size:.74rem;font-weight:700;color:${tendColor};">${arrow} ${Math.abs(delta).toFixed(1)} hrs ${tendTxt}</div>
       </div>
