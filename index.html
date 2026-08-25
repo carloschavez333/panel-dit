@@ -31,7 +31,7 @@
   .kpi:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(15,23,42,.08),0 14px 28px rgba(15,23,42,.12)}
   .kpi .kpi-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px;transition:transform .18s}
   .kpi:hover .kpi-icon{transform:scale(1.1)}
-  .kpi .num{font-family:'Segoe UI Rounded','SF Pro Rounded',system-ui,-apple-system,sans-serif;font-size:2.3rem;font-weight:800;line-height:1;margin-bottom:6px;letter-spacing:.3px;
+  .kpi .num{font-family:'Segoe UI Rounded','SF Pro Rounded',system-ui,-apple-system,sans-serif;font-size:2.3rem;font-weight:800;line-height:1;margin-bottom:6px;letter-spacing:.3px;transition:font-weight .18s;
     background:linear-gradient(180deg,#0f172a 0%,#0f172a 42%,rgba(15,23,42,.6) 50%,#0f172a 58%,#0f172a 100%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
     text-shadow:0 1px 0 rgba(255,255,255,.6);
@@ -41,12 +41,15 @@
   .kpi-cerrados{border-color:#16a34a}
   .kpi-cerrados .kpi-icon{background:#dcfce7;color:#16a34a}
   .kpi-cerrados:hover{background-color:#f0fdf4}
+  .kpi-cerrados:hover .num{font-weight:900;background:linear-gradient(180deg,#15803d 0%,#15803d 42%,rgba(21,128,61,.55) 50%,#15803d 58%,#15803d 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 1px 0 rgba(255,255,255,.5)}
   .kpi-aprobacion{border-color:#f0b429}
   .kpi-aprobacion .kpi-icon{background:#fef3c7;color:#b45309}
   .kpi-aprobacion:hover{background-color:#fffbeb}
+  .kpi-aprobacion:hover .num{font-weight:900;background:linear-gradient(180deg,#b45309 0%,#b45309 42%,rgba(180,83,9,.55) 50%,#b45309 58%,#b45309 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 1px 0 rgba(255,255,255,.5)}
   .kpi-backlog{border-color:#dc2626}
   .kpi-backlog:hover{background-color:#fef2f2}
   .kpi-backlog .kpi-icon{background:#fee2e2;color:#dc2626}
+  .kpi-backlog:hover .num{font-weight:900;background:linear-gradient(180deg,#b91c1c 0%,#b91c1c 42%,rgba(185,28,28,.55) 50%,#b91c1c 58%,#b91c1c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 1px 0 rgba(255,255,255,.5)}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
   .legend-bar span{font-size:.72rem;font-weight:600;color:#6b7280;margin-right:4px}
   .pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600;white-space:nowrap}
