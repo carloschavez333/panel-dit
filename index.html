@@ -522,6 +522,27 @@
         </table>
       </div>
     </div>
+    <div class="panel" style="margin-top:22px;">
+      <h3>Hallazgos &mdash; &iquest;Qu&eacute; dicen estos n&uacute;meros?</h3>
+      <div class="info-box" style="font-size:.85rem;line-height:1.65;" id="equipo-hallazgos-text"></div>
+    </div>
+    <div class="panel" style="margin-top:22px;">
+      <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs.</div>
+      <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Responsable</th>
+            <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
+            <th><span class="pill" style="background:rgba(13,148,136,.14);color:#0d9488;">Evolutivos</span></th>
+            <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
+            <th>Total</th><th>% Error</th>
+          </tr></thead>
+          <tbody id="equipo-rendimiento-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- TAB: BITACORA -->
@@ -1761,6 +1782,73 @@ function renderEquipoTendencia(){
   );
 }
 
+// Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
+// usadas en cada módulo por separado — mismos 11 nombres en las 3) para dar una
+// producción combinada por persona y redactar hallazgos dinámicos. No hardcodea
+// ningún total ni nombre: todo se deriva de los arrays existentes, para que nunca
+// se desincronice si esos números cambian.
+function renderEquipoRendimiento(){
+  const findN = (arr, nom) => { const f = arr.find(r=>r.nom===nom); return f ? f.n : 0; };
+  const combinado = RESPONSABLES.map(r=>r.nom).map(nom => {
+    const sop = findN(RESPONSABLES, nom);
+    const dev = findN(RESPONSABLES_DEV, nom);
+    const err = findN(RESPONSABLES_ERR, nom);
+    const total = sop + dev + err;
+    return { nom, sop, dev, err, total, pctErr: total>0 ? (err/total*100) : 0 };
+  }).sort((a,b)=>b.total-a.total);
+
+  const medals=['🥇','🥈','🥉'];
+  const podioColors=['#eab308','#64748b','#c98a52'];
+  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+
+  const podio=document.getElementById('top3-podio-equipo');
+  if(podio){
+    podio.innerHTML=combinado.slice(0,3).map((r,i)=>`
+      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
+        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.total}</div>
+        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
+        <div style="font-size:.75rem;color:#64748b;">Soportes ${r.sop} · Evolutivos ${r.dev} · Error ${r.err}</div>
+      </div>`).join('');
+  }
+
+  const tb=document.getElementById('equipo-rendimiento-tbody');
+  if(tb){
+    tb.innerHTML = combinado.map((r,i)=>{
+      const rowStyle=i<3?'font-weight:700;':'';
+      const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
+      return `<tr style="${rowStyle}">
+        <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
+        <td>${r.nom}</td>
+        <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
+        <td style="color:#0d9488;font-weight:700;">${r.dev}</td>
+        <td style="color:#2563eb;font-weight:700;">${r.err}</td>
+        <td style="color:${numColor};font-weight:700;">${r.total}</td>
+        <td>${r.pctErr.toFixed(1)}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const hallazgos = document.getElementById('equipo-hallazgos-text');
+  if(hallazgos){
+    const { year, rows } = getComparativoMensual();
+    const totS = rows.reduce((s,r)=>s+r.soportes,0);
+    const totD = rows.reduce((s,r)=>s+r.evolutivos,0);
+    const totE = rows.reduce((s,r)=>s+r.error,0);
+    const totGeneral = totS+totD+totE;
+    const mesPico = [...rows].sort((a,b)=>(b.soportes+b.evolutivos+b.error)-(a.soportes+a.evolutivos+a.error))[0];
+    const top1 = combinado[0];
+    const mayorPctErr = [...combinado].filter(r=>r.total>=10).sort((a,b)=>b.pctErr-a.pctErr)[0];
+
+    hallazgos.innerHTML = `En lo que va de ${year}, el equipo combinado atendió <strong>${totGeneral.toLocaleString()}</strong> tickets entre las 3 categorías: `
+      + `Soportes (<strong>${totS.toLocaleString()}</strong>, ${(totS/totGeneral*100).toFixed(0)}%), Evolutivos (<strong>${totD.toLocaleString()}</strong>, ${(totD/totGeneral*100).toFixed(0)}%) y Error (<strong>${totE.toLocaleString()}</strong>, ${(totE/totGeneral*100).toFixed(0)}%). `
+      + `El mes de mayor volumen combinado fue <strong>${mesPico.mes}</strong> (${(mesPico.soportes+mesPico.evolutivos+mesPico.error).toLocaleString()} tickets entre las 3 categorías). `
+      + `<strong>${top1.nom}</strong> es quien más producción combinada tiene en el año, con ${top1.total} tickets resueltos entre Soportes, Evolutivos y Error. `
+      + (mayorPctErr ? `<strong>${mayorPctErr.nom}</strong> es quien dedica la mayor proporción de su trabajo a resolver tickets de Error (${mayorPctErr.pctErr.toFixed(0)}% de su producción total) — puede indicar un rol más enfocado en estabilización/bugfixing que en soporte directo o nuevo desarrollo. ` : '')
+      + `Evolutivos sigue siendo la categoría de menor volumen (solo ${(totD/totGeneral*100).toFixed(1)}% del total combinado) — esperable si son tickets de mayor complejidad y esfuerzo individual que Soportes o Error.`;
+  }
+}
+
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
 function renderBitacora(){
   const tb=document.getElementById('bitacora-tbody');
@@ -1833,7 +1921,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
-   renderEquipoTendencia].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoRendimiento].forEach(fn => fn());
 });
 </script>
 </body>
