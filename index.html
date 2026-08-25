@@ -175,6 +175,7 @@
     <div class="subtabs-wrap" id="subtabs-err" style="display:none">
       <div class="tab tab-sub" onclick="showTab('cerrados_err',this)"><span class="tab-ico">&#x1F535;</span> Resueltos</div>
     </div>
+    <div class="tab" onclick="showTab('ritmo',this)"><span class="tab-ico">&#x23F1;</span> Ritmo de Atenci&oacute;n</div>
     <div class="tab" onclick="showTab('equipo',this)"><span class="tab-ico">&#x1F465;</span> Evaluaci&oacute;n de Equipo</div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -497,6 +498,29 @@
     </div>
   </div>
 
+  <!-- TAB: RITMO DE ATENCIÓN (Soportes) -->
+  <div id="tab-ritmo" class="tab-content">
+    <div class="info-box"><strong>Ritmo de Atenci&oacute;n</strong> mide qu&eacute; tan r&aacute;pido puede el equipo vaciar el backlog actual de Soportes (&quot;En Atenci&oacute;n&quot;) al ritmo de cierre que ya ha demostrado. Solo aplica a Soportes &mdash; no incluye &quot;Aprobaci&oacute;n Cliente&quot;, porque esos tickets est&aacute;n detenidos esperando al cliente, no al equipo.</div>
+    <div class="panel">
+      <h3>Ritmo de Atenci&oacute;n &mdash; Soportes</h3>
+      <div class="info-box" style="font-size:.78rem;" id="ritmo-year-label"></div>
+      <div id="ritmo-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
+      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="ritmo-formula"></div>
+    </div>
+    <div class="panel" style="margin-top:22px;">
+      <h3>Ritmo Actual vs. Ritmo Necesario para Metas de Cierre</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Tickets de Soportes que el equipo necesitar&iacute;a cerrar por d&iacute;a h&aacute;bil para vaciar el backlog actual en cada plazo, comparado contra el ritmo que ya demuestran.</div>
+      <div style="position:relative;height:320px;">
+        <canvas id="chartRitmoMetas"></canvas>
+      </div>
+      <div style="font-size:.72rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
+        <strong style="color:#8b5cf6;">Actual</strong> = ritmo de cierre que el equipo ya demuestra hoy (tickets/d&iacute;a h&aacute;bil) &nbsp;&bull;&nbsp;
+        <strong style="color:#d97706;">1 sem</strong> = ritmo necesario para vaciar el backlog actual en 1 semana h&aacute;bil &nbsp;&bull;&nbsp;
+        <strong style="color:#0d9488;">2 sem</strong> = ritmo necesario para vaciarlo en 2 semanas h&aacute;biles
+      </div>
+    </div>
+  </div>
+
   <!-- TAB: EVALUACIÓN DE EQUIPO -->
   <div id="tab-equipo" class="tab-content">
     <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
@@ -697,6 +721,63 @@ function getCerradosVigentes(){
     .sort((a,b)=>a.loc.localeCompare(b.loc));
   const rows = enAnio.concat(sinMes);
   return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
+}
+
+// ─── RENDER: RITMO DE ATENCIÓN (Soportes) ─────────────────────────────────────
+// Pedido del usuario 25 Ago 2026: "una estrategia de cuánto atender para cerrar
+// todo lo pendiente o en atención". Se deriva 100% de TOTAL_ACTIVOS (backlog actual
+// de Soportes, "En Atención") y CERRADOS/getCerradosVigentes() (ritmo histórico de
+// cierre) — nada hardcodeado. Solo aplica a Soportes, NO a "Aprobación Cliente"
+// (esos tickets están detenidos esperando al cliente, no al equipo, así que no
+// tiene sentido medir "ritmo del equipo" contra algo que el equipo no controla).
+// Supuesto explícito (documentado, no oculto): ~21 días hábiles por mes calendario
+// — se usa para convertir el ritmo mensual histórico a un ritmo diario. El usuario
+// eligió usar el promedio de los 8 meses de 2026 con datos (no solo los últimos 3),
+// así que el resultado SÍ incluye el pico de marzo (384 cierres).
+const DIAS_HABILES_MES = 21;
+function renderRitmoAtencion(){
+  const { year, rows } = getCerradosVigentes();
+  const mesesConDatos = rows.filter(r=>/^\d{4}-/.test(r.loc));
+  const totCerrado = mesesConDatos.reduce((s,r)=>s+r.n,0);
+  const numMeses = mesesConDatos.length;
+  if(numMeses===0) return;
+
+  const ritmoDiario = totCerrado / (numMeses*DIAS_HABILES_MES);
+  const backlogActual = TOTAL_ACTIVOS;
+  const diasParaCerrar = ritmoDiario>0 ? backlogActual/ritmoDiario : null;
+  const semanasParaCerrar = diasParaCerrar!==null ? diasParaCerrar/5 : null;
+  const ritmo1sem = backlogActual/5;
+  const ritmo2sem = backlogActual/10;
+
+  const yl = document.getElementById('ritmo-year-label');
+  if(yl) yl.textContent = `Año ${year} · ritmo calculado sobre ${numMeses} meses con datos (${mesesConDatos[0].loc.split(' · ')[1]}–${mesesConDatos[numMeses-1].loc.split(' · ')[1]}) · backlog actual (En Atención): ${backlogActual.toLocaleString()} tickets`;
+
+  const kpis = [
+    { num: backlogActual.toLocaleString(), lbl:'Backlog actual (En Atención)', sub:'Tickets de Soportes pendientes de atender ahora mismo', col:'#dc2626' },
+    { num: ritmoDiario.toFixed(1), lbl:'Ritmo actual de cierre', sub:`${totCerrado.toLocaleString()} tickets cerrados ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles/mes`, col:'#17a2b8' },
+  ];
+  if(diasParaCerrar!==null){
+    kpis.push({ num: diasParaCerrar.toFixed(1)+' días', lbl:'Para vaciar el backlog actual', sub:`≈ ${semanasParaCerrar.toFixed(1)} semanas hábiles, al ritmo actual y sin contar tickets nuevos`, col:'#16a34a' });
+  }
+  const kpiEl = document.getElementById('ritmo-kpis');
+  if(kpiEl) kpiEl.innerHTML = kpis.map(k=>`
+    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;text-align:center;border:1px solid #e5e7eb;">
+      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
+      <div style="font-size:.75rem;font-weight:700;color:#334155;margin-top:8px;">${k.lbl}</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:3px;">${k.sub}</div>
+    </div>`).join('');
+
+  const formula = document.getElementById('ritmo-formula');
+  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Ritmo actual = total de tickets de Soportes cerrados en ${year} (${totCerrado.toLocaleString()}) ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles por mes (supuesto explícito, no un dato exacto del Sheet). `
+    + `Días para vaciar el backlog = Backlog actual ÷ Ritmo actual. `
+    + `No incluye "Aprobación Cliente" porque esos tickets dependen del cliente, no del ritmo del equipo. `
+    + `<strong>Límite importante:</strong> este cálculo asume que no entran tickets nuevos mientras se vacía el backlog — no hay dato de "tickets nuevos por día" en el Sheet, solo de tickets cerrados por mes, así que es una proyección de "cuánto tardarían si solo atendieran lo que ya está pendiente", no una predicción exacta de cuándo llegará el backlog a cero en la realidad.`;
+
+  drawVBar('chartRitmoMetas',
+    ['Actual', '1 sem', '2 sem'],
+    [Math.round(ritmoDiario*10)/10, Math.round(ritmo1sem*10)/10, Math.round(ritmo2sem*10)/10],
+    ['#8b5cf6', '#d97706', '#0d9488']
+  );
 }
 
 // ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
@@ -1130,6 +1211,7 @@ function showTab(name, el){
   if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
+  if(name==='ritmo'){renderRitmoAtencion();}
   if(name==='equipo'){renderEquipoTendencia(); renderEquipoProductividad(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
 }
@@ -1999,7 +2081,7 @@ document.addEventListener('DOMContentLoaded', function(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
-   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion].forEach(fn => fn());
 });
 </script>
 </body>
