@@ -156,7 +156,7 @@
       <div class="panel">
         <h3>Tickets Activos por Localidad</h3>
         <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc" style="color:#ef4444;font-size:1rem;"></strong></div>
-        <div style="position:relative;height:260px;">
+        <div style="position:relative;height:460px;">
           <canvas id="chartLocalidad"></canvas>
         </div>
       </div>
@@ -326,16 +326,22 @@ const BITACORA = [
   { fecha:'21 Ago 2026', activos:79, cerrados:2172, aprobacion:46, desplegar:12, backlog:88 },
   { fecha:'24 Ago 2026', activos:77, cerrados:2199, aprobacion:36, desplegar:10, backlog:82 },
 ];
+// Fuente: hoja "TD_Soportes_En_Atencion" (tabla dinámica sobre "Product Backlog Soportes DEV"),
+// Tipo de Incidencia = Soporte, agrupado por Estado y Localidad.
 const SOPORTES = [
-  {loc:'Guanajuato', prog:5, aprob:1, qa:5, bloq:19, reabierto:0, bkdev:1, total:31},
-  {loc:'Colima', prog:0, aprob:3, qa:1, bloq:0, reabierto:0, bkdev:2, total:6},
-  {loc:'Baja California', prog:0, aprob:1, qa:2, bloq:0, reabierto:0, bkdev:1, total:4},
-  {loc:'Quintana Roo', prog:0, aprob:0, qa:1, bloq:1, reabierto:0, bkdev:1, total:3},
-  {loc:'Jalisco', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
-  {loc:'Hidalgo', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
-  {loc:'Sonora', prog:0, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:0, total:1},
+  {loc:'Quintana Roo', prog:4, aprob:0, qa:0, bloq:6, reabierto:0, bkdev:11, total:21},
+  {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:5, reabierto:1, bkdev:5, total:16},
+  {loc:'Hidalgo', prog:2, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:10, total:13},
+  {loc:'Colima', prog:1, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:8, total:10},
+  {loc:'Jalisco', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, total:5},
+  {loc:'Seguritech', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, total:5},
+  {loc:'Baja California', prog:1, aprob:0, qa:0, bloq:2, reabierto:0, bkdev:1, total:4},
+  {loc:'Sonora', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:2, total:3},
+  {loc:'Chihuahua', prog:2, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:0, total:2},
+  {loc:'Sinaloa', prog:0, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:0, total:1},
+  {loc:'Chiapas', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
 ];
-const TOTAL_ACTIVOS = 59;
+const TOTAL_ACTIVOS = 81;
 const APROBACION = [
   {loc:'Quintana Roo', n:10},
   {loc:'Guanajuato', n:6},
