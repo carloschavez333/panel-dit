@@ -529,7 +529,11 @@
       <h3>Velocidad de Atenci&oacute;n</h3>
       <div class="info-box" style="font-size:.78rem;">Cu&aacute;ntas horas de trabajo efectivo (no d&iacute;as transcurridos) le toma al equipo resolver un ticket t&iacute;pico, por tipo. Mide esfuerzo/eficiencia del equipo, no la espera por aprobaciones u otros actores fuera de su control.</div>
       <div id="velocidad-atencion" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
-      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="velocidad-atencion-formula"></div>
+      <div style="font-size:.82rem;font-weight:700;color:#334155;margin:22px 0 4px;">Mediana de horas por ticket &mdash; mes a mes</div>
+      <div style="position:relative;height:320px;">
+        <canvas id="chartVelocidadMensual"></canvas>
+      </div>
+      <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;margin-top:16px;" id="velocidad-atencion-formula"></div>
     </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Productividad del Equipo</h3>
@@ -1114,6 +1118,29 @@ function renderVelocidadAtencion(){
       <div style="font-size:.68rem;color:#94a3b8;margin-top:2px;">de ${g.primera.median.toFixed(1)} hrs (${g.primera.lbl}) a ${g.segunda.median.toFixed(1)} hrs (${g.segunda.lbl})</div>
     </div>`;
   }).join('');
+
+  // Gráfica mensual (agregada 25 Ago 2026, a pedido del usuario: "también en un
+  // gráfico, así por mes a mes") — mismo motor (drawGroupedVBar) y estética que
+  // "Comparativo Mensual" de arriba, pero con la MEDIANA de horas por ticket en
+  // vez de el conteo de tickets. Error no tiene datos antes de marzo 2026 (no
+  // había Evolutivos activos aún) — se muestra en 0, igual que en Comparativo
+  // Mensual, no se inventa un valor.
+  const MESES_ABBR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'];
+  const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'];
+  const medianasPorMes = (monthly) => {
+    const m = {};
+    monthly.forEach(r=>{ m[r.mes] = r.median; });
+    return MESES_FULL.map(mes => m[mes] !== undefined ? Number(m[mes].toFixed(1)) : 0);
+  };
+  drawGroupedVBar('chartVelocidadMensual',
+    MESES_ABBR,
+    [
+      {label:'Soportes',              data: medianasPorMes(TIEMPO_ATENCION.soporte.monthly),   color: TIEMPO_ATENCION.soporte.color},
+      {label:'Evolutivos',            data: medianasPorMes(TIEMPO_ATENCION.evolutivo.monthly), color: TIEMPO_ATENCION.evolutivo.color},
+      {label:'Fallos de QA (Error)',  data: medianasPorMes(TIEMPO_ATENCION.error.monthly),     color: TIEMPO_ATENCION.error.color},
+    ]
+  );
+
   const formula = document.getElementById('velocidad-atencion-formula');
   if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> mediana de "Tiempo Empleado (Hrs)" (horas de trabajo efectivo registradas en Jira, no días transcurridos) por ticket cerrado en 2026, por tipo. `
     + `Tendencia = mediana de la 1ª mitad de meses con datos vs la 2ª mitad (mismo criterio que "Tendencia de Calidad"). `
