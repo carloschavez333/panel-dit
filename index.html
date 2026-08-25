@@ -216,11 +216,13 @@
       <!-- Lista izquierda -->
       <div class="panel" style="margin-bottom:0;">
         <h3>Tickets por Mes</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:10px;" id="cerrados-year-label"></div>
         <div id="cerrados-lista"></div>
       </div>
       <!-- Gráfica barras derecha -->
       <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
         <h3>Distribución Mensual</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:4px;" id="cerrados-year-label2"></div>
         <div style="position:relative;flex:1;min-height:280px;">
           <canvas id="chartCerradosBars"></canvas>
         </div>
@@ -786,9 +788,20 @@ function renderAprobacion(){
 function renderCerrados(){
   const lista=document.getElementById('cerrados-lista');
   if(!lista) return;
-  const sorted=[...CERRADOS].sort((a,b)=>a.loc.localeCompare(b.loc));
+  // Siempre el año en curso (calculado, no fijo), ordenado cronológicamente por mes.
+  // "Sin mes asignado" no tiene año en el Sheet todavía, así que se muestra aparte,
+  // al final, sin mezclarse con años anteriores.
+  const currentYear = String(new Date().getFullYear());
+  const sinMes = CERRADOS.filter(r=>!/^\d{4}-/.test(r.loc));
+  const enAnio = CERRADOS.filter(r=>r.loc.startsWith(currentYear+'-'))
+    .sort((a,b)=>a.loc.localeCompare(b.loc));
+  const sorted = enAnio.concat(sinMes);
   const total=sorted.reduce((s,r)=>s+r.n,0);
-  const colors=sorted.map((_,i)=> i===sorted.length-1 ? '#12707d' : '#17a2b8');
+  const colors=sorted.map(r=> /^\d{4}-/.test(r.loc) ? '#17a2b8' : '#12707d');
+
+  const yearLabelTxt = `Año ${currentYear} · ordenado por mes`;
+  const yl1=document.getElementById('cerrados-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
+  const yl2=document.getElementById('cerrados-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
 
   // Lista izquierda: solo periodo + número, sin barras
   lista.innerHTML=sorted.map((r,i)=>`
@@ -797,7 +810,7 @@ function renderCerrados(){
       <span style="font-size:1rem;font-weight:800;color:${colors[i]};">${r.n}</span>
     </div>`).join('')
   + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#1a1d29;">
-      <span>Total</span><span>${total.toLocaleString()}</span>
+      <span>Total ${currentYear}</span><span>${total.toLocaleString()}</span>
     </div>`;
 
   // Gráfica vertical (Canvas nativo)
