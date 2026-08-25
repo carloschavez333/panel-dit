@@ -499,7 +499,7 @@
 
   <!-- TAB: EVALUACIÓN DE EQUIPO -->
   <div id="tab-equipo" class="tab-content">
-    <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso el &Iacute;ndice de Calidad de Desarrollo abajo compara Error solo contra Evolutivos, nunca contra Soporte.</div>
+    <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
     <div class="panel">
       <h3>Productividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
@@ -1778,7 +1778,11 @@ function renderEquipoTendencia(){
 //      inventa esa dimensión; simplemente no se mide todavía.
 // Con esos 3 límites, las 2 métricas de calidad quedan aisladas a Evolutivos+Error
 // (excluyendo Soportes por completo) y solo desde marzo (primer mes con Error real),
-// para no diluir el índice con meses donde la métrica de Error ni siquiera aplicaba.
+// para no diluir el ratio con meses donde la métrica de Error ni siquiera aplicaba.
+// 2º ajuste, mismo día: el usuario pidió una forma "concreta y fácil de entender" en
+// vez del % — se cambió de "Error÷(Evolutivos+Error) en %" a un RATIO simple: Error
+// total ÷ Evolutivos total = "fallos de QA por cada Evolutivo liberado" (ej. 6.8).
+// Se explica solo, sin tener que interpretar qué significa un % de un pool combinado.
 function renderEquipoProductividad(){
   const { year, rows } = getComparativoMensual();
   const personas = RESPONSABLES.length;
@@ -1788,32 +1792,37 @@ function renderEquipoProductividad(){
   const totGeneral = rows.reduce((s,r)=>s+r.soportes+r.evolutivos+r.error,0);
   const ticketsPorPersonaMes = totGeneral / personas / meses;
 
-  // Índice de Calidad de Desarrollo: solo Evolutivos + Error, solo desde el primer
-  // mes con Error>0 (antes de eso no había desarrollo activo generando Errores, según
-  // confirmó el usuario) — así no se diluye el índice con meses donde la métrica no
-  // aplicaba todavía.
+  // Fallos de QA por Evolutivo liberado: solo Evolutivos + Error, solo desde el
+  // primer mes con Error>0 (antes de eso no había desarrollo activo generando
+  // Errores, según confirmó el usuario) — así no se diluye el ratio con meses donde
+  // la métrica no aplicaba todavía. Se expresa como RATIO (fallos ÷ evolutivo), no
+  // como porcentaje: es la forma más concreta de leerlo — "cada Evolutivo liberado
+  // generó en promedio X hallazgos de QA antes de quedar listo" — sin tener que
+  // interpretar qué significa un % de un pool combinado.
   const firstErrIdx = rows.findIndex(r=>r.error>0);
   const mesesCalidad = firstErrIdx>=0 ? rows.slice(firstErrIdx) : [];
   const totDCalidad = mesesCalidad.reduce((s,r)=>s+r.evolutivos,0);
   const totECalidad = mesesCalidad.reduce((s,r)=>s+r.error,0);
-  const denomCalidad = totDCalidad + totECalidad;
-  const indiceCalidad = denomCalidad>0 ? totECalidad/denomCalidad*100 : null;
+  const fallosPorEvolutivo = totDCalidad>0 ? totECalidad/totDCalidad : null;
 
-  // Tendencia de Calidad: variación del índice mensual entre la 1ª y 2ª mitad de esos
-  // mismos meses "con desarrollo activo" (mismo criterio de partición 1ª/2ª mitad que
-  // antes, pero aplicado solo al rango donde la comparación es causalmente válida).
-  let tendenciaPts = null, primeraLbl = '', segundaLbl = '';
+  // Tendencia de Calidad: variación de ese mismo ratio (fallos/evolutivo) entre la
+  // 1ª y 2ª mitad de esos meses "con desarrollo activo" — se comparan los TOTALES
+  // de cada mitad (no el promedio de ratios mensuales), para no dejar que un mes con
+  // pocos Evolutivos liberados (ej. mayo, con solo 6) distorsione el promedio con un
+  // ratio disparado ese mes.
+  let tendenciaRatio = null, primeraLbl = '', segundaLbl = '', primeraRatio = null, segundaRatio = null;
   if(mesesCalidad.length >= 2){
-    const idxMes = r => (r.evolutivos+r.error)>0 ? r.error/(r.evolutivos+r.error)*100 : null;
     const mitadC = Math.ceil(mesesCalidad.length/2);
-    const primera = mesesCalidad.slice(0, mitadC).map(idxMes).filter(v=>v!==null);
-    const segunda = mesesCalidad.slice(mitadC).map(idxMes).filter(v=>v!==null);
-    if(primera.length && segunda.length){
-      const avgPrimera = primera.reduce((a,b)=>a+b,0)/primera.length;
-      const avgSegunda = segunda.reduce((a,b)=>a+b,0)/segunda.length;
-      tendenciaPts = avgSegunda - avgPrimera;
-      primeraLbl = mesesCalidad.slice(0, mitadC).map(r=>r.mes).join('-');
-      segundaLbl = mesesCalidad.slice(mitadC).map(r=>r.mes).join('-');
+    const primeraMeses = mesesCalidad.slice(0, mitadC);
+    const segundaMeses = mesesCalidad.slice(mitadC);
+    const dP = primeraMeses.reduce((s,r)=>s+r.evolutivos,0), eP = primeraMeses.reduce((s,r)=>s+r.error,0);
+    const dS = segundaMeses.reduce((s,r)=>s+r.evolutivos,0), eS = segundaMeses.reduce((s,r)=>s+r.error,0);
+    if(dP>0 && dS>0){
+      primeraRatio = eP/dP;
+      segundaRatio = eS/dS;
+      tendenciaRatio = segundaRatio - primeraRatio;
+      primeraLbl = primeraMeses.map(r=>r.mes).join('-');
+      segundaLbl = segundaMeses.map(r=>r.mes).join('-');
     }
   }
 
@@ -1823,14 +1832,14 @@ function renderEquipoProductividad(){
   const kpis = [
     { num: ticketsPorPersonaMes.toFixed(1), lbl:'Volumen por persona / mes', sub:`${totGeneral.toLocaleString()} tickets (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses · conteo bruto, sin ajuste por tamaño/complejidad`, col:'#17a2b8' },
   ];
-  if(indiceCalidad!==null){
-    kpis.push({ num: indiceCalidad.toFixed(1)+'%', lbl:'Índice de Calidad de Desarrollo', sub:`${totECalidad.toLocaleString()} fallos de QA de ${denomCalidad.toLocaleString()} tickets de desarrollo (Evolutivos+Error) desde ${mesesCalidad[0].mes} · no incluye Soportes (producción)`, col: indiceCalidad<=15?'#16a34a': indiceCalidad<=30?'#d97706':'#dc2626' });
+  if(fallosPorEvolutivo!==null){
+    kpis.push({ num: fallosPorEvolutivo.toFixed(1), lbl:'Fallos de QA por Evolutivo liberado', sub:`${totECalidad.toLocaleString()} fallos de QA ÷ ${totDCalidad.toLocaleString()} Evolutivos liberados desde ${mesesCalidad[0].mes} · no incluye Soportes (producción)`, col:'#8b5cf6' });
   }
-  if(tendenciaPts!==null){
-    const mejora = tendenciaPts<0; // % Error bajando = mejor calidad
+  if(tendenciaRatio!==null){
+    const mejora = tendenciaRatio<0; // menos fallos por evolutivo = mejor calidad
     const tendColor = mejora ? '#16a34a' : '#dc2626';
     const tendArrow = mejora ? '▼' : '▲';
-    kpis.push({ num: `${tendArrow} ${Math.abs(tendenciaPts).toFixed(1)} pts`, lbl:'Tendencia de Calidad', sub: `% Error ${mejora?'bajó':'subió'}: ${primeraLbl} vs ${segundaLbl}`, col: tendColor });
+    kpis.push({ num: `${tendArrow} ${Math.abs(tendenciaRatio).toFixed(1)}`, lbl:'Tendencia de Calidad', sub: `Fallos por evolutivo ${mejora?'bajó':'subió'} de ${primeraRatio.toFixed(1)} (${primeraLbl}) a ${segundaRatio.toFixed(1)} (${segundaLbl})`, col: tendColor });
   }
   const kpiEl = document.getElementById('equipo-productividad-kpis');
   if(kpiEl){
@@ -1845,9 +1854,9 @@ function renderEquipoProductividad(){
 
   const formula = document.getElementById('equipo-productividad-formula');
   if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Volumen = total combinado (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses — es conteo de tickets, no esfuerzo; el tamaño de cada ticket es subjetivo y no se pesa. `
-    + `Índice de Calidad de Desarrollo = Error ÷ (Evolutivos + Error), calculado SOLO con esas dos categorías desde ${mesesCalidad.length?mesesCalidad[0].mes:'—'} (primer mes con Error registrado) — se excluye Soportes porque los tickets de Error los genera el propio trabajo de desarrollo Evolutivo, no Soportes; y se excluyen enero/febrero porque antes de marzo no había desarrollo activo generando Errores (no es un hueco de datos). `
-    + `<strong>Importante:</strong> los tickets de Error son fallos que levanta QA durante el control de calidad de los Evolutivos, no incidentes que el cliente reporta en producción (eso es Soporte) — un índice alto aquí mide retrabajo interno del ciclo de desarrollo/QA, no calidad de servicio al cliente. `
-    + `Tendencia de Calidad = variación del % de Error mensual entre la 1ª mitad (${primeraLbl||'—'}) y la 2ª mitad (${segundaLbl||'—'}) de esos mismos meses; negativo/▼ = el % de Error bajó = mejoró la calidad. `
+    + `Fallos de QA por Evolutivo liberado = total de tickets Error ÷ total de tickets Evolutivo, calculado SOLO con esas dos categorías desde ${mesesCalidad.length?mesesCalidad[0].mes:'—'} (primer mes con Error registrado) — se excluye Soportes porque los tickets de Error los genera el propio trabajo de desarrollo Evolutivo, no Soportes; y se excluyen enero/febrero porque antes de marzo no había desarrollo activo generando Errores (no es un hueco de datos). Es un ratio, no un porcentaje: significa &quot;por cada Evolutivo que se libera a producción, QA levantó en promedio este número de hallazgos antes de que quedara listo&quot;. `
+    + `<strong>Importante:</strong> los tickets de Error son fallos que levanta QA durante el control de calidad de los Evolutivos, no incidentes que el cliente reporta en producción (eso es Soporte) — un ratio alto aquí mide retrabajo interno del ciclo de desarrollo/QA, no calidad de servicio al cliente. `
+    + `Tendencia de Calidad = variación de ese mismo ratio (fallos ÷ evolutivo) comparando los totales de la 1ª mitad (${primeraLbl||'—'}) contra la 2ª mitad (${segundaLbl||'—'}) de esos meses — se suman los tickets de cada mitad antes de dividir, para que un mes con pocos Evolutivos liberados no distorsione el promedio con un ratio disparado ese mes solo. Negativo/▼ = bajó el número de fallos por evolutivo = mejoró la calidad. `
     + `Nota: aún no existe SLA/tiempo de atención medido para Soportes, así que este panel no evalúa tiempos de respuesta — solo volumen y calidad de desarrollo.`;
 }
 
