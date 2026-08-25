@@ -142,7 +142,7 @@
       <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')">&#x25B8;</span>
     </div>
     <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
-      <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
+      <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E0;</span> Espera de Firma</div>
       <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
     </div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
@@ -275,10 +275,10 @@
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-dev-sub">Evolutivos del año en curso</div>
     </div>
-    <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
+    <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Espera de Firma">
       <div class="kpi-icon">&#x1F7E0;</div>
       <div class="num" id="kpi-aprobacion-dev">0</div>
-      <div class="lbl">Aprobaci&oacute;n Cliente</div>
+      <div class="lbl">Espera de Firma</div>
       <div class="sub">Estado: Pendiente de Firma</div>
     </div>
     <div class="kpi kpi-backlog">
@@ -328,7 +328,7 @@
   <!-- TAB: NUEVOS DESARROLLOS — APROBACION CLIENTE -->
   <div id="tab-aprobacion_dev" class="tab-content">
     <div style="background:#fdeeea;color:#a83b1d;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
-      &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Evolutivos por Localidad
+      &#x1F7E0; Espera de Firma &mdash; Evolutivos por Localidad
     </div>
     <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Pendiente de Firma"</strong> (la espera de aprobaci&oacute;n/firma del cliente en este flujo). No incluye "Aprobaci&oacute;n por Cliente" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen. Fuente: hoja CC Evolutivos (1hr activo).</div>
     <div id="aprobacion-dev-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
