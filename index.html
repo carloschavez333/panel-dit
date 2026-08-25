@@ -154,6 +154,7 @@
     </div>
     <div class="panel">
       <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia = Soporte &bull; Estado seg&uacute;n Jira, agrupado por Localidad</div>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -317,8 +318,11 @@ const BITACORA = [
   { fecha:'21 Ago 2026', activos:79, cerrados:2172, aprobacion:46, desplegar:12, backlog:88 },
   { fecha:'24 Ago 2026', activos:77, cerrados:2199, aprobacion:36, desplegar:10, backlog:82 },
 ];
-// Fuente: hoja "TD_Soportes_En_Atencion" (tabla dinámica sobre "Product Backlog Soportes DEV"),
-// Tipo de Incidencia = Soporte, agrupado por Estado y Localidad.
+// Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
+// Filtro: Tipo de Incidencia = Soporte. Agrupado por Localidad y por Estado de Jira
+// (columna "Estado"), mapeado a: En Progreso, Aprobación (Espera Cliente Externo),
+// En QA, Bloqueado, Reabierto, Backlog Dev (Listo p/Desplegar + Ready to Merge +
+// Backlog Desarrollo Centralizado + Product Backlog).
 const SOPORTES = [
   {loc:'Quintana Roo', prog:4, aprob:0, qa:0, bloq:6, reabierto:0, bkdev:11, total:21},
   {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:5, reabierto:1, bkdev:5, total:16},
