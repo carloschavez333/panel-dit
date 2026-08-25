@@ -79,6 +79,12 @@
   .kpi-cerrados-err .kpi-icon{background:#dbeafe;color:#1d4ed8}
   .kpi-cerrados-err:hover{background-color:#eff6ff}
   .kpi-cerrados-err:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#1e3a8a;color:#1e3a8a;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(30,58,138,.35)}
+  /* Tickets de Error — En Atención (naranja, propio del módulo — ya no reutiliza
+     el rojo de .kpi-backlog para no leerse como "crítico/alarma") */
+  .kpi-backlog-err{border-color:#ea580c}
+  .kpi-backlog-err .kpi-icon{background:#ffedd5;color:#c2410c}
+  .kpi-backlog-err:hover{background-color:#fff7ed}
+  .kpi-backlog-err:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#7c2d12;color:#7c2d12;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(124,45,18,.35)}
   .kpi-linkable{cursor:pointer}
   .kpi-linkable:hover .lbl{text-decoration:underline;text-underline-offset:3px}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
@@ -388,24 +394,6 @@
         <div id="cerrados-dev-total-box2"></div>
       </div>
     </div>
-    <div class="panel" style="margin-top:28px;">
-      <h3>Top Responsables &mdash; Tickets Evolutivos Atendidos por Persona</h3>
-      <div class="info-box" style="font-size:.78rem;" id="responsables-info-dev">Misma lista fija de 11 Responsables oficiales que Soportes. Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo &Aacute;gil + CC Evolutivo), agrupado por Persona asignada.</div>
-      <!-- Podio top 3 -->
-      <div id="top3-podio-dev" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;"></div>
-      <!-- Tabla + gráfica -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Responsable</th><th>Tickets</th><th>Participaci&oacute;n</th></tr></thead>
-            <tbody id="historial-cerrados-dev-tbody"></tbody>
-          </table>
-        </div>
-        <div style="position:relative;min-height:320px;height:100%;">
-          <canvas id="chartTopRespDev"></canvas>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- TAB: TICKETS DE ERROR (RESUMEN + EN ATENCIÓN) -->
@@ -417,21 +405,21 @@
       <div class="lbl">Resueltos</div>
       <div class="sub" id="kpi-cerrados-err-sub">Errores del año en curso</div>
     </div>
-    <div class="kpi kpi-backlog">
+    <div class="kpi kpi-backlog-err">
       <div class="kpi-icon"></div>
       <div class="num" id="kpi-backlog-err">0</div>
       <div class="lbl">En Atenci&oacute;n</div>
       <div class="sub">Errores activos</div>
     </div>
   </div>
-    <div class="panel" style="border-top:4px solid #dc2626">
+    <div class="panel" style="border-top:4px solid #ea580c">
       <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-err" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-err" style="color:#ef4444;font-size:1rem;"></strong></div>
       <div style="position:relative;height:410px;">
         <canvas id="chartLocalidadErr"></canvas>
       </div>
     </div>
-    <div class="panel" style="border-top:4px solid #dc2626">
+    <div class="panel" style="border-top:4px solid #ea580c">
       <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Error (1hr activo)</strong> &bull; Tipo de Incidencia: Error &bull; columnas de Estado generadas din&aacute;micamente desde los datos reales del Sheet, agrupado por Localidad</div>
       <div class="table-wrap">
@@ -1414,7 +1402,7 @@ function showTab(name, el){
   if(name==='resumen'){renderResumen();}
   if(name==='cerrados'){renderCerrados();}
   if(name==='resumen_dev'){renderResumenDev();}
-  if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
+  if(name==='cerrados_dev'){renderCerradosDev();}
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
@@ -1875,69 +1863,6 @@ function renderCerradosDev(){
   );
 }
 
-// ─── RENDER: TOP RESPONSABLES (Evolutivos, misma lista de 11 personas que Soportes) ──
-function renderHistorialCerradosDev(){
-  const tb=document.getElementById('historial-cerrados-dev-tbody');
-  if(!tb) return;
-  const sorted=[...RESPONSABLES_DEV].sort((a,b)=>b.n-a.n);
-  // Misma lista fija de 11 Responsables oficiales que Soportes (RESPONSABLES). El % de
-  // participación va sobre el total REAL de tickets Evolutivos atendidos (TOTAL_CERRADOS_DEV,
-  // la misma fuente que el KPI "Liberados Producción"), no sobre la suma de esta lista —
-  // de lo contrario cada % sale inflado, porque esta lista es un subconjunto de 11 personas
-  // y no incluye a todo el personal que cerró tickets Evolutivos.
-  const TOTAL_TOP = sorted.reduce((s,r)=>s+r.n,0);
-  const TOTAL = TOTAL_CERRADOS_DEV;
-  const medals=['🥇','🥈','🥉'];
-  const podioColors=['#eab308','#64748b','#c98a52'];
-  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
-
-  const info=document.getElementById('responsables-info-dev');
-  if(info){
-    const coberturaPct=(TOTAL_TOP/TOTAL*100).toFixed(1);
-    info.innerHTML='Misma lista fija de 11 Responsables oficiales que Soportes (no son necesariamente quienes más tickets Evolutivos tienen asignados en el Sheet). Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo), agrupado por Persona asignada. '
-      + `Estas 11 personas concentran ${TOTAL_TOP.toLocaleString()} de ${TOTAL.toLocaleString()} tickets Evolutivos del histórico total (${coberturaPct}%); el resto corresponde a otro personal que no forma parte de esta lista.`;
-  }
-
-  // Podio top 3
-  const podio=document.getElementById('top3-podio-dev');
-  if(podio){
-    podio.innerHTML=sorted.slice(0,3).map((r,i)=>`
-      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.n}</div>
-        <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
-        <div style="font-size:.75rem;color:#64748b;">${(r.n/TOTAL*100).toFixed(1)}% del total registrado</div>
-      </div>`).join('');
-  }
-
-  // Tabla
-  tb.innerHTML=sorted.map((r,i)=>{
-    const pct=(r.n/TOTAL*100).toFixed(1);
-    const barW=Math.round(r.n/sorted[0].n*100);
-    const rowStyle=i<3?`font-weight:700;`:'';
-    const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-    return `<tr style="${rowStyle}">
-      <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
-      <td>${r.nom}</td>
-      <td style="color:${numColor};font-weight:700;">${r.n}</td>
-      <td><div style="display:flex;align-items:center;gap:8px;">
-        <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px;">
-          <div style="width:${barW}%;height:100%;background:${i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8'};border-radius:4px;"></div>
-        </div>
-        <span style="font-size:.75rem;color:#64748b;min-width:34px;">${pct}%</span>
-      </div></td>
-    </tr>`;
-  }).join('');
-
-  // Gráfica horizontal top 10 (Canvas nativo)
-  const barColors=sorted.map((_,i)=>i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8');
-  drawHBar('chartTopRespDev',
-    sorted.map(r=>r.nom.split(' ').slice(0,2).join(' ')),
-    sorted.map(r=>r.n),
-    barColors
-  );
-}
-
 // ─── RENDER: TICKETS DE ERROR — KPIs ───────────────────────────────────────────
 function renderKPIsErr(){
   const elCerrados = document.getElementById('kpi-cerrados-err');
@@ -1959,7 +1884,11 @@ function renderResumenErr(){
     kpiActivos: TOTAL_ACTIVOS_ERR,
     totalLocId: 'total-loc-err',
     totalSinLocId: 'total-sinloc-err',
-    barChartId: 'chartLocalidadErr',
+    // Gráfica "piruleta" (lollipop), homologada 25 Ago 2026 con el mismo diseño
+    // que Soportes/Evolutivos (chartId → drawLollipop con LOLLIPOP_COLORS) — antes
+    // usaba barChartId → drawStackedHBar (barra plana color único, distinta al
+    // resto del panel).
+    chartId: 'chartLocalidadErr',
   });
 }
 
@@ -2417,7 +2346,7 @@ document.addEventListener('DOMContentLoaded', function(){
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderBitacora,
-   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev, renderHistorialCerradosDev,
+   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr, renderHistorialCerradosErr,
    renderEquipoTendencia, renderEquipoProductividad, renderEquipoRendimiento, renderRitmoAtencion, renderEfectividadEquipo, renderVelocidadAtencion].forEach(fn => fn());
 });
