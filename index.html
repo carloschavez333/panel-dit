@@ -167,7 +167,7 @@
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia = Soporte &bull; Estado seg&uacute;n Jira, agrupado por Localidad</div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia en {Soporte, Problema} &bull; Estado seg&uacute;n Jira, agrupado por Localidad</div>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -313,15 +313,16 @@ const BITACORA = [
   { fecha:'24 Ago 2026', activos:77, cerrados:2199, aprobacion:36, desplegar:10, backlog:82 },
 ];
 // Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
-// Filtro: Tipo de Incidencia = Soporte. Agrupado por Localidad y por Estado de Jira
-// (columna "Estado"), mapeado a: En Progreso, Aprobación (Espera Cliente Externo),
-// En QA, Bloqueado, Reabierto, Backlog Dev (Listo p/Desplegar + Ready to Merge +
+// Filtro: Tipo de Incidencia en {Soporte, Problema} (coincide con el conteo total
+// de filas de la hoja). Agrupado por Localidad y por Estado de Jira (columna
+// "Estado"), mapeado a: En Progreso, Aprobación (Espera Cliente Externo), En QA,
+// Bloqueado, Reabierto, Backlog Dev (Listo p/Desplegar + Ready to Merge +
 // Backlog Desarrollo Centralizado + Product Backlog).
 const SOPORTES = [
   {loc:'Quintana Roo', prog:4, aprob:0, qa:0, bloq:6, reabierto:0, bkdev:11, total:21},
-  {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:5, reabierto:1, bkdev:5, total:16},
+  {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:6, reabierto:1, bkdev:5, total:17},
   {loc:'Hidalgo', prog:2, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:10, total:13},
-  {loc:'Colima', prog:1, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:8, total:10},
+  {loc:'Colima', prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:8, total:11},
   {loc:'Jalisco', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, total:5},
   {loc:'Seguritech', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, total:5},
   {loc:'Baja California', prog:1, aprob:0, qa:0, bloq:2, reabierto:0, bkdev:1, total:4},
@@ -330,7 +331,7 @@ const SOPORTES = [
   {loc:'Sinaloa', prog:0, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:0, total:1},
   {loc:'Chiapas', prog:0, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:1, total:1},
 ];
-const TOTAL_ACTIVOS = 81;
+const TOTAL_ACTIVOS = 83;
 const APROBACION = [
   {loc:'Quintana Roo', n:8},
   {loc:'Guanajuato', n:6},
