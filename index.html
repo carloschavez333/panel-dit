@@ -192,19 +192,19 @@
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
       <div class="kpi-icon"></div>
-      <div class="num" id="kpi-cerrados">2,199</div>
+      <div class="num" id="kpi-cerrados">2,095</div>
       <div class="lbl">Atendidos (DONE)</div>
       <div class="sub" id="kpi-cerrados-sub">Soportes + Asistencias del año en curso</div>
     </div>
     <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
       <div class="kpi-icon"></div>
-      <div class="num" id="kpi-aprobacion">37</div>
+      <div class="num" id="kpi-aprobacion">35</div>
       <div class="lbl">Aprobaci&oacute;n Cliente</div>
       <div class="sub">Pendientes de validar</div>
     </div>
     <div class="kpi kpi-backlog">
       <div class="kpi-icon"></div>
-      <div class="num" id="kpi-backlog">82</div>
+      <div class="num" id="kpi-backlog">80</div>
       <div class="lbl">En Atenci&oacute;n</div>
       <div class="sub">Soportes + Asistencias</div>
     </div>
@@ -498,18 +498,18 @@
     </div>
   </div>
 
-  <!-- TAB: RITMO DE ATENCIÓN (Soportes) -->
+  <!-- TAB: RITMO DE ATENCIÓN (Soportes + Evolutivos) -->
   <div id="tab-ritmo" class="tab-content">
-    <div class="info-box"><strong>Ritmo de Atenci&oacute;n</strong> mide qu&eacute; tan r&aacute;pido puede el equipo vaciar el backlog actual de Soportes (&quot;En Atenci&oacute;n&quot;) al ritmo de cierre que ya ha demostrado. Solo aplica a Soportes &mdash; no incluye &quot;Aprobaci&oacute;n Cliente&quot;, porque esos tickets est&aacute;n detenidos esperando al cliente, no al equipo.</div>
+    <div class="info-box"><strong>Ritmo de Atenci&oacute;n</strong> mide qu&eacute; tan r&aacute;pido puede el equipo vaciar el backlog actual de <strong>Soportes + Evolutivos</strong> (&quot;En Atenci&oacute;n&quot;) al ritmo de cierre que ya ha demostrado. No incluye &quot;Aprobaci&oacute;n Cliente&quot; (Soportes) ni &quot;Espera de Firma&quot; (Evolutivos) &mdash; esos tickets est&aacute;n detenidos esperando al cliente, no al equipo &mdash; ni tickets de Error, que son hallazgos de QA, no backlog operativo.</div>
     <div class="panel">
-      <h3>Ritmo de Atenci&oacute;n &mdash; Soportes</h3>
+      <h3>Ritmo de Atenci&oacute;n &mdash; Soportes + Evolutivos</h3>
       <div class="info-box" style="font-size:.78rem;" id="ritmo-year-label"></div>
       <div id="ritmo-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
       <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="ritmo-formula"></div>
     </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Ritmo Actual vs. Ritmo Necesario para Metas de Cierre</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Tickets de Soportes que el equipo necesitar&iacute;a cerrar por d&iacute;a h&aacute;bil para vaciar el backlog actual en cada plazo, comparado contra el ritmo que ya demuestran.</div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Tickets de Soportes + Evolutivos que el equipo necesitar&iacute;a cerrar por d&iacute;a h&aacute;bil para vaciar el backlog actual en cada plazo, comparado contra el ritmo que ya demuestran.</div>
       <div style="position:relative;height:320px;">
         <canvas id="chartRitmoMetas"></canvas>
       </div>
@@ -628,6 +628,7 @@ const BITACORA = [
   { fecha:'20 Ago 2026', activos:79, cerrados:2164, aprobacion:43, desplegar:10, backlog:88 },
   { fecha:'21 Ago 2026', activos:79, cerrados:2172, aprobacion:46, desplegar:12, backlog:88 },
   { fecha:'24 Ago 2026', activos:77, cerrados:2199, aprobacion:36, desplegar:10, backlog:82 },
+  { fecha:'25 Ago 2026', activos:77, cerrados:2204, aprobacion:35, desplegar:9, backlog:80 },
 ];
 // Fuente homologada: hoja "Product Backlog Soportes DEV (1hr activo)".
 // Filtro: Tipo de Incidencia en {Soporte, Problema} (coincide con el conteo total
@@ -641,11 +642,11 @@ const BITACORA = [
 const SOPORTES = [
   {loc:'Quintana Roo', prog:4, aprob:0, qa:0, bloq:6, reabierto:0, bkdev:11, otro:0, total:21},
   {loc:'Guanajuato', prog:5, aprob:0, qa:0, bloq:6, reabierto:1, bkdev:5, otro:0, total:17},
-  {loc:'Hidalgo', prog:2, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:10, otro:0, total:13},
-  {loc:'Colima', prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:8, otro:0, total:11},
-  {loc:'Jalisco', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, otro:0, total:5},
-  {loc:'Seguritech', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:4, otro:0, total:5},
+  {loc:'Colima', prog:2, aprob:1, qa:0, bloq:0, reabierto:0, bkdev:10, otro:0, total:13},
+  {loc:'Hidalgo', prog:2, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:6, otro:0, total:9},
+  {loc:'Jalisco', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:5, otro:0, total:6},
   {loc:'Baja California', prog:1, aprob:0, qa:0, bloq:2, reabierto:0, bkdev:1, otro:0, total:4},
+  {loc:'Seguritech', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:2, otro:0, total:3},
   {loc:'Sonora', prog:1, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:2, otro:0, total:3},
   {loc:'Chihuahua', prog:2, aprob:0, qa:0, bloq:0, reabierto:0, bkdev:0, otro:0, total:2},
   {loc:'Sinaloa', prog:0, aprob:0, qa:0, bloq:0, reabierto:1, bkdev:0, otro:0, total:1},
@@ -655,13 +656,13 @@ const SOPORTES = [
 // la tabla sean matemáticamente imposibles de desincronizar entre sí.
 const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
 const APROBACION = [
-  {loc:'Quintana Roo', n:8},
+  {loc:'Quintana Roo', n:9},
   {loc:'Guanajuato', n:6},
-  {loc:'Hidalgo', n:4},
-  {loc:'Jalisco', n:3},
-  {loc:'Colima', n:3},
+  {loc:'Jalisco', n:4},
+  {loc:'Colima', n:4},
   {loc:'Baja California', n:3},
   {loc:'Sonora', n:2},
+  {loc:'Hidalgo', n:2},
   {loc:'Zacatecas', n:2},
   {loc:'Cancún', n:1},
   {loc:'CDMX', n:1},
@@ -728,17 +729,22 @@ function getCerradosVigentes(){
   return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
 }
 
-// ─── RENDER: RITMO DE ATENCIÓN (Soportes) ─────────────────────────────────────
+// ─── RENDER: RITMO DE ATENCIÓN (Soportes + Evolutivos) ────────────────────────
 // Pedido del usuario 25 Ago 2026: "una estrategia de cuánto atender para cerrar
-// todo lo pendiente o en atención". Se deriva 100% de TOTAL_ACTIVOS (backlog actual
-// de Soportes, "En Atención") y CERRADOS/getCerradosVigentes() (ritmo histórico de
-// cierre) — nada hardcodeado. Solo aplica a Soportes, NO a "Aprobación Cliente"
-// (esos tickets están detenidos esperando al cliente, no al equipo, así que no
-// tiene sentido medir "ritmo del equipo" contra algo que el equipo no controla).
+// todo lo pendiente o en atención". Primera versión solo usaba Soportes; el usuario
+// corrigió: "el backlog corresponde tanto a tickets de Soportes como tickets
+// Evolutivos" — así que el backlog y el ritmo combinan AMBAS categorías. Se deriva
+// 100% de TOTAL_ACTIVOS + TOTAL_ACTIVOS_DEV_ACCIONABLE (backlog actual) y
+// CERRADOS/CERRADOS_DEV vía getCerradosVigentes()/getCerradosVigentesDev() (ritmo
+// histórico de cierre) — nada hardcodeado. Confirmado con el usuario vía
+// AskUserQuestion (25 Ago 2026): NO incluye Error (son hallazgos de QA, no tickets
+// "pendientes de atender" en el mismo sentido operativo) y excluye lo que depende
+// del cliente en ambas categorías — "Aprobación Cliente" en Soportes y "Espera de
+// Firma" en Evolutivos — porque ese tiempo no lo controla el equipo.
 // Supuesto explícito (documentado, no oculto): ~21 días hábiles por mes calendario
 // — se usa para convertir el ritmo mensual histórico a un ritmo diario. El usuario
 // eligió usar el promedio de los 8 meses de 2026 con datos (no solo los últimos 3),
-// así que el resultado SÍ incluye el pico de marzo (384 cierres).
+// así que el resultado SÍ incluye el pico de marzo (384 cierres de Soportes).
 const DIAS_HABILES_MES = 21;
 // META_DIAS_RITMO = "2 semanas hábiles" (2×5 días) — el mismo umbral que ya se usa
 // en la gráfica "Ritmo Actual vs. Metas de Cierre" (barra "2 sem"). Se reutiliza
@@ -750,31 +756,35 @@ const META_DIAS_RITMO = 2*5;
 // (panel propio) y por renderEfectividadEquipo() (síntesis), para que ambos paneles
 // sean matemáticamente imposibles de desincronizar entre sí.
 function computeRitmoAtencion(){
-  const { year, rows } = getCerradosVigentes();
-  const mesesConDatos = rows.filter(r=>/^\d{4}-/.test(r.loc));
-  const totCerrado = mesesConDatos.reduce((s,r)=>s+r.n,0);
-  const numMeses = mesesConDatos.length;
+  const sop = getCerradosVigentes();
+  const dev = getCerradosVigentesDev();
+  const mesesSop = sop.rows.filter(r=>/^\d{4}-/.test(r.loc));
+  const mesesDev = dev.rows.filter(r=>/^\d{4}-/.test(r.loc));
+  const totCerradoSop = mesesSop.reduce((s,r)=>s+r.n,0);
+  const totCerradoDev = mesesDev.reduce((s,r)=>s+r.n,0);
+  const totCerrado = totCerradoSop + totCerradoDev;
+  const numMeses = Math.max(mesesSop.length, mesesDev.length);
   if(numMeses===0) return null;
   const ritmoDiario = totCerrado / (numMeses*DIAS_HABILES_MES);
-  const backlogActual = TOTAL_ACTIVOS;
+  const backlogActual = TOTAL_ACTIVOS + TOTAL_ACTIVOS_DEV_ACCIONABLE;
   const diasParaCerrar = ritmoDiario>0 ? backlogActual/ritmoDiario : null;
   const semanasParaCerrar = diasParaCerrar!==null ? diasParaCerrar/5 : null;
   const ritmo1sem = backlogActual/5;
   const ritmo2sem = backlogActual/META_DIAS_RITMO;
-  return { year, mesesConDatos, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem };
+  return { year: sop.year, mesesSop, mesesDev, totCerradoSop, totCerradoDev, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem };
 }
 
 function renderRitmoAtencion(){
   const r = computeRitmoAtencion();
   if(!r) return;
-  const { year, mesesConDatos, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem } = r;
+  const { year, mesesSop, totCerradoSop, totCerradoDev, totCerrado, numMeses, ritmoDiario, backlogActual, diasParaCerrar, semanasParaCerrar, ritmo1sem, ritmo2sem } = r;
 
   const yl = document.getElementById('ritmo-year-label');
-  if(yl) yl.textContent = `Año ${year} · ritmo calculado sobre ${numMeses} meses con datos (${mesesConDatos[0].loc.split(' · ')[1]}–${mesesConDatos[numMeses-1].loc.split(' · ')[1]}) · backlog actual (En Atención): ${backlogActual.toLocaleString()} tickets`;
+  if(yl) yl.textContent = `Año ${year} · ritmo calculado sobre ${numMeses} meses con datos (${mesesSop[0].loc.split(' · ')[1]}–${mesesSop[numMeses-1].loc.split(' · ')[1]}) · backlog actual (Soportes + Evolutivos, En Atención): ${backlogActual.toLocaleString()} tickets`;
 
   const kpis = [
-    { num: backlogActual.toLocaleString(), lbl:'Backlog actual (En Atención)', sub:'Tickets de Soportes pendientes de atender ahora mismo', col:'#dc2626' },
-    { num: ritmoDiario.toFixed(1), lbl:'Ritmo actual de cierre', sub:`${totCerrado.toLocaleString()} tickets cerrados ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles/mes`, col:'#17a2b8' },
+    { num: backlogActual.toLocaleString(), lbl:'Backlog actual (En Atención)', sub:`${TOTAL_ACTIVOS.toLocaleString()} Soportes + ${TOTAL_ACTIVOS_DEV_ACCIONABLE.toLocaleString()} Evolutivos pendientes de atender ahora mismo`, col:'#dc2626' },
+    { num: ritmoDiario.toFixed(1), lbl:'Ritmo actual de cierre', sub:`${totCerradoSop.toLocaleString()} Soportes + ${totCerradoDev.toLocaleString()} Evolutivos cerrados ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles/mes`, col:'#17a2b8' },
   ];
   if(diasParaCerrar!==null){
     kpis.push({ num: diasParaCerrar.toFixed(1)+' días', lbl:'Para vaciar el backlog actual', sub:`≈ ${semanasParaCerrar.toFixed(1)} semanas hábiles, al ritmo actual y sin contar tickets nuevos`, col:'#16a34a' });
@@ -788,9 +798,10 @@ function renderRitmoAtencion(){
     </div>`).join('');
 
   const formula = document.getElementById('ritmo-formula');
-  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Ritmo actual = total de tickets de Soportes cerrados en ${year} (${totCerrado.toLocaleString()}) ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles por mes (supuesto explícito, no un dato exacto del Sheet). `
+  if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Backlog actual = tickets "En Atención" de Soportes (${TOTAL_ACTIVOS.toLocaleString()}) + tickets "En Atención" de Evolutivos excluyendo Espera de Firma (${TOTAL_ACTIVOS_DEV_ACCIONABLE.toLocaleString()} de ${TOTAL_ACTIVOS_DEV.toLocaleString()} totales). `
+    + `Ritmo actual = (tickets de Soportes + tickets de Evolutivos cerrados en ${year}, ${totCerrado.toLocaleString()} en total) ÷ ${numMeses} meses ÷ ${DIAS_HABILES_MES} días hábiles por mes (supuesto explícito, no un dato exacto del Sheet). `
     + `Días para vaciar el backlog = Backlog actual ÷ Ritmo actual. `
-    + `No incluye "Aprobación Cliente" porque esos tickets dependen del cliente, no del ritmo del equipo. `
+    + `No incluye "Aprobación Cliente" (Soportes) ni "Espera de Firma" (Evolutivos) porque esos tickets dependen del cliente, no del ritmo del equipo. Tampoco incluye tickets de Error (son hallazgos de QA, no backlog operativo pendiente de atender). `
     + `<strong>Límite importante:</strong> este cálculo asume que no entran tickets nuevos mientras se vacía el backlog — no hay dato de "tickets nuevos por día" en el Sheet, solo de tickets cerrados por mes, así que es una proyección de "cuánto tardarían si solo atendieran lo que ya está pendiente", no una predicción exacta de cuándo llegará el backlog a cero en la realidad.`;
 
   drawVBar('chartRitmoMetas',
@@ -818,6 +829,13 @@ const EVOL_ACTIVOS = [
   {loc:'Chiapas',         firma:0, prog:1, backlog:0, presup:0, bloq:0, listo:0, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:1},
 ];
 const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
+// Corrección 25 Ago 2026: el usuario aclaró que el backlog de "Ritmo de Atención"
+// debe incluir tanto Soportes como Evolutivos (antes solo tenía Soportes). Igual que
+// "Aprobación Cliente" se excluye del backlog de Soportes (depende del cliente, no
+// del equipo), aquí se excluye "Espera de Firma" (columna `firma`) del backlog de
+// Evolutivos por el mismo criterio — confirmado con el usuario vía AskUserQuestion.
+const TOTAL_FIRMA_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.firma,0);
+const TOTAL_ACTIVOS_DEV_ACCIONABLE = TOTAL_ACTIVOS_DEV - TOTAL_FIRMA_DEV;
 
 // Fuente: la MISMA hoja "CC Evolutivos (1hr activo)", pero solo el Estado exacto
 // "PENDIENTE DE FIRMA" — corregido el 25 Ago 2026: el usuario aclaró que en este
@@ -2017,14 +2035,14 @@ function renderEfectividadEquipo(){
       ok: ritmoOk,
       lbl: 'Ritmo de Atención',
       txt: ritmoOk
-        ? `Backlog de Soportes bajo control: se vacía en ${rit.diasParaCerrar.toFixed(1)} días hábiles (meta: ${META_DIAS_RITMO})`
-        : `Backlog de Soportes por encima de la meta: tardaría ${rit.diasParaCerrar.toFixed(1)} días hábiles en vaciarse (meta: ${META_DIAS_RITMO})`
+        ? `Backlog de Soportes + Evolutivos bajo control: se vacía en ${rit.diasParaCerrar.toFixed(1)} días hábiles (meta: ${META_DIAS_RITMO})`
+        : `Backlog de Soportes + Evolutivos por encima de la meta: tardaría ${rit.diasParaCerrar.toFixed(1)} días hábiles en vaciarse (meta: ${META_DIAS_RITMO})`
     },
   ];
 
   let conclusion;
   if(totalOk===2){
-    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo está siendo efectivo: mejora su calidad de desarrollo y mantiene el backlog de Soportes bajo control, sin acumular pendientes.`;
+    conclusion = `Con ${totalOk} de 2 señales en verde, el equipo está siendo efectivo: mejora su calidad de desarrollo y mantiene el backlog de Soportes + Evolutivos bajo control, sin acumular pendientes.`;
   } else if(totalOk===1){
     conclusion = `Con ${totalOk} de 2 señales en verde, el equipo va bien en una dimensión pero necesita atención en la otra — no es un veredicto de "efectivo" ni de "no efectivo" completo todavía.`;
   } else {
