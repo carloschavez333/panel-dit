@@ -161,7 +161,7 @@
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc" style="color:#ef4444;font-size:1rem;"></strong></div>
-      <div style="position:relative;height:460px;">
+      <div style="position:relative;height:410px;">
         <canvas id="chartLocalidad"></canvas>
       </div>
     </div>
@@ -373,40 +373,6 @@ const CERRADOS = [
   {loc:'2026-08 · Agosto', n:206},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0);
-const BACKLOG_RESP = [
-  {nom:'Eunice Anais Arevalo Avalos', n:13},
-  {nom:'Gibran Esaú Solís Valenzuela', n:7},
-  {nom:'Leonardo Lucio Perez', n:6},
-  {nom:'Mariano Conte', n:6},
-  {nom:'Sin asignar', n:6},
-  {nom:'Omar Villalpando', n:4},
-  {nom:'ZAMORA RODRIGUEZ LUZ ADRIANA', n:4},
-  {nom:'Hugo Cesar Rivero Rodriguez', n:3},
-  {nom:'BRUNO ANTONIO GONZALEZ URIBE', n:3},
-  {nom:'Angel Ulises Velasquez Hernandez', n:3},
-  {nom:'Jonathan Levi Márquez García', n:2},
-  {nom:'Ivan Perez Felipe', n:2},
-  {nom:'Jesus Feria Ortiz', n:2},
-  {nom:'LOZANO HERNANDEZ JONATHAN ARISTEO', n:2},
-  {nom:'VILLEGAS GUEVARA YOSHIO ADAN', n:2},
-  {nom:'Arturo Cedeño Ortíz', n:2},
-  {nom:'QUINTERO SERNA JUAN ANTONIO', n:1},
-  {nom:'Silvestre Cerrato', n:1},
-  {nom:'Jorge Octavio Paz Hernandez', n:1},
-  {nom:'Luis Antonio Hernández Martínez', n:1},
-  {nom:'Luis Andres Lopez Estrada', n:1},
-  {nom:'GRAS RODRIGO GABRIEL', n:1},
-  {nom:'JIMENEZ MICETE RICARDO', n:1},
-  {nom:'DURAZO RIOS MANUEL ANGEL', n:1},
-  {nom:'Miguel Angel Velasco Castañeda', n:1},
-  {nom:'MAQUEDA POLICARPO ALEJANDRA', n:1},
-  {nom:'Berenice Zavala Jiménez', n:1},
-  {nom:'Juan Manuel Olguin Colin', n:1},
-  {nom:'Luis Antonio Jimenez Matus', n:1},
-  {nom:'Jesus Jonathan Ramos Nuñez', n:1},
-  {nom:'Andrea Ixchel Tejeda Rayas', n:1},
-];
-const TOTAL_BACKLOG = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
 
 // ─── CHART ENGINE (Canvas 2D nativo, sin dependencias) ───────────────────────
 function drawDonut(id, data, labels, colors){
@@ -526,13 +492,14 @@ function drawStackedHBar(id, labels, datasets){
   if(!canvas) return;
   const parent = canvas.parentElement;
   canvas.width  = parent.offsetWidth  || 400;
-  canvas.height = Math.max(parent.offsetHeight||260, labels.length*34+80);
+  const padB = datasets.length > 1 ? 60 : 20;
+  canvas.height = Math.max(parent.offsetHeight||260, labels.length*34+padB+20);
   const cx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   cx.clearRect(0,0,W,H);
   const totals = labels.map((_,i)=>datasets.reduce((s,ds)=>s+(ds.data[i]||0),0));
   const maxV = Math.max(...totals,1);
-  const padL=110, padR=16, padT=20, padB=60;
+  const padL=110, padR=16, padT=20;
   const barArea=W-padL-padR, barH=18, step=(H-padT-padB)/labels.length;
   labels.forEach((lbl,i)=>{
     const y = padT + i*step + step/2;
@@ -549,14 +516,16 @@ function drawStackedHBar(id, labels, datasets){
     cx.fillStyle='#1a1d29'; cx.font='bold 10px Segoe UI'; cx.textAlign='left'; cx.textBaseline='middle';
     cx.fillText(totals[i], xoff+4, y);
   });
-  // Leyenda
-  const lx0=padL, ly=H-padB+10;
-  datasets.forEach((ds,i)=>{
-    const lx=lx0+i*(barArea/datasets.length);
-    cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
-    cx.fillStyle='#334155'; cx.font='10px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
-    cx.fillText(ds.label, lx+13, ly);
-  });
+  // Leyenda (solo si hay más de un dataset; con uno solo no aporta nada)
+  if(datasets.length > 1){
+    const lx0=padL, ly=H-padB+10;
+    datasets.forEach((ds,i)=>{
+      const lx=lx0+i*(barArea/datasets.length);
+      cx.fillStyle=ds.color; cx.fillRect(lx,ly,10,10);
+      cx.fillStyle='#334155'; cx.font='10px Segoe UI'; cx.textAlign='left'; cx.textBaseline='top';
+      cx.fillText(ds.label, lx+13, ly);
+    });
+  }
 }
 
 function drawLine(id, labels, datasets){
@@ -673,7 +642,7 @@ function renderKPIs(){
   const elAprobacion = document.getElementById('kpi-aprobacion');
   if(elAprobacion) elAprobacion.textContent = TOTAL_APROBACION.toLocaleString();
   const elBacklog = document.getElementById('kpi-backlog');
-  if(elBacklog) elBacklog.textContent = TOTAL_BACKLOG.toLocaleString();
+  if(elBacklog) elBacklog.textContent = TOTAL_ACTIVOS.toLocaleString();
 }
 function filtrarTabla(tbodyId, val){
   const tbody = document.getElementById(tbodyId);
@@ -736,17 +705,13 @@ function renderResumen(){
     ['#17a2b8','#f2793a','#22c55e','#ef4444','#eab308','#7c6fd0']
   );
 
-  // Gráfica barras apiladas por localidad (Canvas nativo)
+  // Gráfica de barras por localidad: total de tickets en atención (sin desglose por
+  // estado de Jira, ya que ese detalle vive en la tabla de abajo).
   const sortedLoc = [...SOPORTES].sort((a,b)=>b.total-a.total);
   drawStackedHBar('chartLocalidad',
     sortedLoc.map(r=>r.loc),
     [
-      {label:'En Progreso',    data:sortedLoc.map(r=>r.prog),      color:'#17a2b8'},
-      {label:'Aprob. Cliente', data:sortedLoc.map(r=>r.aprob),     color:'#f2793a'},
-      {label:'En QA',          data:sortedLoc.map(r=>r.qa),        color:'#22c55e'},
-      {label:'Bloqueado',      data:sortedLoc.map(r=>r.bloq),      color:'#ef4444'},
-      {label:'Reabierto',      data:sortedLoc.map(r=>r.reabierto), color:'#eab308'},
-      {label:'Backlog Dev',    data:sortedLoc.map(r=>r.bkdev),     color:'#7c6fd0'},
+      {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'},
     ]
   );
 
