@@ -92,6 +92,15 @@
   .pill-backlog{background:rgba(124,111,208,0.16);color:#7c6fd0}
   .pill-otro{background:rgba(100,116,139,0.16);color:#64748b}
   .pill-cerrado{background:rgba(34,197,94,0.16);color:#22c55e}
+  /* Tarjetas de "universo de estados" (25 Ago 2026) — mismo lenguaje visual que
+     los KPI de arriba, una tarjeta por Estado de Jira en vez de fila de tabla. */
+  .status-cardgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .status-card{border-radius:12px;padding:16px 14px;text-align:center;border:1px solid #eceef1}
+  .status-card .n{font-size:1.7rem;font-weight:800;line-height:1;margin-bottom:6px}
+  .status-card .l{font-size:.72rem;font-weight:700;color:#475569}
+  .status-card .p{font-size:.68rem;color:#94a3b8;margin-top:4px}
+  .status-card.total{border-color:#1a1d29;background:#f7f8fa}
+  .status-card.total .n{color:#1a1d29}
   /* Estados exclusivos de "Nuevos Desarrollos" (CC Evolutivos) — cada Estado de Jira
      es su propia categoría, no se agrupan varios en un mismo pill */
   .pill-firma{background:rgba(245,158,11,0.16);color:#d97706}
@@ -217,24 +226,9 @@
       </div>
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
-      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia en {Soporte, Problema} &bull; Estado seg&uacute;n Jira, agrupado por Localidad</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Localidad</th>
-            <th><span class="pill pill-progreso">En Progreso</span></th>
-            <th><span class="pill pill-aprobacion">Aprobaci&oacute;n</span></th>
-            <th><span class="pill pill-qa">En QA</span></th>
-            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
-            <th><span class="pill pill-reabierto">Reabierto</span></th>
-            <th><span class="pill pill-backlog">Backlog Dev</span></th>
-            <th><span class="pill pill-otro">Otro</span></th>
-            <th>Total</th>
-          </tr></thead>
-          <tbody id="resumen-tbody"></tbody>
-        </table>
-      </div>
+      <h3>&#x1F4CA; Universo de Estados &mdash; Soportes</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:14px;">Fuente: hoja <strong>Product Backlog Soportes DEV (1hr activo)</strong> &bull; Tipo de Incidencia en {Soporte, Problema} &bull; Estado seg&uacute;n Jira</div>
+      <div class="status-cardgrid" id="resumen-cards"></div>
     </div>
     <div id="loc-cards" style="display:none;"></div>
   </div>
@@ -1461,45 +1455,45 @@ function filtrarTabla(tbodyId, val){
   });
 }
 
-// ─── RENDER: RESUMEN (tabla + gráficas) ──────────────────────────────────────
+// ─── RENDER: RESUMEN (tarjetas + gráficas) ────────────────────────────────────
 function renderResumen(){
-  const tb = document.getElementById('resumen-tbody');
-  if(!tb) return;
-  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totO=0,totT=0, html='';
+  const cardsEl = document.getElementById('resumen-cards');
+  if(!cardsEl) return;
+  let totP=0,totA=0,totQ=0,totB=0,totR=0,totBK=0,totO=0,totT=0;
   SOPORTES.forEach(r=>{
     totP+=r.prog; totA+=r.aprob; totQ+=r.qa;
     totB+=r.bloq; totR+=r.reabierto; totBK+=r.bkdev; totO+=(r.otro||0); totT+=r.total;
-    html+=`<tr>
-      <td><strong>${r.loc}</strong></td>
-      <td>${pill(r.prog,'pill-progreso')}</td>
-      <td>${pill(r.aprob,'pill-aprobacion')}</td>
-      <td>${pill(r.qa,'pill-qa')}</td>
-      <td>${pill(r.bloq,'pill-bloqueado')}</td>
-      <td>${pill(r.reabierto,'pill-reabierto')}</td>
-      <td>${pill(r.bkdev,'pill-backlog')}</td>
-      <td>${pill(r.otro||0,'pill-otro')}</td>
-      <td><strong>${r.total}</strong></td>
-    </tr>`;
   });
-  // Tickets sin localidad asignada
   const kpiActivos = TOTAL_ACTIVOS;
   const sinLoc = kpiActivos - totT;
-  if(sinLoc > 0){
-    html+=`<tr style="background:rgba(229,85,90,.16);">
-      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
-      <td colspan="7" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
-      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
-    </tr>`;
-  }
-  html+=`<tr class="tr-total">
-    <td>TOTAL REAL (Sheet)</td>
-    <td>${pill(totP,'pill-progreso')}</td><td>${pill(totA,'pill-aprobacion')}</td>
-    <td>${pill(totQ,'pill-qa')}</td><td>${pill(totB,'pill-bloqueado')}</td>
-    <td>${pill(totR,'pill-reabierto')}</td><td>${pill(totBK,'pill-backlog')}</td>
-    <td>${pill(totO,'pill-otro')}</td>
-    <td><strong>${kpiActivos > 0 ? kpiActivos : totT}</strong></td>
-  </tr>`;
-  tb.innerHTML = html;
+  const totalReal = kpiActivos > 0 ? kpiActivos : totT;
+
+  // Tarjetas de "Universo de Estados" — 25 Ago 2026: reemplaza la tabla por
+  // Localidad (pedido del usuario: sin desglose por localidad, solo el total
+  // de cada Estado de Jira). Mismo orden y mismos nombres que ya tenía la
+  // tabla original ("En Progreso", "Aprobación", "En QA", "Bloqueado",
+  // "Reabierto", "Backlog Dev", "Otro") — sin reordenar por cantidad.
+  const ESTADOS_RESUMEN = [
+    { n: totP,  lbl: 'En Progreso', css: 'pill-progreso',  bg: 'rgba(42,157,143,0.12)',  col: '#2a9d8f' },
+    { n: totA,  lbl: 'Aprobación',  css: 'pill-aprobacion',bg: 'rgba(242,121,58,0.12)',  col: '#f2793a' },
+    { n: totQ,  lbl: 'En QA',       css: 'pill-qa',        bg: 'rgba(34,197,94,0.12)',   col: '#22c55e' },
+    { n: totB,  lbl: 'Bloqueado',   css: 'pill-bloqueado', bg: 'rgba(239,68,68,0.10)',   col: '#ef4444' },
+    { n: totR,  lbl: 'Reabierto',   css: 'pill-reabierto', bg: 'rgba(234,179,8,0.14)',   col: '#eab308' },
+    { n: totBK, lbl: 'Backlog Dev', css: 'pill-backlog',   bg: 'rgba(124,111,208,0.12)', col: '#7c6fd0' },
+    { n: totO,  lbl: 'Otro',        css: 'pill-otro',      bg: 'rgba(100,116,139,0.12)', col: '#64748b' },
+  ];
+  cardsEl.innerHTML = ESTADOS_RESUMEN.map(e=>{
+    const pct = totalReal>0 ? ((e.n/totalReal)*100).toFixed(1) : 0;
+    return `<div class="status-card" style="background:${e.bg};border-color:${e.col}33;">
+      <div class="n" style="color:${e.col};">${e.n}</div>
+      <div class="l">${e.lbl}</div>
+      <div class="p">${pct}%</div>
+    </div>`;
+  }).join('') + `<div class="status-card total">
+      <div class="n">${totalReal}</div>
+      <div class="l">Total</div>
+      <div class="p">${sinLoc>0?`incl. ${sinLoc} sin localidad`:'100%'}</div>
+    </div>`;
 
   // Mostrar totales sobre las gráficas
   const elDona = document.getElementById('total-dona');
