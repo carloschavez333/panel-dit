@@ -58,9 +58,6 @@
   .kpi-backlog .kpi-icon{background:#fee2e2;color:#dc2626}
   .kpi-backlog:hover .num{font-weight:900;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#7f1d1d;color:#7f1d1d;text-shadow:0 1px 0 rgba(255,255,255,.5),0 0 16px rgba(127,29,29,.35)}
   .kpi-linkable{cursor:pointer}
-  .kpi-linkable:hover{transform:none;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05);background-color:#fff}
-  .kpi-linkable:hover .kpi-icon{transform:none}
-  .kpi-linkable:hover .num{font-weight:800;background:linear-gradient(180deg,#0f172a 0%,#0f172a 42%,rgba(15,23,42,.6) 50%,#0f172a 58%,#0f172a 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:initial;text-shadow:0 1px 0 rgba(255,255,255,.6)}
   .kpi-linkable:hover .lbl{text-decoration:underline;text-underline-offset:3px}
   .legend-bar{display:flex;flex-wrap:wrap;gap:10px;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:13px 18px;margin-bottom:20px;align-items:center;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
   .legend-bar span{font-size:.72rem;font-weight:600;color:#6b7280;margin-right:4px}
@@ -143,7 +140,7 @@
   <!-- TAB: TICKETS ACTIVOS (RESUMEN) -->
   <div id="tab-resumen" class="tab-content active">
   <div class="kpi-grid">
-    <div class="kpi kpi-cerrados">
+    <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
       <div class="kpi-icon">&#x1F7E2;</div>
       <div class="num" id="kpi-cerrados">2,199</div>
       <div class="lbl">Atendidos (DONE)</div>
