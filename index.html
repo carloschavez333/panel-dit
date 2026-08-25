@@ -323,24 +323,20 @@
     </div>
   </div>
     <div class="panel" style="border-top:4px solid #dc2626">
-      <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
+      <h3>Distribuci&oacute;n de tickets evolutivos en atenci&oacute;n por cliente</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-dev" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-dev" style="color:#ef4444;font-size:1rem;"></strong></div>
       <div style="position:relative;height:410px;">
         <canvas id="chartLocalidadDev"></canvas>
       </div>
     </div>
     <div class="panel" style="border-top:4px solid #dc2626">
-      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>CC Evolutivos (1hr activo)</strong> &bull; Tipo de Incidencia en {CC Evolutivo, Evolutivo &Aacute;gil} &bull; columnas de Estado generadas din&aacute;micamente desde los datos reales del Sheet, agrupado por Localidad</div>
-      <div class="table-wrap">
-        <table>
-          <!-- Columnas generadas por JS (renderEstadosTable) a partir de los Estados
-               reales presentes en EVOL_ACTIVOS — nunca una lista fija en el HTML, para
-               que un Estado nuevo en Jira aparezca solo, sin editar esta página. -->
-          <thead><tr id="resumen-dev-thead"></tr></thead>
-          <tbody id="resumen-dev-tbody"></tbody>
-        </table>
-      </div>
+      <h3>Tickets evolutivos por estado de jira</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total de ticket: <strong id="total-ticket-resumen-dev" style="color:#17a2b8;font-size:1rem;"></strong></div>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:14px;">Fuente: hoja <strong>CC Evolutivos (1hr activo)</strong> &bull; Tipo de Incidencia en {CC Evolutivo, Evolutivo &Aacute;gil} &bull; Estado seg&uacute;n Jira</div>
+      <!-- Tarjetas generadas por JS (renderEstadosCards) a partir de los Estados
+           reales presentes en EVOL_ACTIVOS — nunca una lista fija en el HTML, para
+           que un Estado nuevo en Jira aparezca solo, sin editar esta página. -->
+      <div class="status-cardgrid" id="resumen-dev-cards"></div>
     </div>
   </div>
 
@@ -1766,20 +1762,26 @@ function renderKPIsDev(){
   if(elBacklog) elBacklog.textContent = TOTAL_ACTIVOS_DEV.toLocaleString();
 }
 
-// ─── RENDER: NUEVOS DESARROLLOS — RESUMEN (tabla + gráfica) ───────────────────
+// ─── RENDER: NUEVOS DESARROLLOS — RESUMEN (tarjetas + gráfica) ────────────────
+// Rediseño 25 Ago 2026 — mismo lenguaje visual que Soportes (lollipop + tarjetas
+// "Universo de Estados"), a pedido del usuario ("igualalos, pero en el de
+// Tickets Evolutivos"). 100% dinámico: sin lista fija de Estados, si aparece
+// uno nuevo en el Sheet se agrega solo como tarjeta nueva.
 function renderResumenDev(){
-  // 100% dinámico (25 Ago 2026) — ver nota junto a `renderEstadosTable()`.
-  // Sin lista fija de Estados: si aparece uno nuevo en el Sheet, se agrega
-  // solo como columna nueva la próxima vez que se regeneren los datos.
-  renderEstadosTable({
-    tbodyId: 'resumen-dev-tbody',
-    theadId: 'resumen-dev-thead',
-    data: EVOL_ACTIVOS,
-    kpiActivos: TOTAL_ACTIVOS_DEV,
-    totalLocId: 'total-loc-dev',
-    totalSinLocId: 'total-sinloc-dev',
-    barChartId: 'chartLocalidadDev',
-  });
+  const r = renderEstadosCards('resumen-dev-cards', EVOL_ACTIVOS, TOTAL_ACTIVOS_DEV, 'total-ticket-resumen-dev');
+  if(!r) return;
+  const { totT } = r;
+  const elLoc = document.getElementById('total-loc-dev');
+  if(elLoc) elLoc.textContent = totT;
+  const elSin = document.getElementById('total-sinloc-dev');
+  if(elSin) elSin.textContent = (TOTAL_ACTIVOS_DEV - totT > 0) ? (TOTAL_ACTIVOS_DEV - totT) : '0';
+
+  const sortedLoc = [...EVOL_ACTIVOS].sort((a,b)=>b.total-a.total);
+  drawLollipop('chartLocalidadDev',
+    sortedLoc.map(r=>r.loc),
+    sortedLoc.map(r=>r.total),
+    LOLLIPOP_COLORS
+  );
 }
 
 // ─── RENDER: NUEVOS DESARROLLOS — APROBACIÓN CLIENTE ──────────────────────────
