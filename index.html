@@ -126,7 +126,6 @@
       <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
       <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
     </div>
-    <div class="tab" onclick="showTab('backlog',this)"><span class="tab-ico">&#x1F4CC;</span> Backlog</div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
   <div class="sidebar-foot">Actualizaci&oacute;n autom&aacute;tica cada hora</div>
@@ -205,25 +204,6 @@
           <tbody id="aprobacion-tbody"></tbody>
         </table>
       </div>
-    </div>
-  </div>
-
-  <!-- TAB: BACKLOG -->
-  <div id="tab-backlog" class="tab-content">
-    <div class="info-box"><strong>&iquest;Qu&eacute; es el Backlog?</strong> Incidentes registrados que a&uacute;n no han comenzado su atenci&oacute;n formal.</div>
-    <div class="panel">
-      <h3>&#x1F4CC; Backlog por Localidad</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Localidad</th><th>Incidentes Pendientes</th><th>Distribuci&oacute;n</th></tr></thead>
-          <tbody id="backlog-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>&#x26A0; Rezago de Tickets por Responsable</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:16px;">Mayor n&uacute;mero = mayor acumulaci&oacute;n pendiente &bull; Fuente: <strong>Product Backlog Soportes</strong></div>
-      <div id="rezago-ranking"></div>
     </div>
   </div>
 
@@ -425,18 +405,6 @@ const BACKLOG_RESP = [
   {nom:'Luis Antonio Jimenez Matus', n:1},
   {nom:'Jesus Jonathan Ramos Nuñez', n:1},
   {nom:'Andrea Ixchel Tejeda Rayas', n:1},
-];
-const BACKLOG = [
-  {loc:'Quintana Roo', n:21},
-  {loc:'Guanajuato', n:16},
-  {loc:'Hidalgo', n:13},
-  {loc:'Colima', n:11},
-  {loc:'Jalisco', n:5},
-  {loc:'Seguritech', n:5},
-  {loc:'Baja California', n:4},
-  {loc:'Sonora', n:3},
-  {loc:'Chihuahua', n:2},
-  {loc:'Sinaloa', n:1},
 ];
 const TOTAL_BACKLOG = BACKLOG_RESP.reduce((s,r)=>s+r.n,0);
 
@@ -838,56 +806,6 @@ function renderAprobacion(){
   tb.innerHTML=html;
 }
 
-// ─── RENDER: BACKLOG ──────────────────────────────────────────────────────────
-function renderBacklog(){
-  const tb=document.getElementById('backlog-tbody');
-  if(tb){
-    const sorted=[...BACKLOG].sort((a,b)=>b.n-a.n);
-    const MAX=sorted[0]?sorted[0].n:0;
-    tb.innerHTML=sorted.map(r=>`<tr>
-      <td><strong>${r.loc}</strong></td>
-      <td><strong>${r.n}</strong></td>
-      <td>${pbar(r.n,MAX,'#7c6fd0')}</td>
-    </tr>`).join('');
-  }
-  const rk=document.getElementById('rezago-ranking');
-  if(rk){
-    const sorted=[...BACKLOG_RESP].sort((a,b)=>b.n-a.n);
-    const TOTAL=sorted.reduce((s,r)=>s+r.n,0);
-    const n=sorted.length;
-    const critico=Math.ceil(n*0.3);
-    var html='<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">';
-    html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;background:#f8fafc;padding:8px 16px;font-size:.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;">';
-    html+='<span>#</span><span>Responsable</span><span style="text-align:center;">Tickets</span><span style="text-align:right;">%</span></div>';
-    for(var i=0;i<sorted.length;i++){
-      var r=sorted[i];
-      var pct=(r.n/TOTAL*100).toFixed(1);
-      var isTop=(i<critico);
-      var isSinResp=(r.nom==='Sin responsable asignado');
-      var bg=(i%2===0)?'rgba(15,23,42,.02)':'#eef1f5';
-      var leftBorder=isTop?'border-left:3px solid #ef4444;':'border-left:3px solid transparent;';
-      var numCol=isTop?'#ff9a9d':'#1a1d29';
-      var fw=(isTop||isSinResp)?'600':'400';
-      var alerta=isTop?'<span style="font-size:.65rem;background:rgba(229,85,90,.16);color:#ff9a9d;border:1px solid rgba(229,85,90,.22);border-radius:3px;padding:1px 5px;margin-left:7px;">atención</span>':'';
-      var borderTop=(i===0)?'':'border-top:1px solid #f8fafc;';
-      html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;padding:10px 16px;background:'+bg+';'+leftBorder+borderTop+'align-items:center;">';
-      html+='<span style="font-size:.8rem;color:#94a3b8;">'+( i+1)+'</span>';
-      html+='<span style="font-size:.87rem;color:#1a1d29;font-weight:'+fw+';">'+r.nom+alerta+'</span>';
-      html+='<span style="text-align:center;font-size:1rem;font-weight:700;color:'+numCol+';">'+r.n+'</span>';
-      html+='<span style="text-align:right;font-size:.78rem;color:#94a3b8;">'+pct+'%</span>';
-      html+='</div>';
-    }
-    html+='<div style="display:grid;grid-template-columns:36px 1fr 56px 52px;padding:10px 16px;background:#f8fafc;border-top:2px solid #e5e7eb;align-items:center;">';
-    html+='<span></span>';
-    html+='<span style="font-size:.78rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Total</span>';
-    html+='<span style="text-align:center;font-size:1rem;font-weight:700;color:#1a1d29;">'+TOTAL+'</span>';
-    html+='<span style="text-align:right;font-size:.78rem;color:#94a3b8;">100%</span>';
-    html+='</div>';
-    html+='</div>';
-    rk.innerHTML=html;
-  }
-}
-
 // ─── RENDER: CERRADOS ─────────────────────────────────────────────────────────
 function renderCerrados(){
   const lista=document.getElementById('cerrados-lista');
@@ -1033,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  [renderKPIs, renderResumen, renderAprobacion, renderBacklog, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
+  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
 });
 </script>
 </body>
