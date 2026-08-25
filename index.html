@@ -184,6 +184,56 @@
   .loc-row .lc-label{font-size:.76rem;color:#6b7280}
   .footer{text-align:center;padding:18px;color:#9aa0ab;font-size:.74rem}
   .footer strong{color:#6b7280}
+
+  /* ─── Reporte Individual (Rendimiento por Persona → clic en nombre), 25 Ago 2026 ─── */
+  .ri-clickrow{cursor:pointer}
+  .ri-clickrow:hover td{background:#f7f8fa}
+  .ri-clickrow td.ri-name-cell{color:#2563eb;text-decoration:underline;text-decoration-color:#c7d7f7;text-underline-offset:2px}
+  .ri-podio-card{cursor:pointer;transition:transform .12s ease}
+  .ri-podio-card:hover{transform:translateY(-2px)}
+  .ri-back-link{display:inline-flex;align-items:center;gap:6px;color:#64748b;font-size:.82rem;text-decoration:none;cursor:pointer;font-weight:600;margin-bottom:16px;background:none;border:none;padding:0}
+  .ri-back-link:hover{color:#1a1d29}
+  .ri-top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;flex-wrap:wrap;gap:14px}
+  .ri-person-id{display:flex;align-items:center;gap:16px}
+  .ri-avatar-wrap{position:relative;flex-shrink:0}
+  .ri-avatar-lg{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem}
+  .ri-rank-badge{position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .ri-person-name{font-size:1.3rem;font-weight:800;color:#1a1d29;line-height:1.2}
+  .ri-person-role{font-size:.82rem;color:#64748b;margin-top:3px}
+  .ri-top-actions{display:flex;align-items:center;gap:10px}
+  .ri-year-chip{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:9px 14px;font-size:.8rem;color:#475569;font-weight:600}
+  .ri-export-btn{display:flex;align-items:center;gap:7px;background:#1a1d29;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:.8rem;font-weight:700;cursor:pointer}
+  .ri-export-btn:hover{background:#000}
+  .ri-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+  .ri-kpi-card{background:#fff;border:1px solid #eceef1;border-radius:14px;padding:16px 14px;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
+  .ri-kpi-card .ri-num{font-size:1.7rem;font-weight:800;line-height:1}
+  .ri-kpi-card .ri-lbl{font-size:.72rem;color:#64748b;margin-top:6px;font-weight:600}
+  .ri-grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+  .ri-delta-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .ri-delta-card{border-radius:12px;padding:14px;text-align:left}
+  .ri-delta-card .ri-d-lbl{font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px}
+  .ri-delta-card .ri-d-num{font-size:1.15rem;font-weight:800;margin-top:6px}
+  .ri-delta-card .ri-d-sub{font-size:.68rem;color:#94a3b8;margin-top:4px}
+  .ri-donut-legend{flex:1;display:flex;flex-direction:column;gap:10px}
+  .ri-dl-row{display:flex;align-items:center;justify-content:space-between;font-size:.82rem}
+  .ri-dl-dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:8px}
+  .ri-cmp-row{margin-bottom:16px}
+  .ri-cmp-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .ri-cmp-lbl{font-size:.8rem;font-weight:700}
+  .ri-cmp-val{font-size:.78rem;color:#64748b}
+  .ri-cmp-track{position:relative;height:14px;background:#f1f5f9;border-radius:7px;overflow:visible}
+  .ri-cmp-fill{height:100%;border-radius:7px}
+  .ri-cmp-marker{position:absolute;top:-4px;width:2px;height:22px}
+  .ri-cmp-marker-lbl{position:absolute;top:16px;font-size:.62rem;color:#94a3b8;white-space:nowrap;transform:translateX(-50%)}
+  .ri-locked{border:1.5px dashed #d8dce3;border-radius:12px;padding:18px;text-align:center;background:#fafbfc}
+  .ri-locked .ri-lock-ico{font-size:1.2rem;margin-bottom:6px}
+  .ri-locked .ri-lock-title{font-size:.82rem;font-weight:700;color:#64748b}
+  .ri-locked .ri-lock-sub{font-size:.72rem;color:#9aa0ab;margin-top:4px;line-height:1.5;max-width:420px;margin-left:auto;margin-right:auto}
+  .ri-obs-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .ri-obs-list li{display:flex;gap:9px;font-size:.82rem;line-height:1.5;align-items:flex-start}
+  .ri-sub{font-size:.76rem;color:#94a3b8;margin-bottom:16px;margin-top:-8px}
+  @media(max-width:900px){.ri-grid-2{grid-template-columns:1fr}.ri-kpi-row{grid-template-columns:repeat(2,1fr)}.ri-delta-row{grid-template-columns:repeat(2,1fr)}}
+  @media print{.sidebar,.ri-back-link,.ri-export-btn{display:none!important}}
   @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.loc-grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}}
   @media(max-width:900px){.shell{flex-direction:column}.sidebar{width:100%;flex-direction:row;align-items:center;overflow-x:auto;gap:14px}.tabs{flex-direction:row}.brand p{display:none}.sidebar-foot{display:none}}
   @media(max-width:640px){.kpi-grid{grid-template-columns:1fr}.loc-grid{grid-template-columns:1fr}}
@@ -573,9 +623,9 @@
         <div style="font-size:.74rem;color:#64748b;line-height:1.6;" id="velocidad-atencion-formula"></div>
       </div>
     </div>
-    <div class="panel" style="margin-top:22px;">
+    <div class="panel" id="rp-ranking-view" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
-      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs.</div>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre para ver su reporte individual.</div>
       <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
       <div class="table-wrap">
         <table>
@@ -590,6 +640,7 @@
         </table>
       </div>
     </div>
+    <div id="rp-detail-view" style="display:none;margin-top:22px;"></div>
   </div>
 
   <!-- TAB: BITACORA -->
@@ -2298,10 +2349,20 @@ function renderVolumenVelocidad(){
 
 // Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
 // usadas en cada módulo por separado — mismos 11 nombres en las 3) para dar una
-// producción combinada por persona y redactar hallazgos dinámicos. No hardcodea
-// ningún total ni nombre: todo se deriva de los arrays existentes, para que nunca
-// se desincronice si esos números cambian.
-function renderEquipoRendimiento(){
+// producción combinada por persona. No hardcodea ningún total ni nombre: todo se
+// deriva de los arrays existentes, para que nunca se desincronice si esos números
+// cambian. Única fuente de verdad — consumida por renderEquipoRendimiento() (tabla
+// + podio) y por renderReporteIndividual() (reporte al hacer clic en un nombre),
+// para que ambos sean matemáticamente imposibles de desincronizar entre sí.
+// Metas por persona (25 Ago 2026, a pedido explícito del usuario, con reglas
+// confirmadas vía AskUserQuestion): volumen (Soportes/Evolutivos/Error) = promedio
+// del equipo × 1.20 (margen +20%, más es mejor). %Error = NO superar el promedio
+// del equipo (sin margen — menos %Error es mejor, así que sumarle margen subiría
+// el umbral en el sentido incorrecto). No son metas oficiales de negocio — son una
+// regla relativa al propio equipo que el usuario eligió porque no existía ninguna
+// meta absoluta acordada antes.
+const MARGEN_META_RENDIMIENTO = 1.20;
+function computeRendimientoEquipo(){
   const findN = (arr, nom) => { const f = arr.find(r=>r.nom===nom); return f ? f.n : 0; };
   const combinado = RESPONSABLES.map(r=>r.nom).map(nom => {
     const sop = findN(RESPONSABLES, nom);
@@ -2311,16 +2372,36 @@ function renderEquipoRendimiento(){
     return { nom, sop, dev, err, total, pctErr: total>0 ? (err/total*100) : 0 };
   }).sort((a,b)=>b.total-a.total);
 
-  const medals=['🥇','🥈','🥉'];
-  const podioColors=['#eab308','#64748b','#c98a52'];
-  const podioColorsLight=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+  const N = combinado.length;
+  const sumaSop = combinado.reduce((s,r)=>s+r.sop,0);
+  const sumaDev = combinado.reduce((s,r)=>s+r.dev,0);
+  const sumaErr = combinado.reduce((s,r)=>s+r.err,0);
+  const sumaTotal = sumaSop+sumaDev+sumaErr;
+  const prom = {
+    sop: N>0?sumaSop/N:0, dev: N>0?sumaDev/N:0, err: N>0?sumaErr/N:0,
+    total: N>0?sumaTotal/N:0,
+    pctErr: sumaTotal>0 ? sumaErr/sumaTotal*100 : 0,
+  };
+  const meta = {
+    sop: prom.sop*MARGEN_META_RENDIMIENTO, dev: prom.dev*MARGEN_META_RENDIMIENTO, err: prom.err*MARGEN_META_RENDIMIENTO,
+    pctErr: prom.pctErr,
+  };
+  return { combinado, N, prom, meta };
+}
+
+const RP_MEDALS=['🥇','🥈','🥉'];
+const RP_PODIO_COLORS=['#eab308','#64748b','#c98a52'];
+const RP_PODIO_COLORS_LIGHT=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
+
+function renderEquipoRendimiento(){
+  const { combinado } = computeRendimientoEquipo();
 
   const podio=document.getElementById('top3-podio-equipo');
   if(podio){
     podio.innerHTML=combinado.slice(0,3).map((r,i)=>`
-      <div style="background:${podioColorsLight[i]};border:2px solid ${podioColors[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${medals[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${podioColors[i]};line-height:1;">${r.total}</div>
+      <div class="ri-podio-card" onclick="abrirReporteIndividual(${i})" style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">${RP_MEDALS[i]}</div>
+        <div style="font-size:2.2rem;font-weight:800;color:${RP_PODIO_COLORS[i]};line-height:1;">${r.total}</div>
         <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
         <div style="font-size:.75rem;color:#64748b;">Soportes ${r.sop} · Evolutivos ${r.dev} · Error ${r.err}</div>
       </div>`).join('');
@@ -2331,9 +2412,9 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-      return `<tr style="${rowStyle}">
-        <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
-        <td>${r.nom}</td>
+      return `<tr class="ri-clickrow" onclick="abrirReporteIndividual(${i})" style="${rowStyle}">
+        <td style="color:${numColor};font-weight:700;">${i<3?RP_MEDALS[i]:i+1}</td>
+        <td class="ri-name-cell">${r.nom}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
@@ -2361,6 +2442,235 @@ function renderEquipoRendimiento(){
       + (mayorPctErr ? `<strong>${mayorPctErr.nom}</strong> es quien dedica la mayor proporción de su trabajo a resolver tickets de Error (${mayorPctErr.pctErr.toFixed(0)}% de su producción total) — puede indicar un rol más enfocado en estabilización/bugfixing que en soporte directo o nuevo desarrollo. ` : '')
       + `Evolutivos sigue siendo la categoría de menor volumen (solo ${(totD/totGeneral*100).toFixed(1)}% del total combinado) — esperable si son tickets de mayor complejidad y esfuerzo individual que Soportes o Error.`;
   }
+}
+
+// ─── RENDER: REPORTE INDIVIDUAL (clic en un nombre de "Rendimiento por Persona") ─
+// Pedido del usuario 25 Ago 2026: reporte individual por responsable para dar
+// feedback. Diseño acordado tras 2 rondas de mockup — ver mockup_reporte_individual.html
+// y _v2.html. Límite de datos real, confirmado con el usuario: por persona SOLO
+// existe el conteo total anual por categoría (RESPONSABLES/_DEV/_ERR) — no hay
+// desglose mensual, ni horas de trabajo, ni detalle de ticket individual por
+// responsable en el Sheet. Por eso este reporte compara SOLO volumen y mezcla de
+// categorías contra el promedio del equipo y las metas de computeRendimientoEquipo()
+// — nunca inventa una tendencia mensual, un tiempo de atención o un historial de
+// tickets por persona. Las 2 secciones que el usuario pidió y que no se pueden
+// calcular hoy ("Tiempo de atención individual", "Últimos errores registrados") se
+// muestran como tarjeta "no disponible" con la explicación de qué haría falta
+// capturar para activarlas, en vez de inventar el dato o desaparecer sin explicar.
+// "Notas del líder"/calificación/"Guardar evaluación" del mockup original se
+// excluyeron a pedido del usuario (el sitio es estático, sin servidor — guardar
+// solo sería viable vía localStorage de un solo navegador, y el usuario prefirió
+// no agregarlo). "Plan de acción sugerido" con fechas límite tampoco se incluye:
+// habría sido contenido inventado con apariencia de instrucción real.
+function fmtRi(n){ return n.toLocaleString('es-MX', {maximumFractionDigits:1}); }
+
+function riCmpBar(lbl, val, promedio, metaVal, color, metaEsTope){
+  // metaEsTope=true → cumple si val <= metaVal (caso %Error, menos es mejor).
+  // metaEsTope=false → cumple si val >= metaVal (caso de volumen, más es mejor).
+  const cumple = metaEsTope ? val <= metaVal : val >= metaVal;
+  const maxEscala = Math.max(val, promedio, metaVal, 1) * 1.25;
+  const pctVal = Math.min(100, (val/maxEscala)*100);
+  const pctProm = Math.min(100, (promedio/maxEscala)*100);
+  const fillColor = cumple ? '#16a34a' : color;
+  return `
+  <div class="ri-cmp-row">
+    <div class="ri-cmp-head">
+      <span class="ri-cmp-lbl" style="color:${color};">${lbl}</span>
+      <span class="ri-cmp-val">${fmtRi(val)} ${cumple?'✓ cumple meta':'· meta '+fmtRi(metaVal)}</span>
+    </div>
+    <div class="ri-cmp-track">
+      <div class="ri-cmp-fill" style="width:${pctVal}%;background:${fillColor};"></div>
+      <div class="ri-cmp-marker" style="left:${pctProm}%;background:#94a3b8;"></div>
+      <div class="ri-cmp-marker-lbl" style="left:${pctProm}%;">prom. ${fmtRi(promedio)}</div>
+    </div>
+  </div>`;
+}
+
+function abrirReporteIndividual(idx){
+  const { combinado, N, prom, meta } = computeRendimientoEquipo();
+  const r = combinado[idx];
+  if(!r) return;
+  const { year } = getComparativoMensual();
+
+  const rankColor = idx<3 ? RP_PODIO_COLORS[idx] : '#17a2b8';
+  const rankLight = idx<3 ? RP_PODIO_COLORS_LIGHT[idx] : '#eef2ff';
+  const iniciales = r.nom.split(' ').filter(w=>w.length>1).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+  const cats3 = [{k:'Soportes',v:r.sop,c:'#16a34a'},{k:'Evolutivos',v:r.dev,c:'#d97706'},{k:'Error',v:r.err,c:'#2563eb'}];
+  const principal = [...cats3].sort((a,b)=>b.v-a.v)[0];
+
+  const cumpleSop = r.sop >= meta.sop, cumpleDev = r.dev >= meta.dev, cumpleErr = r.err >= meta.err, cumplePct = r.pctErr <= meta.pctErr;
+
+  const fortalezas = [], mejoras = [];
+  if(idx===0) fortalezas.push('Es quien más producción combinada tiene en todo el equipo este año.');
+  else if(idx<3) fortalezas.push(`Está en el top 3 del equipo por producción combinada (#${idx+1} de ${N}).`);
+  if(cumpleSop) fortalezas.push(`Soportes por encima de la meta (${fmtRi(r.sop)} vs. meta ${fmtRi(meta.sop)}).`); else mejoras.push(`Soportes por debajo de la meta (${fmtRi(r.sop)} vs. meta ${fmtRi(meta.sop)}).`);
+  if(cumpleDev) fortalezas.push(`Evolutivos por encima de la meta (${fmtRi(r.dev)} vs. meta ${fmtRi(meta.dev)}).`); else mejoras.push(`Evolutivos por debajo de la meta (${fmtRi(r.dev)} vs. meta ${fmtRi(meta.dev)}).`);
+  if(cumplePct) fortalezas.push(`% Error dentro de la meta (${r.pctErr.toFixed(1)}% ≤ ${meta.pctErr.toFixed(1)}% del promedio del equipo).`); else mejoras.push(`% Error por encima del promedio del equipo (${r.pctErr.toFixed(1)}% vs. ${meta.pctErr.toFixed(1)}%) — puede reflejar más enfoque en corrección de bugs, no necesariamente menor calidad.`);
+  if(r.total < prom.total) mejoras.push(`Producción combinada por debajo del promedio del equipo (${r.total} vs. ${fmtRi(prom.total)}).`);
+
+  const html = `
+    <button class="ri-back-link" onclick="cerrarReporteIndividual()">&larr; Volver al ranking</button>
+    <div class="ri-top-bar">
+      <div class="ri-person-id">
+        <div class="ri-avatar-wrap">
+          <div class="ri-avatar-lg" style="background:${rankLight};color:${rankColor};">${iniciales}</div>
+          <div class="ri-rank-badge" style="color:${rankColor};">${idx+1}</div>
+        </div>
+        <div>
+          <div class="ri-person-name">${r.nom}</div>
+          <div class="ri-person-role">Principalmente ${principal.k} &middot; #${idx+1} de ${N} por producci&oacute;n combinada</div>
+        </div>
+      </div>
+      <div class="ri-top-actions">
+        <div class="ri-year-chip">📅 A&ntilde;o ${year}</div>
+        <button class="ri-export-btn" onclick="window.print()">⭳ Exportar</button>
+      </div>
+    </div>
+
+    <div class="ri-kpi-row">
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#16a34a;">${r.sop}</div><div class="ri-lbl">Soportes atendidos</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#d97706;">${r.dev}</div><div class="ri-lbl">Evolutivos atendidos</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#2563eb;">${r.err}</div><div class="ri-lbl">Errores registrados</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#1a1d29;">${r.total}</div><div class="ri-lbl">Total general</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#7c3aed;">${r.pctErr.toFixed(1)}%</div><div class="ri-lbl">% de Error sobre total</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Resumen de desempeño</h3>
+      <div class="ri-sub">Comparativo vs. promedio del equipo (no hay dato de periodo anterior por persona todavía)</div>
+      <div class="ri-delta-row">
+        ${[
+          {lbl:'Soportes', val:r.sop, p:prom.sop, color:'#16a34a'},
+          {lbl:'Evolutivos', val:r.dev, p:prom.dev, color:'#d97706'},
+          {lbl:'Error', val:r.err, p:prom.err, color:'#2563eb'},
+        ].map(c=>{
+          const d = c.val-c.p; const signo = d>=0?'+':''; const dcolor = d>=0?'#16a34a':'#dc2626';
+          return `<div class="ri-delta-card" style="background:${c.color}14;">
+            <div class="ri-d-lbl" style="color:${c.color};">${c.lbl}</div>
+            <div class="ri-d-num" style="color:${dcolor};">${signo}${fmtRi(d)}</div>
+            <div class="ri-d-sub">vs. promedio (${fmtRi(c.p)})</div>
+          </div>`;
+        }).join('')}
+        ${(()=>{ const d=r.pctErr-prom.pctErr; const signo=d>=0?'+':''; const dcolor= d<=0?'#16a34a':'#d97706';
+          return `<div class="ri-delta-card" style="background:#7c3aed14;">
+            <div class="ri-d-lbl" style="color:#7c3aed;">% Error</div>
+            <div class="ri-d-num" style="color:${dcolor};">${signo}${d.toFixed(1)} pts</div>
+            <div class="ri-d-sub">vs. promedio (${prom.pctErr.toFixed(1)}%)</div>
+          </div>`; })()}
+      </div>
+    </div>
+
+    <div class="ri-grid-2">
+      <div class="panel">
+        <h3>Comparaci&oacute;n vs. el equipo</h3>
+        <div class="ri-sub">Barra = su valor &middot; l&iacute;nea gris = promedio del equipo &middot; meta = promedio +20% (%Error: no superar el promedio)</div>
+        ${riCmpBar('Soportes', r.sop, prom.sop, meta.sop, '#16a34a', false)}
+        ${riCmpBar('Evolutivos', r.dev, prom.dev, meta.dev, '#d97706', false)}
+        ${riCmpBar('Error', r.err, prom.err, meta.err, '#2563eb', false)}
+        ${riCmpBar('% Error', r.pctErr, prom.pctErr, meta.pctErr, '#7c3aed', true)}
+      </div>
+      <div class="panel">
+        <h3>Distribuci&oacute;n por tipo</h3>
+        <div class="ri-sub">Mezcla de su producci&oacute;n combinada (${r.total} tickets)</div>
+        <div class="ri-donut-legend">
+          ${cats3.map(c=>`<div class="ri-dl-row"><span><span class="ri-dl-dot" style="background:${c.c};"></span>${c.k}</span><strong>${r.total>0?(c.v/r.total*100).toFixed(1):'0.0'}%</strong></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="ri-grid-2">
+      <div class="panel">
+        <h3>Cumplimiento de metas</h3>
+        <div class="ri-sub">Metas ${year}: volumen = promedio del equipo +20% &middot; %Error = no superar el promedio</div>
+        ${[
+          {lbl:'Soportes', val:r.sop, m:meta.sop, ok:cumpleSop},
+          {lbl:'Evolutivos', val:r.dev, m:meta.dev, ok:cumpleDev},
+          {lbl:'Error', val:r.err, m:meta.err, ok:cumpleErr},
+          {lbl:'% Error', val:r.pctErr, m:meta.pctErr, ok:cumplePct},
+        ].map(m=>{
+          const pct = m.m>0 ? Math.min(999, (m.val/m.m*100)) : 0;
+          return `<div class="ri-cmp-row">
+            <div class="ri-cmp-head"><span class="ri-cmp-lbl">${m.lbl}</span><span class="ri-cmp-val" style="color:${m.ok?'#16a34a':'#dc2626'};font-weight:700;">${pct.toFixed(0)}% ${m.ok?'✓':''}</span></div>
+            <div class="ri-cmp-track"><div class="ri-cmp-fill" style="width:${Math.min(100,pct)}%;background:${m.ok?'#16a34a':'#dc2626'};"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="panel">
+        <h3>Tiempo de atenci&oacute;n individual</h3>
+        <div class="ri-locked">
+          <div class="ri-lock-ico">🔒</div>
+          <div class="ri-lock-title">No disponible todav&iacute;a</div>
+          <div class="ri-lock-sub">Las horas de trabajo (columna "Tiempo Empleado") existen agregadas por categor&iacute;a, pero el Sheet no las relaciona con el responsable del ticket. Para activar esto habr&iacute;a que registrar qui&eacute;n atendi&oacute; cada ticket junto con su tiempo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Detalle de actividades</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipo</th><th>Cantidad</th><th>% del total</th><th>vs. promedio del equipo</th></tr></thead>
+          <tbody>
+            ${cats3.map(c=>{
+              const p = c.k==='Soportes'?prom.sop:c.k==='Evolutivos'?prom.dev:prom.err;
+              const d = c.v-p; const signo=d>=0?'+':''; const dcolor=d>=0?'#16a34a':'#dc2626';
+              return `<tr>
+                <td style="color:${c.c};font-weight:700;">${c.k}</td>
+                <td>${c.v}</td>
+                <td>${r.total>0?(c.v/r.total*100).toFixed(1):'0.0'}%</td>
+                <td style="color:${dcolor};font-weight:600;">${signo}${fmtRi(d)}</td>
+              </tr>`;
+            }).join('')}
+            <tr style="background:#f7f8fa;font-weight:700;">
+              <td>Total</td><td>${r.total}</td><td>100%</td><td>${(r.total-prom.total)>=0?'+':''}${fmtRi(r.total-prom.total)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>&Uacute;ltimos errores registrados</h3>
+      <div class="ri-locked">
+        <div class="ri-lock-ico">🔒</div>
+        <div class="ri-lock-title">No disponible todav&iacute;a</div>
+        <div class="ri-lock-sub">No hay detalle a nivel ticket (fecha, descripci&oacute;n, estado individual) en los datos que alimentan este panel &mdash; solo conteos agregados por Estado. Para activar esto habr&iacute;a que exportar el detalle de tickets de Error con su responsable.</div>
+      </div>
+    </div>
+
+    <div class="ri-grid-2">
+      <div class="panel">
+        <h3>✓ Fortalezas</h3>
+        <ul class="ri-obs-list">
+          ${fortalezas.length ? fortalezas.map(f=>`<li><span style="color:#16a34a;">●</span> ${f}</li>`).join('') : '<li style="color:#94a3b8;">Sin señales por encima del promedio en esta categoría todavía.</li>'}
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>⚠ &Aacute;reas de mejora</h3>
+        <ul class="ri-obs-list">
+          ${mejoras.length ? mejoras.map(f=>`<li><span style="color:#d97706;">●</span> ${f}</li>`).join('') : '<li style="color:#94a3b8;">Cumple todas las metas definidas este año.</li>'}
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box" style="font-size:.78rem;">Este reporte usa &uacute;nicamente datos reales (volumen y mezcla de categor&iacute;as por persona) y las metas definidas el 25 Ago 2026 (promedio del equipo +20% en volumen, no superar el promedio en %Error). No incluye tiempo de atenci&oacute;n ni detalle de tickets por persona porque ese dato no existe todav&iacute;a en el Sheet — las 2 secciones marcadas "no disponible" muestran exactamente qu&eacute; har&iacute;a falta capturar para activarlas.</div>
+  `;
+
+  const detailView = document.getElementById('rp-detail-view');
+  const rankingView = document.getElementById('rp-ranking-view');
+  if(detailView) detailView.innerHTML = html;
+  if(detailView) detailView.style.display = 'block';
+  if(rankingView) rankingView.style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+function cerrarReporteIndividual(){
+  const detailView = document.getElementById('rp-detail-view');
+  const rankingView = document.getElementById('rp-ranking-view');
+  if(detailView) detailView.style.display = 'none';
+  if(rankingView) rankingView.style.display = 'block';
+  window.scrollTo(0,0);
 }
 
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
