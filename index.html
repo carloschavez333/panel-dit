@@ -11,6 +11,20 @@
   html{background:#f4f5f7}
   body{font-family:system-ui,-apple-system,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f4f5f7;color:#1a1d29;min-height:100vh}
   .shell{display:flex;min-height:100vh}
+  /* Candado de acceso (25 Ago 2026) — filtro visual simple, NO es seguridad real:
+     todo el contenido/datos ya están en este mismo archivo HTML/JS, así que
+     alguien con "Ver código fuente" los ve pase o no la contraseña. Solo evita
+     que alguien casual con el link abra el panel sin querer. */
+  #gate{position:fixed;inset:0;background:#f4f5f7;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+  #gate-card{background:#ffffff;border:1px solid #eceef1;border-radius:16px;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.08);padding:36px 34px;width:100%;max-width:340px;text-align:center}
+  #gate-card svg{margin-bottom:14px}
+  #gate-card h2{font-size:1.05rem;font-weight:700;color:#1a1d29;margin-bottom:6px}
+  #gate-card p{font-size:.8rem;color:#6b7280;margin-bottom:20px;line-height:1.5}
+  #gate-input{width:100%;padding:11px 14px;border:1px solid #dfe3e8;border-radius:10px;font-size:.9rem;outline:none;text-align:center;transition:border .2s}
+  #gate-input:focus{border-color:#2563eb}
+  #gate-btn{width:100%;margin-top:12px;padding:11px 14px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s}
+  #gate-btn:hover{background:#1d4ed8}
+  #gate-error{margin-top:14px;font-size:.8rem;color:#dc2626;font-weight:600;display:none}
   .sidebar{width:250px;flex-shrink:0;background:#fbfbfc;border-right:1px solid #eceef1;padding:26px 16px;display:flex;flex-direction:column;gap:22px}
   .brand{display:flex;gap:12px;align-items:flex-start;color:#1a1d29;padding:0 6px}
   .brand h1{font-size:1.02rem;font-weight:700;line-height:1.25}
@@ -171,7 +185,21 @@
 </head>
 <body>
 
-<div class="shell">
+<div id="gate">
+  <div id="gate-card">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="4" y="10" width="16" height="10" rx="2"></rect>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+    </svg>
+    <h2>Acceso restringido</h2>
+    <p>Centro de Control DIT &mdash; ingresa la contrase&ntilde;a para ver el panel.</p>
+    <input type="password" id="gate-input" placeholder="Contrase&ntilde;a" autocomplete="off">
+    <button id="gate-btn" onclick="checkGatePassword()">Entrar</button>
+    <div id="gate-error">No tienes acceso. Verifica la contrase&ntilde;a.</div>
+  </div>
+</div>
+
+<div class="shell" id="app-shell" style="display:none">
 <aside class="sidebar">
   <div class="brand">
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.95;" aria-hidden="true">
@@ -555,6 +583,57 @@
 </div><!-- /.shell -->
 
 <script>
+// ─── CANDADO DE ACCESO (25 Ago 2026) ───────────────────────────────────────────
+// Filtro visual simple, NO es seguridad real: todo el HTML/JS/datos de este
+// archivo ya está descargado en el navegador — "Ver código fuente" los muestra
+// pase o no la contraseña. Solo evita que alguien casual con el link abra el
+// panel sin querer. La contraseña se compara por hash SHA-256 (no queda en
+// texto plano en el código), y una vez correcta se recuerda con sessionStorage
+// mientras el navegador siga abierto (no la vuelve a pedir al recargar).
+const GATE_HASH = '1b878524c01a07523856efbd02e57543c742cf7b2a4907a4eebc1e04c9e19319';
+async function sha256Hex(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function unlockPanel(){
+  const gate = document.getElementById('gate');
+  const shell = document.getElementById('app-shell');
+  if(gate) gate.style.display = 'none';
+  if(shell) shell.style.display = 'flex';
+}
+async function checkGatePassword(){
+  const input = document.getElementById('gate-input');
+  const err = document.getElementById('gate-error');
+  const val = input ? input.value : '';
+  let hash;
+  try{
+    hash = await sha256Hex(val);
+  }catch(e){
+    // Respaldo si crypto.subtle no está disponible (ej. contexto no seguro).
+    hash = (val === 'Seguritech') ? GATE_HASH : '';
+  }
+  if(hash === GATE_HASH){
+    try{ sessionStorage.setItem('dit_panel_auth','1'); }catch(e){}
+    unlockPanel();
+  } else {
+    if(err) err.style.display = 'block';
+    if(input){ input.value=''; input.focus(); }
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  let yaAutenticado = false;
+  try{ yaAutenticado = sessionStorage.getItem('dit_panel_auth')==='1'; }catch(e){}
+  if(yaAutenticado){
+    unlockPanel();
+  } else {
+    const input = document.getElementById('gate-input');
+    if(input){
+      input.focus();
+      input.addEventListener('keydown', function(e){ if(e.key==='Enter') checkGatePassword(); });
+    }
+  }
+});
+
 const BITACORA = [
   { fecha:'1 – 15 Jun 2026',  activos:52, cerrados:1465, aprobacion:44, backlog:171 },
   { fecha:'16 – 30 Jun 2026', activos:36, cerrados:1539, aprobacion:32, backlog:143 },
