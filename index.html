@@ -70,6 +70,16 @@
   .pill-backlog{background:rgba(124,111,208,0.16);color:#7c6fd0}
   .pill-otro{background:rgba(100,116,139,0.16);color:#64748b}
   .pill-cerrado{background:rgba(34,197,94,0.16);color:#22c55e}
+  /* Estados exclusivos de "Nuevos Desarrollos" (CC Evolutivos) — cada Estado de Jira
+     es su propia categoría, no se agrupan varios en un mismo pill */
+  .pill-firma{background:rgba(245,158,11,0.16);color:#d97706}
+  .pill-presup{background:rgba(59,130,246,0.16);color:#3b82f6}
+  .pill-listo{background:rgba(22,163,74,0.16);color:#16a34a}
+  .pill-consulta{background:rgba(236,72,153,0.16);color:#ec4899}
+  .pill-control{background:rgba(99,102,241,0.16);color:#6366f1}
+  .pill-certqa{background:rgba(16,185,129,0.16);color:#10b981}
+  .pill-ready{background:rgba(6,182,212,0.16);color:#06b6d4}
+  .pill-estim{background:rgba(161,98,7,0.16);color:#a16207}
   .tab-content{display:none}
   .tab-content.active{display:block}
   .panel{background:#ffffff;border:1px solid #eceef1;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(15,23,42,.05),0 8px 18px rgba(15,23,42,.05)}
@@ -121,11 +131,19 @@
   <div class="tabs">
     <div class="tab active" onclick="showTab('resumen',this)" style="padding-right:9px">
       <span class="tab-ico">&#x1F527;</span><span style="white-space:nowrap">Tickets de Soportes</span>
-      <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event)">&#x25B8;</span>
+      <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event,'soportes')">&#x25B8;</span>
     </div>
     <div class="subtabs-wrap" id="subtabs-soportes" style="display:none">
       <div class="tab tab-sub" onclick="showTab('aprobacion',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
       <div class="tab tab-sub" onclick="showTab('cerrados',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
+    </div>
+    <div class="tab" onclick="showTab('resumen_dev',this)" style="padding-right:9px">
+      <span class="tab-ico">&#x1F4BB;</span><span style="white-space:nowrap">Tickets de Nuevos Desarrollos</span>
+      <span class="tab-caret" id="caret-dev" onclick="toggleSubtabs(event,'dev')">&#x25B8;</span>
+    </div>
+    <div class="subtabs-wrap" id="subtabs-dev" style="display:none">
+      <div class="tab tab-sub" onclick="showTab('aprobacion_dev',this)"><span class="tab-ico">&#x1F7E0;</span> Aprobaci&oacute;n Cliente</div>
+      <div class="tab tab-sub" onclick="showTab('cerrados_dev',this)"><span class="tab-ico">&#x1F7E2;</span> Atendidos (DONE)</div>
     </div>
     <div class="tab" onclick="showTab('bitacora',this)"><span class="tab-ico">&#x1F4C8;</span> Bit&aacute;cora Hist&oacute;rica</div>
   </div>
@@ -243,6 +261,107 @@
         </div>
         <div style="position:relative;min-height:320px;height:100%;">
           <canvas id="chartTopResp"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: NUEVOS DESARROLLOS (RESUMEN) -->
+  <div id="tab-resumen_dev" class="tab-content">
+  <div class="kpi-grid">
+    <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados_dev')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
+      <div class="kpi-icon">&#x1F7E2;</div>
+      <div class="num" id="kpi-cerrados-dev">0</div>
+      <div class="lbl">Atendidos (DONE)</div>
+      <div class="sub" id="kpi-cerrados-dev-sub">Evolutivos del año en curso</div>
+    </div>
+    <div class="kpi kpi-aprobacion kpi-linkable" onclick="kpiGoTo('aprobacion_dev')" role="button" tabindex="0" title="Ver detalle de Aprobaci&oacute;n Cliente">
+      <div class="kpi-icon">&#x1F7E0;</div>
+      <div class="num" id="kpi-aprobacion-dev">0</div>
+      <div class="lbl">Aprobaci&oacute;n Cliente</div>
+      <div class="sub">Estado: Aprobaci&oacute;n por Cliente</div>
+    </div>
+    <div class="kpi kpi-backlog">
+      <div class="kpi-icon">&#x1F534;</div>
+      <div class="num" id="kpi-backlog-dev">0</div>
+      <div class="lbl">En Atenci&oacute;n</div>
+      <div class="sub">Evolutivos activos</div>
+    </div>
+  </div>
+    <div class="panel" style="border-top:4px solid #dc2626">
+      <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-dev" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-dev" style="color:#ef4444;font-size:1rem;"></strong></div>
+      <div style="position:relative;height:410px;">
+        <canvas id="chartLocalidadDev"></canvas>
+      </div>
+    </div>
+    <div class="panel" style="border-top:4px solid #dc2626">
+      <h3>&#x1F4CA; Tabla de Resumen &mdash; Todos los Estados por Localidad</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Fuente: hoja <strong>CC Evolutivos (1hr activo)</strong> &bull; Tipo de Incidencia en {CC Evolutivo, Evolutivo &Aacute;gil} &bull; cada Estado de Jira es su propia columna (no se agrupan), agrupado por Localidad</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Localidad</th>
+            <th><span class="pill pill-firma">Pend. Firma</span></th>
+            <th><span class="pill pill-progreso">En Progreso</span></th>
+            <th><span class="pill pill-backlog">Product Backlog</span></th>
+            <th><span class="pill pill-presup">Validaci&oacute;n Presup.</span></th>
+            <th><span class="pill pill-bloqueado">Bloqueado</span></th>
+            <th><span class="pill pill-listo">Listo p/Desplegar</span></th>
+            <th><span class="pill pill-qa">En QA</span></th>
+            <th><span class="pill pill-aprobacion">Aprobaci&oacute;n Cliente</span></th>
+            <th><span class="pill pill-consulta">Consulta c/Cliente</span></th>
+            <th><span class="pill pill-control">Control Versi&oacute;n</span></th>
+            <th><span class="pill pill-reabierto">Reabierto</span></th>
+            <th><span class="pill pill-certqa">Certificado QA</span></th>
+            <th><span class="pill pill-ready">Ready to Merge</span></th>
+            <th><span class="pill pill-estim">Estim. T&eacute;cnica</span></th>
+            <th><span class="pill pill-otro">Otro</span></th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody id="resumen-dev-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: NUEVOS DESARROLLOS — APROBACION CLIENTE -->
+  <div id="tab-aprobacion_dev" class="tab-content">
+    <div style="background:#fdeeea;color:#a83b1d;border-radius:10px;padding:14px 20px;margin-bottom:20px;font-weight:700;font-size:.95rem;">
+      &#x1F7E0; Aprobaci&oacute;n por Cliente &mdash; Nuevos Desarrollos por Localidad
+    </div>
+    <div class="info-box" style="font-size:.78rem;">Solo tickets cuyo Estado en Jira es exactamente <strong>"Aprobaci&oacute;n por Cliente"</strong> (no incluye "Pendiente de Firma" ni "Consulta con Cliente" — son Estados distintos, ver la Tabla de Resumen). Fuente: hoja CC Evolutivos (1hr activo).</div>
+    <div id="aprobacion-dev-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;"></div>
+    <div class="panel">
+      <div class="t-header">
+        <h3 style="margin:0">&#x1F4CD; Distribuci&oacute;n por Localidad</h3>
+        <span id="aprobacion-dev-corte" style="font-size:.78rem;color:#94a3b8;"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Localidad</th><th>Distribuci&oacute;n</th><th>#</th></tr></thead>
+          <tbody id="aprobacion-dev-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: NUEVOS DESARROLLOS — ATENDIDOS DONE -->
+  <div id="tab-cerrados_dev" class="tab-content">
+    <div class="info-box"><strong>Atendidos (DONE)</strong> son tickets de Nuevos Desarrollos (Evolutivos) completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
+      <!-- Lista izquierda -->
+      <div class="panel" style="margin-bottom:0;">
+        <h3>Tickets por Mes</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:10px;" id="cerrados-dev-year-label"></div>
+        <div id="cerrados-dev-lista"></div>
+      </div>
+      <!-- Gráfica barras derecha -->
+      <div class="panel" style="margin-bottom:0;display:flex;flex-direction:column;">
+        <h3>Distribución Mensual</h3>
+        <div style="font-size:.76rem;color:#94a3b8;margin-bottom:4px;" id="cerrados-dev-year-label2"></div>
+        <div style="position:relative;flex:1;min-height:280px;">
+          <canvas id="chartCerradosBarsDev"></canvas>
         </div>
       </div>
     </div>
@@ -410,6 +529,63 @@ function getCerradosVigentes(){
   const year = String(new Date().getFullYear());
   const sinMes = CERRADOS.filter(r=>!/^\d{4}-/.test(r.loc));
   const enAnio = CERRADOS.filter(r=>r.loc.startsWith(year+'-'))
+    .sort((a,b)=>a.loc.localeCompare(b.loc));
+  const rows = enAnio.concat(sinMes);
+  return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
+}
+
+// ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
+// Fuente: hoja "CC Evolutivos (1hr activo)". Filtro: Tipo de Incidencia en {CC
+// Evolutivo, Evolutivo Ágil}. A diferencia de Soportes, aquí NO se agrupan varios
+// Estados de Jira en un mismo bucket — cada Estado es su propia columna (decisión
+// explícita: los Estados son distintos entre sí y no deben mezclarse). "otro" sigue
+// siendo la red de seguridad para cualquier Estado futuro no mapeado todavía.
+const EVOL_ACTIVOS = [
+  {loc:'Quintana Roo',    firma:8, prog:5, backlog:3, presup:3, bloq:2, listo:1, qa:4, aprob:2, consulta:2, control:0, reabierto:0, certqa:0, ready:1, estim:0, otro:0, total:31},
+  {loc:'Jalisco',         firma:3, prog:4, backlog:7, presup:0, bloq:4, listo:4, qa:0, aprob:1, consulta:0, control:0, reabierto:2, certqa:0, ready:0, estim:0, otro:0, total:25},
+  {loc:'Sonora',          firma:7, prog:0, backlog:1, presup:1, bloq:1, listo:0, qa:3, aprob:1, consulta:0, control:1, reabierto:0, certqa:1, ready:0, estim:2, otro:0, total:18},
+  {loc:'Colima',          firma:4, prog:1, backlog:0, presup:4, bloq:0, listo:1, qa:0, aprob:1, consulta:2, control:1, reabierto:0, certqa:1, ready:0, estim:0, otro:0, total:15},
+  {loc:'Guanajuato',      firma:2, prog:3, backlog:1, presup:0, bloq:0, listo:0, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:1, estim:0, otro:0, total:7},
+  {loc:'Hidalgo',         firma:0, prog:0, backlog:0, presup:4, bloq:0, listo:0, qa:0, aprob:0, consulta:1, control:2, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:7},
+  {loc:'Baja California', firma:2, prog:0, backlog:0, presup:0, bloq:1, listo:1, qa:0, aprob:0, consulta:0, control:0, reabierto:1, certqa:0, ready:0, estim:0, otro:0, total:5},
+  {loc:'Zacatecas',       firma:0, prog:0, backlog:0, presup:0, bloq:0, listo:1, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:1},
+  {loc:'Chiapas',         firma:0, prog:1, backlog:0, presup:0, bloq:0, listo:0, qa:0, aprob:0, consulta:0, control:0, reabierto:0, certqa:0, ready:0, estim:0, otro:0, total:1},
+];
+const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
+
+// Fuente: la MISMA hoja "CC Evolutivos (1hr activo)", pero solo el Estado exacto
+// "APROBACIÓN POR CLIENTE" — no se mezcla con "PENDIENTE DE FIRMA" ni "Consulta Con
+// Cliente" (son Estados distintos y así se pidió mantenerlos, ver EVOL_ACTIVOS arriba).
+const APROBACION_DEV = [
+  {loc:'Quintana Roo', n:2},
+  {loc:'Jalisco', n:1},
+  {loc:'Sonora', n:1},
+  {loc:'Colima', n:1},
+];
+const TOTAL_APROBACION_DEV = APROBACION_DEV.reduce((s,r)=>s+r.n,0);
+
+// Fuente: hoja "Mtto_DONE_2026" (la misma que usa Soportes), filtrado a Tipo de
+// Incidencia en {Evolutivo Ágil, CC Evolutivo} en vez de {Soporte, Asistencia
+// Técnica}. Igual que Soportes, "Sin mes asignado" se muestra aparte al final.
+const CERRADOS_DEV = [
+  {loc:'2025-12 · Diciembre', n:3},
+  {loc:'2026-01 · Enero', n:4},
+  {loc:'2026-02 · Febrero', n:4},
+  {loc:'2026-03 · Marzo', n:43},
+  {loc:'2026-04 · Abril', n:12},
+  {loc:'2026-05 · Mayo', n:6},
+  {loc:'2026-06 · Junio', n:12},
+  {loc:'2026-07 · Julio', n:14},
+  {loc:'2026-08 · Agosto', n:14},
+  {loc:'Sin mes asignado', n:17},
+];
+const TOTAL_CERRADOS_DEV = CERRADOS_DEV.reduce((s,r)=>s+r.n,0); // histórico completo
+// Misma lógica que getCerradosVigentes(): el KPI "Atendidos (DONE)" de Nuevos
+// Desarrollos y su panel "Tickets por Mes" comparten esta única función-fuente.
+function getCerradosVigentesDev(){
+  const year = String(new Date().getFullYear());
+  const sinMes = CERRADOS_DEV.filter(r=>!/^\d{4}-/.test(r.loc));
+  const enAnio = CERRADOS_DEV.filter(r=>r.loc.startsWith(year+'-'))
     .sort((a,b)=>a.loc.localeCompare(b.loc));
   const rows = enAnio.concat(sinMes);
   return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
@@ -645,23 +821,28 @@ function showTab(name, el){
   el.classList.add('active');
   // Re-renderizar gráficas de tabs que estaban ocultos al cargar
   if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
+  if(name==='cerrados_dev'){renderCerradosDev();}
   if(name==='bitacora'){renderBitacora();}
 }
-function toggleSubtabs(e){
+function toggleSubtabs(e, group){
   e.stopPropagation();
-  const wrap = document.getElementById('subtabs-soportes');
-  const caret = document.getElementById('caret-soportes');
+  const wrap = document.getElementById('subtabs-'+group);
+  const caret = document.getElementById('caret-'+group);
+  if(!wrap) return;
   const isOpen = wrap.style.display !== 'none';
   wrap.style.display = isOpen ? 'none' : 'flex';
-  caret.classList.toggle('open', !isOpen);
+  if(caret) caret.classList.toggle('open', !isOpen);
 }
 function kpiGoTo(name){
   const sidebarTab = document.querySelector(`.tab[onclick*="showTab('${name}'"]`);
   if(!sidebarTab) return;
   if(sidebarTab.classList.contains('tab-sub')){
-    const wrap = document.getElementById('subtabs-soportes');
-    const caret = document.getElementById('caret-soportes');
-    if(wrap && wrap.style.display==='none'){ wrap.style.display='flex'; if(caret) caret.classList.add('open'); }
+    const wrap = sidebarTab.closest('.subtabs-wrap');
+    if(wrap && wrap.style.display==='none'){
+      wrap.style.display='flex';
+      const caret = document.getElementById('caret-'+wrap.id.replace('subtabs-',''));
+      if(caret) caret.classList.add('open');
+    }
   }
   showTab(name, sidebarTab);
 }
@@ -849,6 +1030,121 @@ function renderCerrados(){
   );
 }
 
+// ─── RENDER: NUEVOS DESARROLLOS — KPIs ────────────────────────────────────────
+function renderKPIsDev(){
+  const elCerrados = document.getElementById('kpi-cerrados-dev');
+  const cerradosVigentes = getCerradosVigentesDev();
+  if(elCerrados) elCerrados.textContent = cerradosVigentes.total.toLocaleString();
+  const elCerradosSub = document.getElementById('kpi-cerrados-dev-sub');
+  if(elCerradosSub) elCerradosSub.textContent = 'Evolutivos del año en curso (' + cerradosVigentes.year + ')';
+  const elAprobacion = document.getElementById('kpi-aprobacion-dev');
+  if(elAprobacion) elAprobacion.textContent = TOTAL_APROBACION_DEV.toLocaleString();
+  const elBacklog = document.getElementById('kpi-backlog-dev');
+  if(elBacklog) elBacklog.textContent = TOTAL_ACTIVOS_DEV.toLocaleString();
+}
+
+// ─── RENDER: NUEVOS DESARROLLOS — RESUMEN (tabla + gráfica) ───────────────────
+function renderResumenDev(){
+  const tb = document.getElementById('resumen-dev-tbody');
+  if(!tb) return;
+  const keys=['firma','prog','backlog','presup','bloq','listo','qa','aprob','consulta','control','reabierto','certqa','ready','estim'];
+  const css={firma:'pill-firma',prog:'pill-progreso',backlog:'pill-backlog',presup:'pill-presup',bloq:'pill-bloqueado',listo:'pill-listo',qa:'pill-qa',aprob:'pill-aprobacion',consulta:'pill-consulta',control:'pill-control',reabierto:'pill-reabierto',certqa:'pill-certqa',ready:'pill-ready',estim:'pill-estim'};
+  const tot={}; keys.forEach(k=>tot[k]=0); let totO=0, totT=0, html='';
+  EVOL_ACTIVOS.forEach(r=>{
+    keys.forEach(k=>tot[k]+=r[k]);
+    totO+=(r.otro||0); totT+=r.total;
+    html+=`<tr><td><strong>${r.loc}</strong></td>`
+      + keys.map(k=>`<td>${pill(r[k],css[k])}</td>`).join('')
+      + `<td>${pill(r.otro||0,'pill-otro')}</td><td><strong>${r.total}</strong></td></tr>`;
+  });
+  const kpiActivos = TOTAL_ACTIVOS_DEV;
+  const sinLoc = kpiActivos - totT;
+  if(sinLoc > 0){
+    html+=`<tr style="background:rgba(229,85,90,.16);">
+      <td style="color:#ef4444;font-style:italic;">⚠ Sin localidad asignada</td>
+      <td colspan="${keys.length+1}" style="color:#ef4444;font-size:.8rem;font-style:italic;">Registros en el Sheet sin localidad capturada — requieren atención del equipo</td>
+      <td><strong style="color:#ef4444;">${sinLoc}</strong></td>
+    </tr>`;
+  }
+  html+=`<tr class="tr-total"><td>TOTAL REAL (Sheet)</td>`
+    + keys.map(k=>`<td>${pill(tot[k],css[k])}</td>`).join('')
+    + `<td>${pill(totO,'pill-otro')}</td><td><strong>${kpiActivos>0?kpiActivos:totT}</strong></td></tr>`;
+  tb.innerHTML = html;
+
+  const elLoc = document.getElementById('total-loc-dev');
+  if(elLoc) elLoc.textContent = totT;
+  const elSin = document.getElementById('total-sinloc-dev');
+  if(elSin) elSin.textContent = (kpiActivos - totT > 0) ? (kpiActivos - totT) : '0';
+
+  const sortedLoc = [...EVOL_ACTIVOS].sort((a,b)=>b.total-a.total);
+  drawStackedHBar('chartLocalidadDev',
+    sortedLoc.map(r=>r.loc),
+    [ {label:'Tickets en Atención', data:sortedLoc.map(r=>r.total), color:'#17a2b8'} ]
+  );
+}
+
+// ─── RENDER: NUEVOS DESARROLLOS — APROBACIÓN CLIENTE ──────────────────────────
+function renderAprobacionDev(){
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const h=new Date();
+  const corte=document.getElementById('aprobacion-dev-corte');
+  if(corte) corte.textContent=`Corte: ${h.getDate()} ${meses[h.getMonth()].substring(0,3)} ${h.getFullYear()}`;
+  const sorted=[...APROBACION_DEV].sort((a,b)=>b.n-a.n);
+  const MAX=sorted[0]?sorted[0].n:0;
+  const prom=APROBACION_DEV.length>0?(TOTAL_APROBACION_DEV/APROBACION_DEV.length).toFixed(1):0;
+  const maxLocs=sorted.filter(r=>r.n===MAX).map(r=>r.loc).join('/');
+  const kpis=[
+    {num:TOTAL_APROBACION_DEV, lbl:'Total incidentes',  col:'#f2793a'},
+    {num:APROBACION_DEV.length,lbl:'Localidades',        col:'#1a1d29'},
+    {num:prom,                 lbl:'Promedio por loc.',  col:'#1a1d29'},
+    {num:MAX,                  lbl:`Máximo (${maxLocs})`,col:'#ef4444'},
+  ];
+  const kpiEl=document.getElementById('aprobacion-dev-kpis');
+  if(kpiEl) kpiEl.innerHTML=kpis.map(k=>`
+    <div style="background:#f8fafc;border-radius:10px;padding:16px;text-align:center;border:1px solid #e5e7eb;">
+      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
+      <div style="font-size:.75rem;color:#64748b;margin-top:6px;">${k.lbl}</div>
+    </div>`).join('');
+  const tb=document.getElementById('aprobacion-dev-tbody');
+  if(!tb) return;
+  let html='';
+  sorted.forEach(r=>{
+    html+=`<tr>
+      <td><strong>${r.loc}</strong></td>
+      <td>${pbar(r.n,MAX,'#f2793a')}</td>
+      <td><strong>${r.n}</strong></td>
+    </tr>`;
+  });
+  tb.innerHTML=html;
+}
+
+// ─── RENDER: NUEVOS DESARROLLOS — ATENDIDOS DONE ──────────────────────────────
+function renderCerradosDev(){
+  const lista=document.getElementById('cerrados-dev-lista');
+  if(!lista) return;
+  const { year: currentYear, rows: sorted, total } = getCerradosVigentesDev();
+  const colors=sorted.map(r=> /^\d{4}-/.test(r.loc) ? '#17a2b8' : '#12707d');
+
+  const yearLabelTxt = `Año ${currentYear} · ordenado por mes · Fuente: hoja Mtto_DONE_2026 (Tipo de Incidencia: Evolutivo Ágil + CC Evolutivo)`;
+  const yl1=document.getElementById('cerrados-dev-year-label'); if(yl1) yl1.textContent=yearLabelTxt;
+  const yl2=document.getElementById('cerrados-dev-year-label2'); if(yl2) yl2.textContent=yearLabelTxt;
+
+  lista.innerHTML=sorted.map((r,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #f8fafc;">
+      <span style="font-size:.85rem;color:#334155;">${r.loc}</span>
+      <span style="font-size:1rem;font-weight:800;color:${colors[i]};">${r.n}</span>
+    </div>`).join('')
+  + `<div style="display:flex;justify-content:space-between;padding:10px 4px 0;font-size:.85rem;font-weight:700;color:#1a1d29;">
+      <span>Total ${currentYear}</span><span>${total.toLocaleString()}</span>
+    </div>`;
+
+  drawVBar('chartCerradosBarsDev',
+    sorted.map(r=>r.loc.replace(/^\d{4}-\d{2} · /,'')),
+    sorted.map(r=>r.n),
+    sorted.map((_,i)=>colors[i])
+  );
+}
+
 // ─── RENDER: TOP RESPONSABLES ─────────────────────────────────────────────────
 function renderHistorialCerrados(){
   const tb=document.getElementById('historial-cerrados-tbody');
@@ -981,7 +1277,8 @@ document.addEventListener('DOMContentLoaded', function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora].forEach(fn => fn());
+  [renderKPIs, renderResumen, renderAprobacion, renderCerrados, renderHistorialCerrados, renderBitacora,
+   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev].forEach(fn => fn());
 });
 </script>
 </body>
