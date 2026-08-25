@@ -185,12 +185,21 @@
   .footer{text-align:center;padding:18px;color:#9aa0ab;font-size:.74rem}
   .footer strong{color:#6b7280}
 
-  /* ─── Reporte Individual (Rendimiento por Persona → clic en nombre), 25 Ago 2026 ─── */
+  /* ─── Reporte Individual (Rendimiento por Persona → hover en nombre), 25 Ago 2026 ───
+     v2: se cambió de "clic → reemplaza la tabla en el mismo lugar" a "hover → se abre
+     como ventana flotante ENCIMA de la tabla, sin ocultarla" — a pedido explícito del
+     usuario, que encontró "feo" el reemplazo en el mismo lugar. El overlay se abre con
+     mouseenter y se queda fijo (no se cierra solo al quitar el mouse) hasta que se le
+     da clic a la X o se hace clic fuera de la tarjeta — así se puede hacer scroll o usar
+     el botón Exportar sin que se cierre solo. */
   .ri-clickrow{cursor:pointer}
   .ri-clickrow:hover td{background:#f7f8fa}
-  .ri-clickrow td.ri-name-cell{color:#2563eb;text-decoration:underline;text-decoration-color:#c7d7f7;text-underline-offset:2px}
-  .ri-podio-card{cursor:pointer;transition:transform .12s ease}
-  .ri-podio-card:hover{transform:translateY(-2px)}
+  .ri-podio-card{cursor:pointer;transition:background .12s ease}
+  .ri-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+  .ri-overlay.open{display:flex}
+  .ri-modal-card{background:#f4f5f7;border-radius:18px;max-width:960px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(15,23,42,.3);animation:ri-pop .15s ease}
+  @keyframes ri-pop{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .ri-overlay-close{position:fixed;top:22px;right:26px;z-index:201;width:38px;height:38px;border-radius:50%;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:1.2rem;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
   .ri-back-link{display:inline-flex;align-items:center;gap:6px;color:#64748b;font-size:.82rem;text-decoration:none;cursor:pointer;font-weight:600;margin-bottom:16px;background:none;border:none;padding:0}
   .ri-back-link:hover{color:#1a1d29}
   .ri-top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;flex-wrap:wrap;gap:14px}
@@ -625,7 +634,7 @@
     </div>
     <div class="panel" id="rp-ranking-view" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
-      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre para ver su reporte individual.</div>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 11 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Pasa el mouse sobre cualquier nombre para ver su reporte individual.</div>
       <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
       <div class="table-wrap">
         <table>
@@ -640,7 +649,10 @@
         </table>
       </div>
     </div>
-    <div id="rp-detail-view" style="display:none;margin-top:22px;"></div>
+    <div id="rp-overlay" class="ri-overlay" onclick="if(event.target===this) cerrarReporteIndividual()">
+      <button class="ri-overlay-close" onclick="cerrarReporteIndividual()">&times;</button>
+      <div class="ri-modal-card" id="rp-detail-view"></div>
+    </div>
   </div>
 
   <!-- TAB: BITACORA -->
@@ -2399,7 +2411,7 @@ function renderEquipoRendimiento(){
   const podio=document.getElementById('top3-podio-equipo');
   if(podio){
     podio.innerHTML=combinado.slice(0,3).map((r,i)=>`
-      <div class="ri-podio-card" onclick="abrirReporteIndividual(${i})" style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
+      <div class="ri-podio-card" onmouseenter="abrirReporteIndividual(${i})" style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
         <div style="font-size:2rem;margin-bottom:6px;">${RP_MEDALS[i]}</div>
         <div style="font-size:2.2rem;font-weight:800;color:${RP_PODIO_COLORS[i]};line-height:1;">${r.total}</div>
         <div style="font-size:.82rem;font-weight:600;color:#1a1d29;margin:8px 0 4px;">${r.nom}</div>
@@ -2412,9 +2424,9 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-      return `<tr class="ri-clickrow" onclick="abrirReporteIndividual(${i})" style="${rowStyle}">
+      return `<tr class="ri-clickrow" onmouseenter="abrirReporteIndividual(${i})" style="${rowStyle}">
         <td style="color:${numColor};font-weight:700;">${i<3?RP_MEDALS[i]:i+1}</td>
-        <td class="ri-name-cell">${r.nom}</td>
+        <td>${r.nom}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
@@ -2658,19 +2670,14 @@ function abrirReporteIndividual(idx){
   `;
 
   const detailView = document.getElementById('rp-detail-view');
-  const rankingView = document.getElementById('rp-ranking-view');
+  const overlay = document.getElementById('rp-overlay');
   if(detailView) detailView.innerHTML = html;
-  if(detailView) detailView.style.display = 'block';
-  if(rankingView) rankingView.style.display = 'none';
-  window.scrollTo(0,0);
+  if(overlay){ overlay.classList.add('open'); overlay.scrollTop = 0; }
 }
 
 function cerrarReporteIndividual(){
-  const detailView = document.getElementById('rp-detail-view');
-  const rankingView = document.getElementById('rp-ranking-view');
-  if(detailView) detailView.style.display = 'none';
-  if(rankingView) rankingView.style.display = 'block';
-  window.scrollTo(0,0);
+  const overlay = document.getElementById('rp-overlay');
+  if(overlay) overlay.classList.remove('open');
 }
 
 // ─── RENDER: BITÁCORA ─────────────────────────────────────────────────────────
