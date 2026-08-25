@@ -514,7 +514,7 @@
           <thead><tr>
             <th>Mes</th>
             <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
-            <th><span class="pill" style="background:rgba(13,148,136,.14);color:#0d9488;">Evolutivos</span></th>
+            <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
             <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
             <th>Total</th>
           </tr></thead>
@@ -535,7 +535,7 @@
           <thead><tr>
             <th>#</th><th>Responsable</th>
             <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
-            <th><span class="pill" style="background:rgba(13,148,136,.14);color:#0d9488;">Evolutivos</span></th>
+            <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
             <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
             <th>Total</th><th>% Error</th>
           </tr></thead>
@@ -1131,10 +1131,19 @@ function showTab(name, el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   el.classList.add('active');
-  // Re-renderizar gráficas de tabs que estaban ocultos al cargar
+  // Re-renderizar gráficas de tabs que estaban ocultos al cargar — un canvas dentro
+  // de un .tab-content{display:none} mide su contenedor en 0x0 la primera vez (el
+  // navegador no calcula layout de elementos ocultos), así que su gráfica queda
+  // fija en el tamaño de respaldo (ej. 400x260) para siempre si nadie la vuelve a
+  // dibujar. Por eso CADA tab con al menos un <canvas> debe re-renderizarse aquí
+  // la primera vez que se muestra, para que mida su contenedor ya visible.
+  if(name==='resumen'){renderResumen();}
   if(name==='cerrados'){renderCerrados(); renderHistorialCerrados();}
+  if(name==='resumen_dev'){renderResumenDev();}
   if(name==='cerrados_dev'){renderCerradosDev(); renderHistorialCerradosDev();}
+  if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr(); renderHistorialCerradosErr();}
+  if(name==='equipo'){renderEquipoTendencia(); renderEquipoRendimiento();}
   if(name==='bitacora'){renderBitacora();}
 }
 function toggleSubtabs(e, group){
@@ -1757,7 +1766,7 @@ function renderEquipoTendencia(){
       return `<tr>
         <td><strong>${r.mes}</strong></td>
         <td style="color:#16a34a;font-weight:700;">${r.soportes}</td>
-        <td style="color:#0d9488;font-weight:700;">${r.evolutivos}</td>
+        <td style="color:#d97706;font-weight:700;">${r.evolutivos}</td>
         <td style="color:#2563eb;font-weight:700;">${r.error}</td>
         <td><strong>${totalMes}</strong></td>
       </tr>`;
@@ -1765,7 +1774,7 @@ function renderEquipoTendencia(){
     html += `<tr class="tr-total">
       <td>Total ${year}</td>
       <td style="color:#16a34a;">${totS}</td>
-      <td style="color:#0d9488;">${totD}</td>
+      <td style="color:#d97706;">${totD}</td>
       <td style="color:#2563eb;">${totE}</td>
       <td><strong>${totS+totD+totE}</strong></td>
     </tr>`;
@@ -1776,7 +1785,7 @@ function renderEquipoTendencia(){
     rows.map(r=>r.mes),
     [
       {label:'Soportes',   data: rows.map(r=>r.soportes),   color:'#16a34a'},
-      {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#0d9488'},
+      {label:'Evolutivos', data: rows.map(r=>r.evolutivos), color:'#d97706'},
       {label:'Error',      data: rows.map(r=>r.error),      color:'#2563eb'},
     ]
   );
@@ -1821,7 +1830,7 @@ function renderEquipoRendimiento(){
         <td style="color:${numColor};font-weight:700;">${i<3?medals[i]:i+1}</td>
         <td>${r.nom}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
-        <td style="color:#0d9488;font-weight:700;">${r.dev}</td>
+        <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
         <td style="color:${numColor};font-weight:700;">${r.total}</td>
         <td>${r.pctErr.toFixed(1)}%</td>
