@@ -464,7 +464,7 @@
 
   <!-- TAB: TICKETS DE ERROR — RESUELTOS -->
   <div id="tab-cerrados_err" class="tab-content">
-    <div class="info-box"><strong>Resueltos</strong> son tickets de Error completados y entregados. Cada mes acumula el total cerrado en ese periodo.</div>
+    <div class="info-box"><strong>Resueltos</strong> son tickets de Error completados y entregados. Cada mes acumula el total cerrado en ese periodo. Estos tickets de tipo <strong>Error</strong> son fallos levantados por <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; son distintos de <strong>Soporte</strong>, que son incidentes ya en producci&oacute;n.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch;">
       <div class="panel" style="margin-bottom:0;">
         <h3>Tickets por Mes</h3>
@@ -499,7 +499,7 @@
 
   <!-- TAB: EVALUACIÓN DE EQUIPO -->
   <div id="tab-equipo" class="tab-content">
-    <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo.</div>
+    <div class="info-box"><strong>Evaluaci&oacute;n de Equipo</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso el &Iacute;ndice de Calidad de Desarrollo abajo compara Error solo contra Evolutivos, nunca contra Soporte.</div>
     <div class="panel">
       <h3>Productividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
@@ -1769,6 +1769,11 @@ function renderEquipoTendencia(){
 //      por Soportes) — por eso Error no existía antes de marzo 2026 (aún no había
 //      desarrollo activo), no es un hueco de captura de datos. Esto hace que Error
 //      solo tenga sentido comparado contra Evolutivos, nunca mezclado con Soportes.
+//      Aclaración adicional del usuario (25 Ago 2026): Soporte = incidentes ya en
+//      producción; Error = fallos que levanta QA durante el control de calidad de
+//      los Evolutivos (no necesariamente llegaron al cliente). Por eso un índice alto
+//      aquí no equivale a "el cliente recibe software roto" — es una métrica del
+//      ciclo interno de desarrollo/QA, distinta de la calidad de servicio en producción.
 //   3) Todavía no existe SLA/tiempo de atención para Soportes — este panel NO
 //      inventa esa dimensión; simplemente no se mide todavía.
 // Con esos 3 límites, las 2 métricas de calidad quedan aisladas a Evolutivos+Error
@@ -1819,7 +1824,7 @@ function renderEquipoProductividad(){
     { num: ticketsPorPersonaMes.toFixed(1), lbl:'Volumen por persona / mes', sub:`${totGeneral.toLocaleString()} tickets (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses · conteo bruto, sin ajuste por tamaño/complejidad`, col:'#17a2b8' },
   ];
   if(indiceCalidad!==null){
-    kpis.push({ num: indiceCalidad.toFixed(1)+'%', lbl:'Índice de Calidad de Desarrollo', sub:`${totECalidad.toLocaleString()} Error de ${denomCalidad.toLocaleString()} tickets de desarrollo (Evolutivos+Error) desde ${mesesCalidad[0].mes} · no incluye Soportes`, col: indiceCalidad<=15?'#16a34a': indiceCalidad<=30?'#d97706':'#dc2626' });
+    kpis.push({ num: indiceCalidad.toFixed(1)+'%', lbl:'Índice de Calidad de Desarrollo', sub:`${totECalidad.toLocaleString()} fallos de QA de ${denomCalidad.toLocaleString()} tickets de desarrollo (Evolutivos+Error) desde ${mesesCalidad[0].mes} · no incluye Soportes (producción)`, col: indiceCalidad<=15?'#16a34a': indiceCalidad<=30?'#d97706':'#dc2626' });
   }
   if(tendenciaPts!==null){
     const mejora = tendenciaPts<0; // % Error bajando = mejor calidad
@@ -1841,6 +1846,7 @@ function renderEquipoProductividad(){
   const formula = document.getElementById('equipo-productividad-formula');
   if(formula) formula.innerHTML = `<strong>Cómo se calcula:</strong> Volumen = total combinado (Soportes+Evolutivos+Error) ÷ ${personas} personas ÷ ${meses} meses — es conteo de tickets, no esfuerzo; el tamaño de cada ticket es subjetivo y no se pesa. `
     + `Índice de Calidad de Desarrollo = Error ÷ (Evolutivos + Error), calculado SOLO con esas dos categorías desde ${mesesCalidad.length?mesesCalidad[0].mes:'—'} (primer mes con Error registrado) — se excluye Soportes porque los tickets de Error los genera el propio trabajo de desarrollo Evolutivo, no Soportes; y se excluyen enero/febrero porque antes de marzo no había desarrollo activo generando Errores (no es un hueco de datos). `
+    + `<strong>Importante:</strong> los tickets de Error son fallos que levanta QA durante el control de calidad de los Evolutivos, no incidentes que el cliente reporta en producción (eso es Soporte) — un índice alto aquí mide retrabajo interno del ciclo de desarrollo/QA, no calidad de servicio al cliente. `
     + `Tendencia de Calidad = variación del % de Error mensual entre la 1ª mitad (${primeraLbl||'—'}) y la 2ª mitad (${segundaLbl||'—'}) de esos mismos meses; negativo/▼ = el % de Error bajó = mejoró la calidad. `
     + `Nota: aún no existe SLA/tiempo de atención medido para Soportes, así que este panel no evalúa tiempos de respuesta — solo volumen y calidad de desarrollo.`;
 }
