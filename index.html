@@ -485,7 +485,14 @@
   <!-- TAB: EVALUACIÓN DE EQUIPO -->
   <div id="tab-equipo" class="tab-content">
     <div class="info-box"><strong>Informe de desempe&ntilde;o</strong> compara mes a mes cu&aacute;nto se atendi&oacute; en Soportes, Evolutivos y Errores &mdash; mismos totales que ya se muestran en cada m&oacute;dulo por separado (Mtto_DONE_2026), aqu&iacute; lado a lado para ver la tendencia del equipo completo. <strong>Soporte</strong> son incidentes de producci&oacute;n; <strong>Error</strong> son fallos que levanta <strong>QA</strong> durante el control de calidad de los Evolutivos &mdash; por eso los &quot;Fallos de QA por Evolutivo liberado&quot; de abajo comparan Error solo contra Evolutivos, nunca contra Soporte.</div>
-    <div class="panel" style="border-top:4px solid #17a2b8;">
+    <div class="panel">
+      <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
+      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;" id="equipo-year-label"></div>
+      <div style="position:relative;height:380px;">
+        <canvas id="chartEquipoTendencia"></canvas>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:22px;border-top:4px solid #17a2b8;">
       <h3>Efectividad del Equipo</h3>
       <div class="info-box" style="font-size:.78rem;">S&iacute;ntesis de Calidad de Desarrollo + Ritmo de Atenci&oacute;n &mdash; no es un n&uacute;mero compuesto (ver por qu&eacute; abajo), es un sem&aacute;foro de 2 se&ntilde;ales que ya se calculan en sus propios paneles.</div>
       <div id="efectividad-equipo"></div>
@@ -501,13 +508,6 @@
       <div class="info-box" style="font-size:.78rem;" id="equipo-productividad-year-label"></div>
       <div id="equipo-productividad-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 16px;"></div>
       <div style="font-size:.74rem;color:#94a3b8;line-height:1.6;" id="equipo-productividad-formula"></div>
-    </div>
-    <div class="panel" style="margin-top:22px;">
-      <h3>Comparativo Mensual &mdash; Soportes vs Evolutivos vs Errores</h3>
-      <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;" id="equipo-year-label"></div>
-      <div style="position:relative;height:380px;">
-        <canvas id="chartEquipoTendencia"></canvas>
-      </div>
     </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
