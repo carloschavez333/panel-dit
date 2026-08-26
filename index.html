@@ -584,6 +584,10 @@
     <div class="panel" style="margin-top:22px;">
       <h3>Tickets activos por persona</h3>
       <div class="info-box" style="font-size:.78rem;">El equipo <strong>Desarrollo</strong> (9 personas, resaltadas) siempre va primero, en un orden fijo. El resto de las personas va despu&eacute;s, ordenado por total de mayor a menor. "(Sin asignar)" son tickets activos sin responsable capturado en el Sheet.</div>
+      <div style="position:relative;max-width:340px;margin:14px 0 16px;">
+        <input type="text" id="asig-search" oninput="filtrarAsignacionPersona()" placeholder="Buscar persona&hellip;" style="width:100%;padding:9px 14px 9px 34px;border:1px solid #d8dce3;border-radius:8px;font-size:.82rem;font-family:inherit;color:#1a1d29;box-sizing:border-box;">
+        <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.85rem;pointer-events:none;">&#x1F50D;</span>
+      </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -1021,6 +1025,12 @@ function renderRitmoAtencion(){
 // no depende de que el tab ya sea visible para medir tamaño — pero igual se
 // dispara desde showTab() y renderAll() como el resto, por consistencia.
 function renderAsignacionActual(){
+  // Limpia el buscador cada vez que se redibuja la vista normal (ej. al
+  // volver a esta pestaña) — si quedara texto de una búsqueda anterior pero
+  // la tabla ya volvió al orden por defecto, se vería inconsistente.
+  const searchInput = document.getElementById('asig-search');
+  if(searchInput) searchInput.value = '';
+
   // Orden final: primero el equipo "Desarrollo" en el orden fijo que dio el
   // usuario (ASIGNACION_ORDEN_FIJO), luego el resto — el resto SÍ sigue
   // ordenado por total de mayor a menor (orden original de ASIGNACION_ACTUAL).
@@ -1085,6 +1095,61 @@ function toggleAsignacionResto(){
   const mostrando = filas[0].style.display !== 'none';
   filas.forEach(f=>{ f.style.display = mostrando ? 'none' : ''; });
   btn.textContent = mostrando ? `Mostrar los demás (${filas.length})` : `Ocultar los demás (${filas.length})`;
+}
+
+// Quita acentos y pasa a minúsculas para que la búsqueda encuentre "yoshio"
+// aunque el nombre real tenga acentos en otra parte, o "jonathan" sin
+// importar mayúsculas/minúsculas. Reutilizable si se agrega otro buscador
+// de personas en el panel más adelante.
+function normalizaBusqueda(s){
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+// Buscador de "Asignación Real Actual" (26 Ago 2026, a pedido del usuario):
+// mientras se escribe, filtra TODAS las personas (no solo el grupo fijo
+// Desarrollo ni las visibles del "resto" colapsado) y pone arriba las
+// coincidencias más fuertes — primero las que EMPIEZAN con lo escrito, luego
+// las que solo lo contienen en cualquier parte del nombre, y dentro de cada
+// grupo por total descendente. Con el buscador vacío, se restaura la vista
+// normal (Desarrollo fijo arriba + resto colapsado) llamando de nuevo a
+// renderAsignacionActual() — no hay un estado "de búsqueda" que sobreviva,
+// se recalcula todo desde ASIGNACION_ACTUAL cada vez.
+function filtrarAsignacionPersona(){
+  const input = document.getElementById('asig-search');
+  const qRaw = input ? input.value : '';
+  const q = normalizaBusqueda(qRaw);
+  const tbody = document.getElementById('asignacion-actual-tbody');
+  if(!tbody) return;
+
+  if(!q){
+    renderAsignacionActual();
+    return;
+  }
+
+  const nombresFijos = new Set(ASIGNACION_ORDEN_FIJO);
+  const matches = ASIGNACION_ACTUAL
+    .map(r => ({ r, idx: normalizaBusqueda(r.nom).indexOf(q) }))
+    .filter(m => m.idx !== -1)
+    .sort((a,b) => (a.idx - b.idx) || (b.r.total - a.r.total) || a.r.nom.localeCompare(b.r.nom, 'es'));
+
+  if(!matches.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:22px;">Sin coincidencias para &quot;${qRaw}&quot;.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = matches.map((m,i)=>{
+    const r = m.r;
+    const esFijo = nombresFijos.has(r.nom);
+    return `
+    <tr style="${esFijo?'background:#f0f9ff;':''}">
+      <td>${i+1}</td>
+      <td style="white-space:nowrap;font-weight:600;${r.nom==='(Sin asignar)'?'color:#94a3b8;font-style:italic;font-weight:500;':'color:#1a1d29;'}">${r.nom}${esFijo?' <span class="pill" style="background:rgba(23,162,184,.14);color:#17a2b8;font-size:.62rem;">DESARROLLO</span>':''}</td>
+      <td style="color:#16a34a;font-weight:600;">${r.sop}</td>
+      <td style="color:#d97706;font-weight:600;">${r.dev}</td>
+      <td style="color:#2563eb;font-weight:600;">${r.err}</td>
+      <td style="font-weight:700;">${r.total}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
