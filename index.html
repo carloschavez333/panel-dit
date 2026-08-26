@@ -2475,6 +2475,28 @@ function renderVolumenVelocidad(){
   const veloPct = v.horasPrimera>0 ? Math.abs((v.horasSegunda-v.horasPrimera)/v.horasPrimera*100) : null;
   const emoji = v.estado==='Creciendo bien' ? '🟢' : v.estado==='Posible saturación' ? '🟠' : v.estado==='Bajó demanda, más eficientes' ? '🔵' : '🔴';
 
+  // Diferencia en número absoluto (no solo %), a pedido del usuario (26 Ago 2026):
+  // "en un número ponlo abajo a cuánto corresponde ese aumento". Signo (+/-) siempre
+  // refleja el cambio real del dato crudo (más tickets = +, más horas = +), NUNCA el
+  // criterio de "bueno/malo" — ese criterio solo controla flecha y color, no el signo
+  // de este número, para no mentir sobre la magnitud real.
+  const volDelta = v.volSegunda - v.volPrimera;
+  const volDeltaTxt = `${volDelta>=0?'+':''}${volDelta.toLocaleString()} tickets`;
+  const veloDelta = v.horasSegunda - v.horasPrimera;
+  const veloDeltaTxt = `${veloDelta>=0?'+':''}${veloDelta.toFixed(1)} hrs/ticket`;
+
+  // Criterio de flecha/color homologado (26 Ago 2026, a pedido del usuario: "si es
+  // bueno para arriba si es malo para bajo... verde si es bueno, rojo si es malo"):
+  // la flecha SIEMPRE apunta hacia arriba cuando la señal es favorable para el
+  // negocio y hacia abajo cuando es desfavorable — sin importar si el dato crudo
+  // subió o bajó. Volumen: más tickets cerrados = favorable = ▲ (volSubio ya
+  // significa "subió", que aquí siempre es bueno). Velocidad: MENOS horas por
+  // ticket = favorable = ▲ (veloMejoro significa "mejoró", aunque el dato crudo
+  // de horas haya bajado) — por eso su flecha va invertida respecto al signo del
+  // número crudo, a propósito, para que ▲+verde siempre quiera decir "va bien".
+  const volFavorable = v.volSubio;
+  const veloFavorable = v.veloMejoro;
+
   const explicacion = {
     'Creciendo bien': `El equipo cerró más tickets (${v.primeraLbl} → ${v.segundaLbl}) sin perder velocidad — de hecho mejoró. Es la combinación más sana de las 4: más volumen atendido y más rápido a la vez.`,
     'Posible saturación': `El equipo cerró más tickets, pero cada uno está tomando más horas que antes. Puede ser señal de que el volumen ya está por encima de lo que se puede sostener al mismo ritmo — vale la pena vigilarlo.`,
@@ -2484,14 +2506,16 @@ function renderVolumenVelocidad(){
 
   wrap.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-      <div style="background:${v.volSubio?'#f0fdf4':'#fef2f2'};border:1px solid ${v.volSubio?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
+      <div style="background:${volFavorable?'#f0fdf4':'#fef2f2'};border:1px solid ${volFavorable?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
         <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Volumen</div>
-        <div style="font-size:1.3rem;font-weight:800;color:${v.volSubio?'#16a34a':'#dc2626'};margin-top:4px;">${v.volSubio?'▲':'▼'} ${volPct!=null?volPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:1.3rem;font-weight:800;color:${volFavorable?'#16a34a':'#dc2626'};margin-top:4px;">${volFavorable?'▲':'▼'} ${volPct!=null?volPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:.86rem;font-weight:700;color:${volFavorable?'#16a34a':'#dc2626'};margin-top:2px;">${volDeltaTxt}</div>
         <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.volPrimera.toLocaleString()} (${v.primeraLbl}) a ${v.volSegunda.toLocaleString()} (${v.segundaLbl}) tickets cerrados</div>
       </div>
-      <div style="background:${v.veloMejoro?'#f0fdf4':'#fef2f2'};border:1px solid ${v.veloMejoro?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
+      <div style="background:${veloFavorable?'#f0fdf4':'#fef2f2'};border:1px solid ${veloFavorable?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
         <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Velocidad</div>
-        <div style="font-size:1.3rem;font-weight:800;color:${v.veloMejoro?'#16a34a':'#dc2626'};margin-top:4px;">${v.veloMejoro?'▼':'▲'} ${veloPct!=null?veloPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:1.3rem;font-weight:800;color:${veloFavorable?'#16a34a':'#dc2626'};margin-top:4px;">${veloFavorable?'▲':'▼'} ${veloPct!=null?veloPct.toFixed(0)+'%':'—'}</div>
+        <div style="font-size:.86rem;font-weight:700;color:${veloFavorable?'#16a34a':'#dc2626'};margin-top:2px;">${veloDeltaTxt} ${veloFavorable?'(más rápido)':'(más lento)'}</div>
         <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.horasPrimera.toFixed(1)} hrs/ticket (${v.primeraLbl}) a ${v.horasSegunda.toFixed(1)} hrs/ticket (${v.segundaLbl})</div>
       </div>
     </div>
