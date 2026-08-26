@@ -636,7 +636,7 @@
     </div>
     <div class="panel" id="rp-ranking-view" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
-      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 9 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre (subrayado) para ver su reporte individual.</div>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 8 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre (subrayado) para ver su reporte individual.</div>
       <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
       <div class="table-wrap">
         <table>
@@ -780,10 +780,12 @@ const APROBACION = [
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 // IMPORTANTE: "Top Responsables" NO es "las personas con más tickets" — es una
-// LISTA FIJA de 9 personas reconocidas oficialmente como Responsables de Soporte
-// (ajustada 26 Ago 2026 a pedido explícito del usuario — antes eran 11; se quitaron
-// Silvestre Cerrato, Aníbal Argüelles García, Gibran Esaú Solís Valenzuela y Rodrigo
-// Gabriel Gras, y se agregaron Mariano Nicolás Conte y Jonathan Levi Márquez García).
+// LISTA FIJA de 8 personas reconocidas oficialmente como Responsables de Soporte
+// (ajustada 26 Ago 2026 a pedido explícito del usuario, en 2 pasos el mismo día:
+// primero de 11 a 9 — se quitaron Silvestre Cerrato, Aníbal Argüelles García,
+// Gibran Esaú Solís Valenzuela y Rodrigo Gabriel Gras, y se agregaron Mariano
+// Nicolás Conte y Jonathan Levi Márquez García — y después de 9 a 8, quitando
+// también a Yoshio Adán Villegas Guevara).
 // El resto del personal que aparece en la columna "Persona asignada" (supervisores,
 // coordinadores, etc.) queda fuera de este listado a propósito, aunque tenga más
 // tickets asignados. Nota sobre Mariano Nicolás Conte: su volumen es varias veces
@@ -793,17 +795,15 @@ const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 // con tickets mal asignados (que es el motivo por el que sí se excluyó antes a otras
 // personas de este mismo listado).
 // Fuente: hoja "Mtto_DONE_2026" (descarga en vivo del Sheet, 26 Ago 2026). Filtro:
-// Tipo de Incidencia en {Soporte, Asistencia Técnica}, restringido a estas 9 personas
+// Tipo de Incidencia en {Soporte, Asistencia Técnica}, restringido a estas 8 personas
 // (varias tienen su nombre escrito de más de una forma en el Sheet — mayúsculas/orden
 // distinto — y se unifican bajo un solo registro): Mariano Nicolás Conte (Sheet:
-// "Mariano Conte"), Jonathan Levi Márquez García, Yoshio Adán Villegas Guevara (Sheet
-// también: "VILLEGAS GUEVARA YOSHIO ADAN"), Gerardo Omar Villalpando Villalpando
+// "Mariano Conte"), Jonathan Levi Márquez García, Gerardo Omar Villalpando Villalpando
 // (Sheet: "Omar Villalpando"), Manuel Alejandro Domínguez Enríquez, Leonardo Lucio
 // Perez, Jonathan Aristeo Lozano Hernández (Sheet también: "LOZANO HERNANDEZ JONATHAN
 // ARISTEO"), Ivan Perez Felipe, Jesús Feria Ortiz.
 const RESPONSABLES = [
   {nom:'Mariano Nicolás Conte', n:215},
-  {nom:'Yoshio Adán Villegas Guevara', n:112},
   {nom:'Leonardo Lucio Perez', n:94},
   {nom:'Gerardo Omar Villalpando Villalpando', n:82},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:79},
@@ -816,7 +816,7 @@ const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
 // Fuente: hoja "Mtto_DONE_2026". Filtro: Tipo de Incidencia en {Soporte, Asistencia
 // Técnica}. Agrupado por la columna "Mes" (calculada en el propio Sheet a partir de
 // la fecha "Resuelta"). A diferencia de RESPONSABLES, aquí SÍ se cuenta a todo el
-// personal (no solo a los 9 de la lista fija) — por eso TOTAL_CERRADOS es mayor que
+// personal (no solo a los 8 de la lista fija) — por eso TOTAL_CERRADOS es mayor que
 // TOTAL_RESPONSABLES.
 const CERRADOS = [
   {loc:'2025-01 · Enero', n:1},
@@ -1000,7 +1000,7 @@ function getCerradosVigentesDev(){
 }
 
 // Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia en {Evolutivo Ágil, CC Evolutivo},
-// agrupado por "Persona asignada". Usa la MISMA lista fija de 9 Responsables oficiales
+// agrupado por "Persona asignada". Usa la MISMA lista fija de 8 Responsables oficiales
 // que Soportes (ver RESPONSABLES arriba, ajustada 26 Ago 2026) — es el mismo personal,
 // solo que aquí se cuentan sus tickets Evolutivos en vez de sus tickets de Soporte/
 // Asistencia Técnica.
@@ -1012,7 +1012,6 @@ const RESPONSABLES_DEV = [
   {nom:'Jesús Feria Ortiz', n:9},
   {nom:'Jonathan Aristeo Lozano Hernández', n:7},
   {nom:'Mariano Nicolás Conte', n:5},
-  {nom:'Yoshio Adán Villegas Guevara', n:4},
   {nom:'Jonathan Levi Márquez García', n:0},
 ];
 const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
@@ -1064,12 +1063,11 @@ function getCerradosVigentesErr(){
   return { year, rows, total: rows.reduce((s,r)=>s+r.n,0) };
 }
 
-// Misma lista fija de 9 Responsables oficiales que Soportes y Evolutivos (ajustada
+// Misma lista fija de 8 Responsables oficiales que Soportes y Evolutivos (ajustada
 // 26 Ago 2026) — aquí contando sus tickets de tipo "Error" en Mtto_DONE_2026.
 const RESPONSABLES_ERR = [
   {nom:'Mariano Nicolás Conte', n:202},
   {nom:'Jonathan Aristeo Lozano Hernández', n:97},
-  {nom:'Yoshio Adán Villegas Guevara', n:89},
   {nom:'Leonardo Lucio Perez', n:72},
   {nom:'Gerardo Omar Villalpando Villalpando', n:56},
   {nom:'Manuel Alejandro Domínguez Enríquez', n:53},
@@ -2450,7 +2448,7 @@ function renderVolumenVelocidad(){
 }
 
 // Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
-// usadas en cada módulo por separado — mismos 9 nombres en las 3, ver ajuste de
+// usadas en cada módulo por separado — mismos 8 nombres en las 3, ver ajuste de
 // roster del 26 Ago 2026) para dar una
 // producción combinada por persona. No hardcodea ningún total ni nombre: todo se
 // deriva de los arrays existentes, para que nunca se desincronice si esos números
