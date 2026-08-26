@@ -608,7 +608,7 @@
            recuadro plano teal de antes). Ver CLAUDE.md para la regla completa. -->
       <div style="display:flex;gap:10px;align-items:flex-start;background:#f8fafc;border-radius:10px;padding:12px 14px;margin:10px 0 18px;">
         <div id="icon-vv-info" style="width:22px;height:22px;border-radius:50%;background:#e2e8f0;color:#64748b;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"></div>
-        <div style="font-size:.78rem;color:#475569;line-height:1.6;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos abajo) se movieron en la misma direcci&oacute;n al comparar la 1&ordf; mitad del a&ntilde;o contra la 2&ordf; &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
+        <div id="vv-info-desc" style="font-size:.78rem;color:#475569;line-height:1.6;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos abajo) se movieron en la misma direcci&oacute;n &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
       </div>
       <div id="volumen-velocidad"></div>
     </div>
@@ -2463,8 +2463,11 @@ function renderEquipoTendencia(){
 // independientes (Volumen no tiene una meta acordada — el mismo motivo por el
 // que "Efectividad del Equipo" ya excluye Volumen de su semáforo). En vez de
 // eso, esta función SOLO cruza la DIRECCIÓN de ambas tendencias entre sí (1ª
-// mitad del año con datos vs 2ª mitad) — nunca contra un umbral absoluto — y da
-// una de 4 conclusiones cualitativas posibles. Se apoya 100% en
+// mitad del año con datos vs 2ª mitad — ver comentario dentro de
+// computeVolumenVelocidad() y CLAUDE.md para el método completo, incluyendo
+// una alternativa de ventana móvil que se probó y se descartó el mismo día) —
+// nunca contra un umbral absoluto — y da una de 4 conclusiones cualitativas
+// posibles. Se apoya 100% en
 // getComparativoMensual() y TIEMPO_ATENCION (las mismas 2 fuentes que ya usan
 // "Comparativo Mensual" y "Velocidad de Atención"), cero datos duplicados.
 // Colores fijos del bloque "Mes a mes" (navy=Volumen, teal=Velocidad) — un solo
@@ -2481,6 +2484,22 @@ function computeVolumenVelocidad(){
     return f ? f.median : null;
   };
 
+  // MÉTODO: mitad del año (definitivo, 26 Ago 2026 — ver CLAUDE.md, sección
+  // "Cómo se calcula Panorama General — Volumen vs. Velocidad" para el detalle
+  // completo). Se toman TODOS los meses que ya tienen datos en el Comparativo
+  // Mensual y se parten a la mitad: "primera" = la mitad más antigua, "segunda"
+  // = la mitad más reciente. Si el número de meses es impar, la mitad de más
+  // meses le toca a "primera" (`Math.ceil`), no a "segunda".
+  //
+  // El mismo día se probó (a pedido del usuario) reemplazar esto por una
+  // ventana móvil de 3 meses (últimos 3 vs los 3 anteriores, siempre el mismo
+  // tamaño) para reaccionar más rápido a una reversión reciente — con los datos
+  // de Ago 2026 esa ventana SÍ hubiera cambiado el veredicto de "Creciendo
+  // bien" a "En declive". El usuario, después de verlo, pidió explícitamente
+  // regresar a este método (mitad del año) — NO usar ventana móvil. Ver
+  // CLAUDE.md para el resultado real de esa prueba (queda documentado por si se
+  // vuelve a considerar en el futuro), pero no volver a cambiar este método sin
+  // que el usuario lo pida de nuevo.
   const mitad = Math.ceil(rows.length/2);
   const primera = rows.slice(0, mitad);
   const segunda = rows.slice(mitad);
@@ -2563,6 +2582,14 @@ function renderVolumenVelocidad(){
   if(iconTitulo) iconTitulo.innerHTML = ICONO_BARRAS;
   const iconInfo = document.getElementById('icon-vv-info');
   if(iconInfo) iconInfo.innerHTML = ICONO_INFO;
+  // Texto dinámico (26 Ago 2026): se arma aquí (no fijo en el HTML) para poder
+  // mostrar siempre los meses reales de "primera"/"segunda" mitad, que cambian
+  // según cuántos meses de datos haya. Método = mitad del año, definitivo (ver
+  // comentario dentro de computeVolumenVelocidad() y CLAUDE.md).
+  const descInfo = document.getElementById('vv-info-desc');
+  if(descInfo){
+    descInfo.innerHTML = `Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atención (Velocidad de Atención, ambos abajo) se movieron en la misma dirección al comparar la 1ª mitad de los meses con datos (${v.primeraLbl}) contra la 2ª (${v.segundaLbl}) — no es un número compuesto ni un semáforo con meta de volumen (no hay una acordada todavía), solo compara ambas tendencias entre sí.`;
+  }
 
   const volPct = v.volPrimera>0 ? Math.abs((v.volSegunda-v.volPrimera)/v.volPrimera*100) : null;
   const veloPct = v.horasPrimera>0 ? Math.abs((v.horasSegunda-v.horasPrimera)/v.horasPrimera*100) : null;
