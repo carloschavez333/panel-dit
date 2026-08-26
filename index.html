@@ -1142,6 +1142,43 @@ const RESPONSABLES_ERR = [
 ];
 const TOTAL_RESPONSABLES_ERR = RESPONSABLES_ERR.reduce((s,r)=>s+r.n,0);
 
+// ─── DESGLOSE MENSUAL POR PERSONA (26 Ago 2026) ────────────────────────────
+// A pedido del usuario: el reporte individual solo mostraba el acumulado total
+// del año por persona — sin contexto de cómo se fue formando ese número mes a
+// mes. Se agregó este desglose SOLO como contexto visual (barras), sin meta ni
+// ✓/✗ mensual — el volumen total del equipo varía demasiado mes a mes (14
+// tickets en enero vs. 135 en junio) para que una meta calculada con el
+// promedio de un solo mes sea confiable; la meta que sigue siendo la fuente de
+// verdad de "cumple/no cumple" es la anual (ver computeRendimientoEquipo()).
+// Extraído directamente de la hoja Mtto_DONE_2026 (columnas "Persona asignada"
+// + "Mes"), mismo filtro de Tipo de Incidencia que ya usan RESPONSABLES/
+// RESPONSABLES_DEV/RESPONSABLES_ERR. Verificado que cada suma mensual coincide
+// EXACTO con el total anual ya publicado en esos 3 arreglos (ninguna persona
+// quedó con una diferencia) antes de guardar esto.
+// El primer bucket "Antes 2026" junta un puñado de tickets con Mes anterior a
+// 2026 (nov/dic 2025) que sí cuentan en el acumulado anual de algunas personas
+// pero no tienen mes 2026 propio — es chico (máximo 5 tickets) pero se dejó
+// explícito en vez de descartarlo, para que la suma de las barras siempre
+// cuadre con el total de arriba, nunca menos.
+// Nota de negocio: el pico de Error de Mariano en mayo (110 tickets, muy por
+// encima de los demás meses) NO es un error de dato — el usuario aclaró que
+// ese mes lo asignaron completo a un proyecto especial, no es su ritmo normal.
+// Si se agrega alguien nuevo al roster en el futuro, hay que sacarle este
+// mismo desglose de la hoja (no inventar ceros ni copiar el patrón de otra
+// persona).
+const MESES_MENSUAL_LBLS = ["Antes 2026", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago"];
+const RESPONSABLES_MENSUAL = {
+  "Mariano Nicolás Conte": { sop:[0, 4, 28, 33, 28, 32, 29, 32, 29], dev:[1, 0, 0, 0, 0, 0, 1, 0, 3], err:[0, 0, 0, 9, 25, 110, 38, 14, 6] },
+  "Leonardo Lucio Perez": { sop:[2, 5, 3, 6, 17, 11, 17, 19, 14], dev:[0, 1, 0, 3, 1, 1, 0, 2, 4], err:[0, 0, 0, 34, 1, 0, 8, 29, 0] },
+  "Gerardo Omar Villalpando Villalpando": { sop:[5, 3, 2, 23, 7, 8, 15, 16, 3], dev:[0, 0, 1, 4, 3, 0, 2, 2, 0], err:[2, 0, 0, 21, 1, 11, 3, 12, 6] },
+  "Manuel Alejandro Domínguez Enríquez": { sop:[1, 1, 2, 17, 9, 13, 11, 16, 9], dev:[0, 0, 0, 3, 3, 0, 2, 2, 3], err:[0, 0, 0, 21, 0, 1, 6, 12, 13] },
+  "Ivan Perez Felipe": { sop:[0, 0, 0, 0, 0, 10, 38, 8, 7], dev:[0, 0, 0, 0, 0, 3, 2, 4, 2], err:[0, 0, 0, 0, 0, 0, 0, 2, 5] },
+  "Jesús Feria Ortiz": { sop:[0, 0, 0, 1, 6, 1, 13, 14, 16], dev:[1, 0, 0, 5, 1, 1, 1, 0, 0], err:[0, 0, 0, 20, 5, 0, 4, 3, 7] },
+  "Jonathan Aristeo Lozano Hernández": { sop:[0, 1, 0, 6, 5, 9, 12, 7, 7], dev:[0, 0, 0, 1, 2, 0, 1, 0, 3], err:[0, 0, 0, 18, 21, 22, 3, 17, 16] },
+  "Jonathan Levi Márquez García": { sop:[0, 0, 0, 0, 0, 0, 0, 3, 5], dev:[0, 0, 0, 0, 0, 0, 0, 0, 0], err:[0, 0, 0, 0, 0, 0, 0, 3, 0] },
+};
+
+
 // ─── VELOCIDAD DE ATENCIÓN (horas de trabajo por ticket) ──────────────────────
 // Agregado 25 Ago 2026: el usuario agregó la columna "Tiempo Empleado (Hrs)" a
 // Mtto_DONE_2026 (= "Σ Tiempo empleado" del worklog de Jira, en segundos, ÷
@@ -3165,6 +3202,14 @@ function abrirReporteIndividual(idx){
       <div class="ri-kpi-card"><div class="ri-num" style="color:#1a1d29;">${r.total}</div><div class="ri-lbl">Total general</div></div>
     </div>
 
+    <div class="panel">
+      <h3>Progreso mensual</h3>
+      <div class="ri-sub">Tickets atendidos por mes y tipo &middot; solo contexto visual, sin meta mensual (la meta vigente sigue siendo la anual, ver "Comparaci&oacute;n vs. el equipo" abajo)</div>
+      <div style="position:relative;height:320px;">
+        <canvas id="chartMensualInd"></canvas>
+      </div>
+    </div>
+
     <div class="ri-grid-2">
       <div class="panel">
         <h3>Comparaci&oacute;n vs. el equipo</h3>
@@ -3265,6 +3310,19 @@ function abrirReporteIndividual(idx){
   const overlay = document.getElementById('rp-overlay');
   if(detailView) detailView.innerHTML = html;
   if(overlay){ overlay.classList.add('open'); overlay.scrollTop = 0; }
+
+  // "Progreso mensual" (26 Ago 2026): el canvas recién se insertó arriba junto
+  // con el resto del HTML, así que se dibuja aquí, después de que ya existe en
+  // el DOM (mismo motivo que el resto de las gráficas de este panel miden 0
+  // si se intenta dibujar antes de que el contenedor tenga tamaño real).
+  const mensual = RESPONSABLES_MENSUAL[r.nom];
+  if(mensual){
+    drawGroupedVBar('chartMensualInd', MESES_MENSUAL_LBLS, [
+      {label:'Soportes', data: mensual.sop, color:'#16a34a'},
+      {label:'Evolutivos', data: mensual.dev, color:'#d97706'},
+      {label:'Error', data: mensual.err, color:'#2563eb'},
+    ]);
+  }
 }
 
 function cerrarReporteIndividual(){
