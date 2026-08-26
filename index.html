@@ -222,11 +222,6 @@
   .ri-kpi-card .ri-num{font-size:1.7rem;font-weight:800;line-height:1}
   .ri-kpi-card .ri-lbl{font-size:.72rem;color:#64748b;margin-top:6px;font-weight:600}
   .ri-grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
-  .ri-delta-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .ri-delta-card{border-radius:12px;padding:14px;text-align:left}
-  .ri-delta-card .ri-d-lbl{font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px}
-  .ri-delta-card .ri-d-num{font-size:1.15rem;font-weight:800;margin-top:6px}
-  .ri-delta-card .ri-d-sub{font-size:.68rem;color:#94a3b8;margin-top:4px}
   .ri-donut-legend{flex:1;display:flex;flex-direction:column;gap:10px}
   .ri-dl-row{display:flex;align-items:center;justify-content:space-between;font-size:.82rem}
   .ri-dl-dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:8px}
@@ -245,7 +240,7 @@
   .ri-obs-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
   .ri-obs-list li{display:flex;gap:9px;font-size:.82rem;line-height:1.5;align-items:flex-start}
   .ri-sub{font-size:.76rem;color:#94a3b8;margin-bottom:16px;margin-top:-8px}
-  @media(max-width:900px){.ri-grid-2{grid-template-columns:1fr}.ri-kpi-row{grid-template-columns:repeat(2,1fr)}.ri-delta-row{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:900px){.ri-grid-2{grid-template-columns:1fr}.ri-kpi-row{grid-template-columns:repeat(2,1fr)}}
   @media print{.sidebar,.ri-back-link,.ri-export-btn{display:none!important}}
   @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.loc-grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}}
   @media(max-width:900px){.shell{flex-direction:column}.sidebar{width:100%;flex-direction:row;align-items:center;overflow-x:auto;gap:14px}.tabs{flex-direction:row}.brand p{display:none}.sidebar-foot{display:none}}
@@ -3168,31 +3163,6 @@ function abrirReporteIndividual(idx){
       <div class="ri-kpi-card"><div class="ri-num" style="color:#d97706;">${r.dev}</div><div style="font-size:.72rem;color:#d97706;font-weight:700;margin-top:2px;">${pctDev.toFixed(0)}% del total</div><div class="ri-lbl">Evolutivos atendidos</div></div>
       <div class="ri-kpi-card"><div class="ri-num" style="color:#2563eb;">${r.err}</div><div style="font-size:.72rem;color:#2563eb;font-weight:700;margin-top:2px;">${r.pctErr.toFixed(0)}% del total</div><div class="ri-lbl">Errores registrados</div></div>
       <div class="ri-kpi-card"><div class="ri-num" style="color:#1a1d29;">${r.total}</div><div class="ri-lbl">Total general</div></div>
-    </div>
-
-    <div class="panel">
-      <h3>Resumen de desempeño</h3>
-      <div class="ri-sub">Comparativo vs. promedio del equipo (no hay dato de periodo anterior por persona todavía)</div>
-      <div class="ri-delta-row">
-        ${[
-          {lbl:'Soportes', val:r.sop, p:prom.sop, color:'#16a34a'},
-          {lbl:'Evolutivos', val:r.dev, p:prom.dev, color:'#d97706'},
-          {lbl:'Error', val:r.err, p:prom.err, color:'#2563eb'},
-        ].map(c=>{
-          const d = c.val-c.p; const signo = d>=0?'+':''; const dcolor = d>=0?'#16a34a':'#dc2626';
-          return `<div class="ri-delta-card" style="background:${c.color}14;">
-            <div class="ri-d-lbl" style="color:${c.color};">${c.lbl}</div>
-            <div class="ri-d-num" style="color:${dcolor};">${signo}${fmtRi(d)}</div>
-            <div class="ri-d-sub">vs. promedio (${fmtRi(c.p)})</div>
-          </div>`;
-        }).join('')}
-        ${(()=>{ const d=r.pctErr-prom.pctErr; const signo=d>=0?'+':''; const dcolor= d<=0?'#16a34a':'#d97706';
-          return `<div class="ri-delta-card" style="background:#7c3aed14;">
-            <div class="ri-d-lbl" style="color:#7c3aed;">% Error</div>
-            <div class="ri-d-num" style="color:${dcolor};">${signo}${d.toFixed(1)} pts</div>
-            <div class="ri-d-sub">vs. promedio (${prom.pctErr.toFixed(1)}%)</div>
-          </div>`; })()}
-      </div>
     </div>
 
     <div class="ri-grid-2">
