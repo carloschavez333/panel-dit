@@ -2860,7 +2860,11 @@ const RP_PODIO_COLORS_LIGHT=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2
 // número grande en blanco, y franja de 4 estadísticas al pie). Solo se rediseñaron
 // las 3 tarjetas del podio — la tabla de abajo no se tocó, sigue igual.
 const RP_PODIO_GRADIENT=[
-  'linear-gradient(135deg,#4a3a1a 0%,#1c1712 100%)',   // oro — cálido
+  // Oro (26 Ago 2026, a pedido del usuario: "hazlo más gold" — el tono anterior
+  // (#4a3a1a) se veía más café/olivo que dorado; este sube saturación y brillo
+  // del extremo cálido para que se lea como oro real, manteniendo el extremo
+  // oscuro para que el número blanco siga legible encima).
+  'linear-gradient(135deg,#8a6414 0%,#241c0d 100%)',   // oro — cálido
   'linear-gradient(135deg,#3a3f47 0%,#16181c 100%)',   // plata — frío
   'linear-gradient(135deg,#4a2f22 0%,#1c1310 100%)',   // bronce — cálido rojizo
 ];
