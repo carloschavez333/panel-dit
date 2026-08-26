@@ -2889,6 +2889,16 @@ function renderEquipoRendimiento(){
       const pctOk = r.pctErr <= meta.pctErr;
       const pillBg = pctOk ? 'rgba(59,130,246,.25)' : 'rgba(245,158,11,.28)';
       const pillFg = pctOk ? '#93c5fd' : '#fcd34d';
+      // % de cada tipo sobre el total de la persona (26 Ago 2026, a pedido del
+      // usuario: "agrega los porcentajes... de Soportes, Evolutivos y Error para
+      // ver cómo quedó su 100%"). pctSop+pctDev+pctErr suman exactamente 100 —
+      // los 3 se derivan de r.total, nunca se calculan por separado. r.pctErr YA
+      // existe (viene de computeRendimientoEquipo(), = err/total*100) y es EL
+      // MISMO número que ya usa la pill de "% Error" de la 4ª columna — no se
+      // duplica la fórmula, solo se reutiliza para mostrarla también aquí junto a
+      // las otras 2, en el mismo estilo, para que las 3 se puedan leer juntas.
+      const pctSop = r.total>0 ? (r.sop/r.total*100) : 0;
+      const pctDev = r.total>0 ? (r.dev/r.total*100) : 0;
       return `
       <div style="position:relative;overflow:hidden;border-radius:16px;border:1px solid ${RP_PODIO_BORDER[i]};background:${RP_PODIO_GRADIENT[i]};padding:18px 18px 14px;">
         <div style="position:absolute;inset:0;background-image:url('${RP_PODIO_TEXTURE}');background-size:220px 220px;opacity:.5;pointer-events:none;"></div>
@@ -2904,17 +2914,20 @@ function renderEquipoRendimiento(){
           <div style="display:flex;border-top:1px solid rgba(255,255,255,.14);padding-top:12px;">
             <div style="flex:1;min-width:0;text-align:center;">
               <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.sop}</div>
-              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Soportes</div>
+              <div style="font-size:.62rem;color:rgba(255,255,255,.5);margin-top:1px;">${pctSop.toFixed(0)}%</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:2px;word-break:break-word;">Soportes</div>
             </div>
             <div style="width:1px;background:rgba(255,255,255,.14);"></div>
             <div style="flex:1;min-width:0;text-align:center;">
               <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.dev}</div>
-              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Evolutivos</div>
+              <div style="font-size:.62rem;color:rgba(255,255,255,.5);margin-top:1px;">${pctDev.toFixed(0)}%</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:2px;word-break:break-word;">Evolutivos</div>
             </div>
             <div style="width:1px;background:rgba(255,255,255,.14);"></div>
             <div style="flex:1;min-width:0;text-align:center;">
               <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.err}</div>
-              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Error</div>
+              <div style="font-size:.62rem;color:rgba(255,255,255,.5);margin-top:1px;">${r.pctErr.toFixed(0)}%</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:2px;word-break:break-word;">Error</div>
             </div>
             <div style="width:1px;background:rgba(255,255,255,.14);"></div>
             <div style="flex:1;min-width:0;text-align:center;">
