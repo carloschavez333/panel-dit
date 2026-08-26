@@ -747,17 +747,18 @@ document.addEventListener('DOMContentLoaded', function(){
 // Refrescado 25 Ago 2026 desde el Sheet en vivo (openpyxl sobre "Product Backlog
 // Soportes DEV (1hr activo)"), mismo filtro/criterio documentado arriba.
 const SOPORTES = [
-  {loc:'Quintana Roo', estados:{'EN PROGRESO':4, 'READY TO MERGE':3, 'LISTO PARA DESPLEGAR':5, 'BLOQUEADO':6, 'PRODUCT BACKLOG':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Guanajuato', estados:{'EN PROGRESO':5, 'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'PRODUCT BACKLOG':1}},
-  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':2, 'EN ESPERA DE CLIENTE EXTERNO':1, 'PRODUCT BACKLOG':1}},
-  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2, 'Reabierto':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
-  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2, 'READY TO MERGE':2, 'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':1}},
-  {loc:'Baja California', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':2, 'EN PROGRESO':1}},
+  {loc:'Quintana Roo', estados:{'EN PROGRESO':6, 'READY TO MERGE':2, 'LISTO PARA DESPLEGAR':6, 'BLOQUEADO':5, 'PRODUCT BACKLOG':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Guanajuato', estados:{'EN PROGRESO':4, 'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':3}},
+  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2, 'READY TO MERGE':2, 'EN PROGRESO':6, 'EN ESPERA DE CLIENTE EXTERNO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2, 'Reabierto':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
+  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'EN PROGRESO':2}},
+  {loc:'Baja California', estados:{'Reabierto':1, 'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':2, 'EN PROGRESO':1}},
   {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':1}},
-  {loc:'Sonora', estados:{'EN PROGRESO':1, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Sonora', estados:{'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':2}},
   {loc:'Sinaloa', estados:{'Reabierto':1}},
   {loc:'Chiapas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Cancún', estados:{'PRODUCT BACKLOG':1}},
 ];
 // `.total` derivado del detalle por Estado — nunca hardcodeado, así nunca se
 // puede desincronizar (mismo criterio ya usado para TOTAL_ACTIVOS abajo).
@@ -766,15 +767,14 @@ SOPORTES.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); }
 // la tabla sean matemáticamente imposibles de desincronizar entre sí.
 const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
 const APROBACION = [
-  {loc:'Quintana Roo', n:9},
-  {loc:'Guanajuato', n:6},
-  {loc:'Jalisco', n:4},
+  {loc:'Quintana Roo', n:10},
+  {loc:'Guanajuato', n:5},
   {loc:'Colima', n:4},
-  {loc:'Baja California', n:3},
+  {loc:'Jalisco', n:3},
+  {loc:'Hidalgo', n:2},
   {loc:'Sonora', n:2},
-  {loc:'Zacatecas', n:2},
-  {loc:'Cancún', n:1},
-  {loc:'Hidalgo', n:1},
+  {loc:'Baja California', n:2},
+  {loc:'Zacatecas', n:1},
   {loc:'CDMX', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -829,7 +829,7 @@ const CERRADOS = [
   {loc:'2026-05 · Mayo', n:273},
   {loc:'2026-06 · Junio', n:340},
   {loc:'2026-07 · Julio', n:320},
-  {loc:'2026-08 · Agosto', n:218},
+  {loc:'2026-08 · Agosto', n:220},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0); // histórico completo (todos los años)
 
@@ -934,11 +934,11 @@ function renderRitmoAtencion(){
 // Refrescado 25 Ago 2026 desde el Sheet en vivo ("CC Evolutivos (1hr activo)").
 const EVOL_ACTIVOS = [
   {loc:'Quintana Roo', estados:{'BLOQUEADO':2, 'APROBACIÓN POR CLIENTE':2, 'EN PROGRESO':5, 'PRODUCT BACKLOG':3, 'Validación presupuestal':3, 'PENDIENTE DE FIRMA':8, 'Consulta Con Cliente':2, 'READY TO MERGE':1, 'LISTO PARA DESPLEGAR':1, 'EN QA':4}},
-  {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':3, 'PRODUCT BACKLOG':7, 'BLOQUEADO':4, 'EN PROGRESO':4, 'LISTO PARA DESPLEGAR':3, 'Reabierto':2, 'READY TO MERGE':1, 'APROBACIÓN POR CLIENTE':1}},
+  {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':3, 'PRODUCT BACKLOG':7, 'BLOQUEADO':4, 'EN PROGRESO':5, 'LISTO PARA DESPLEGAR':3, 'Reabierto':1, 'READY TO MERGE':1, 'EN QA':1}},
   {loc:'Sonora', estados:{'PRODUCT BACKLOG':1, 'CERTIFICADO POR QA':1, 'Validación presupuestal':1, 'EN QA':3, 'PENDIENTE DE FIRMA':7, 'Control de Version':1, 'Estimación Técnica':2, 'APROBACIÓN POR CLIENTE':1, 'BLOQUEADO':1}},
-  {loc:'Colima', estados:{'PENDIENTE DE FIRMA':4, 'Control de Version':1, 'Validación presupuestal':4, 'Consulta Con Cliente':2, 'APROBACIÓN POR CLIENTE':1, 'EN PROGRESO':1, 'CERTIFICADO POR QA':1, 'LISTO PARA DESPLEGAR':1}},
-  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
-  {loc:'Hidalgo', estados:{'Control de Version':2, 'Consulta Con Cliente':1, 'Validación presupuestal':4}},
+  {loc:'Colima', estados:{'PENDIENTE DE FIRMA':4, 'Control de Version':1, 'Validación presupuestal':4, 'Consulta Con Cliente':2, 'APROBACIÓN POR CLIENTE':1, 'READY TO MERGE':1, 'CERTIFICADO POR QA':1, 'LISTO PARA DESPLEGAR':1}},
+  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':3, 'EN QA':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'PRODUCT BACKLOG':1, 'Consulta Con Cliente':1, 'Validación presupuestal':4, 'Control de Version':1}},
   {loc:'Baja California', estados:{'BLOQUEADO':1, 'LISTO PARA DESPLEGAR':1, 'PENDIENTE DE FIRMA':2, 'Reabierto':1}},
   {loc:'Zacatecas', estados:{'LISTO PARA DESPLEGAR':1}},
   {loc:'Chiapas', estados:{'EN PROGRESO':1}},
@@ -979,13 +979,12 @@ const CERRADOS_DEV = [
   {loc:'2025-12 · Diciembre', n:3},
   {loc:'2026-01 · Enero', n:4},
   {loc:'2026-02 · Febrero', n:4},
-  {loc:'2026-03 · Marzo', n:43},
-  {loc:'2026-04 · Abril', n:12},
+  {loc:'2026-03 · Marzo', n:45},
+  {loc:'2026-04 · Abril', n:13},
   {loc:'2026-05 · Mayo', n:6},
-  {loc:'2026-06 · Junio', n:12},
-  {loc:'2026-07 · Julio', n:14},
-  {loc:'2026-08 · Agosto', n:14},
-  {loc:'Sin mes asignado', n:17},
+  {loc:'2026-06 · Junio', n:18},
+  {loc:'2026-07 · Julio', n:16},
+  {loc:'2026-08 · Agosto', n:20},
 ];
 const TOTAL_CERRADOS_DEV = CERRADOS_DEV.reduce((s,r)=>s+r.n,0); // histórico completo
 // Misma lógica que getCerradosVigentes(): el KPI "Atendidos (DONE)" de Nuevos
@@ -1029,14 +1028,14 @@ const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 // capitalización que se ve en pantalla la pone `tituloEstado()` solo para
 // mostrar, nunca se toca la clave real.
 const ERROR_ACTIVOS = [
-  {loc:'Guanajuato', estados:{'EN QA':21, 'SPRINT BACKLOG':11, 'No Bug':4, 'Reabierto':1, 'BLOQUEADO':6, 'READY TO MERGE':2}},
-  {loc:'Colima', estados:{'SPRINT BACKLOG':5, 'EN QA':7, 'READY TO MERGE':12, 'EN PROGRESO':5, 'BLOQUEADO':1, 'No Bug':8, 'Reabierto':1}},
-  {loc:'Jalisco', estados:{'SPRINT BACKLOG':1, 'EN PROGRESO':2, 'EN QA':1, 'No Bug':7, 'BLOQUEADO':1}},
-  {loc:'Hidalgo', estados:{'No Bug':7, 'EN PROGRESO':1, 'EN QA':1, 'SPRINT BACKLOG':1}},
-  {loc:'Quintana Roo', estados:{'EN QA':3, 'EN PROGRESO':1, 'No Bug':3}},
-  {loc:'Sonora', estados:{'No Bug':4, 'BLOQUEADO':1, 'SPRINT BACKLOG':2}},
-  {loc:'Baja California', estados:{'READY TO MERGE':3, 'EN PROGRESO':1, 'EN QA':1}},
+  {loc:'Guanajuato', estados:{'EN QA':22, 'SPRINT BACKLOG':11, 'Reabierto':1, 'BLOQUEADO':5, 'READY TO MERGE':2}},
+  {loc:'Colima', estados:{'EN PROGRESO':7, 'READY TO MERGE':13, 'Reabierto':4, 'SPRINT BACKLOG':1}},
+  {loc:'Sonora', estados:{'SPRINT BACKLOG':3, 'EN QA':1, 'BLOQUEADO':1}},
+  {loc:'Baja California', estados:{'EN PROGRESO':1, 'READY TO MERGE':4}},
+  {loc:'Jalisco', estados:{'EN QA':2, 'EN PROGRESO':2, 'BLOQUEADO':1}},
+  {loc:'Quintana Roo', estados:{'EN QA':3, 'EN PROGRESO':1}},
   {loc:'Chiapas', estados:{'READY TO MERGE':2, 'SPRINT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'EN PROGRESO':1, 'EN QA':1, 'SPRINT BACKLOG':1}},
 ];
 ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
@@ -1049,7 +1048,7 @@ const CERRADOS_ERR = [
   {loc:'2026-05 · Mayo', n:167},
   {loc:'2026-06 · Junio', n:89},
   {loc:'2026-07 · Julio', n:103},
-  {loc:'2026-08 · Agosto', n:60},
+  {loc:'2026-08 · Agosto', n:65},
 ];
 const TOTAL_CERRADOS_ERR = CERRADOS_ERR.reduce((s,r)=>s+r.n,0); // histórico completo
 // Misma lógica que getCerradosVigentes()/getCerradosVigentesDev(): el KPI
@@ -1674,6 +1673,69 @@ function drawLine(id, labels, datasets){
   });
 }
 
+// Línea de UNA sola serie con etiquetas de mes horizontales (sin rotar) y valor
+// dibujado junto a cada punto — pensada para ir apilada debajo de un
+// drawGroupedVBar de una sola barra, mismo estilo de cuadrícula/tipografía,
+// para que ambas gráficas se vean como una sola unidad visual. Agregado 26 Ago
+// 2026 para el rediseño de "Panorama General — Volumen vs. Velocidad" (mes a
+// mes), a pedido del usuario con un mockup de referencia. No dibuja leyenda
+// propia (el panel ya trae su propio encabezado con ícono + label).
+function drawLineChart(id, labels, series, opts){
+  opts = opts || {};
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 500;
+  canvas.height = parent.offsetHeight || 220;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+
+  const data = series.data.map(v => v==null ? 0 : v);
+  const maxV = Math.max(...data, 1);
+  const padL=40, padR=16, padT=26, padB=32;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const n = labels.length;
+
+  for(let g=0; g<=4; g++){
+    const y = padT + chartH*(1-g/4);
+    cx.strokeStyle='#e2e8f0'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(padL,y); cx.lineTo(padL+chartW,y); cx.stroke();
+    cx.fillStyle='#94a3b8'; cx.font='10px Segoe UI'; cx.textAlign='right'; cx.textBaseline='middle';
+    const v = maxV*g/4;
+    cx.fillText(opts.decimals!=null ? v.toFixed(opts.decimals) : Math.round(v), padL-6, y);
+  }
+
+  const pts = labels.map((_,i)=>({
+    x: n<2 ? padL+chartW/2 : padL + (i/(n-1))*chartW,
+    y: padT + chartH*(1 - data[i]/maxV),
+    raw: series.data[i],
+  }));
+  cx.beginPath(); cx.strokeStyle=series.color; cx.lineWidth=2.5;
+  pts.forEach((p,i)=> i===0 ? cx.moveTo(p.x,p.y) : cx.lineTo(p.x,p.y));
+  cx.stroke();
+  pts.forEach(p=>{
+    cx.beginPath(); cx.arc(p.x,p.y,4,0,2*Math.PI);
+    cx.fillStyle='#ffffff'; cx.fill();
+    cx.strokeStyle=series.color; cx.lineWidth=2; cx.stroke();
+    if(p.raw!=null){
+      const txt = opts.decimals!=null ? p.raw.toFixed(opts.decimals) : p.raw;
+      cx.font='bold 10px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
+      // Halo del color de fondo del panel detrás del texto, para que se lea
+      // aunque el punto quede cerca de una línea de cuadrícula.
+      cx.lineWidth=3; cx.strokeStyle= opts.bg || '#ffffff'; cx.lineJoin='round';
+      cx.strokeText(txt, p.x, p.y-8);
+      cx.fillStyle=series.color; cx.fillText(txt, p.x, p.y-8);
+    }
+  });
+
+  labels.forEach((lbl,i)=>{
+    const x = n<2 ? padL+chartW/2 : padL + (i/(n-1))*chartW;
+    cx.fillStyle='#64748b'; cx.font='11px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
+    cx.fillText(lbl, x, padT+chartH+8);
+  });
+}
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function showTab(name, el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1768,6 +1830,7 @@ const ICONO_AUDIFONOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCol
 const ICONO_CODIGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>';
 const ICONO_ALERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
 const ICONO_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+const ICONO_RAYO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
 const VELOCIDAD_ICONOS = { soporte: ICONO_AUDIFONOS, evolutivo: ICONO_CODIGO, error: ICONO_ALERTA };
 // Formatea "EN ESPERA DE CLIENTE EXTERNO" → "En Espera de Cliente Externo"
 // SOLO para mostrar — la clave real (tal cual viene del Sheet) nunca se toca,
@@ -2316,6 +2379,10 @@ function renderEquipoTendencia(){
 // una de 4 conclusiones cualitativas posibles. Se apoya 100% en
 // getComparativoMensual() y TIEMPO_ATENCION (las mismas 2 fuentes que ya usan
 // "Comparativo Mensual" y "Velocidad de Atención"), cero datos duplicados.
+// Colores fijos del bloque "Mes a mes" (navy=Volumen, teal=Velocidad) — un solo
+// lugar para no repetir hex sueltos entre el render y las 4 tarjetas resumen.
+const VV_COLOR_VOL = '#1e293b';
+const VV_COLOR_VELO = '#0d9488';
 function computeVolumenVelocidad(){
   const { year, rows } = getComparativoMensual();
   if(rows.length < 2) return null;
@@ -2373,10 +2440,25 @@ function computeVolumenVelocidad(){
   const volMensual = rows.map(r => sumaVol([r]));
   const veloMensual = rows.map(r => horasPonderadas([r]));
 
+  // Tarjetas de resumen mensual (agregado 26 Ago 2026, mismo pedido del gráfico
+  // mes a mes): volTotal/volPromedioMensual se derivan de volMensual (nunca se
+  // vuelve a sumar por separado); veloGlobal es la MISMA fórmula horasPonderadas()
+  // pero sobre TODOS los meses juntos, no solo una mitad; mejorVelocidad busca el
+  // mínimo real de veloMensual (ignora meses sin dato, nunca asume 0).
+  const volTotal = volMensual.reduce((a,b)=>a+b,0);
+  const volPromedioMensual = mesesLbl.length>0 ? volTotal/mesesLbl.length : 0;
+  const veloGlobal = horasPonderadas(rows);
+  let mejorVelocidad = null;
+  veloMensual.forEach((v,i)=>{
+    if(v!=null && (mejorVelocidad===null || v<mejorVelocidad.valor)){
+      mejorVelocidad = { valor:v, mes:mesesLbl[i], mesFull: MES_A_NOMBRE[mesesLbl[i]] || mesesLbl[i] };
+    }
+  });
+
   return {
     year, volPrimera, volSegunda, horasPrimera, horasSegunda, volSubio, veloMejoro, estado, color,
     primeraLbl: primera.map(r=>r.mes).join('-'), segundaLbl: segunda.map(r=>r.mes).join('-'),
-    mesesLbl, volMensual, veloMensual,
+    mesesLbl, volMensual, veloMensual, volTotal, volPromedioMensual, veloGlobal, mejorVelocidad,
   };
 }
 
@@ -2419,31 +2501,82 @@ function renderVolumenVelocidad(){
     <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;margin-bottom:20px;line-height:1.5;">
       Volumen = total combinado (Soportes+Evolutivos+Error) por mitad del año. Velocidad = horas ponderadas por ticket (mediana de cada tipo × su volumen real ese mes, mismo criterio que "Tendencia de Calidad"). Ninguna de las 2 se compara contra una meta absoluta — solo entre sí.
     </div>
-    <div style="border-top:1px solid #eceef1;padding-top:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-        <div style="font-size:.82rem;font-weight:700;color:#1a1d29;">Mes a mes — ${v.mesesLbl[0]} a ${v.mesesLbl[v.mesesLbl.length-1]} ${v.year}</div>
+    <div style="border-top:1px solid #eceef1;padding-top:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <div style="font-size:.86rem;font-weight:700;color:#1a1d29;">Mes a mes — ${v.mesesLbl[0]} a ${v.mesesLbl[v.mesesLbl.length-1]} ${v.year}</div>
         <div style="display:flex;gap:16px;">
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;flex-shrink:0;"></span>
-            <span style="font-size:.74rem;color:#334155;font-weight:600;">Volumen (barras, tickets)</span>
+            <span style="width:10px;height:10px;border-radius:3px;background:${VV_COLOR_VOL};flex-shrink:0;"></span>
+            <span style="font-size:.74rem;color:#334155;font-weight:600;">Volumen (tickets)</span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="width:16px;height:2.5px;background:#f2793a;flex-shrink:0;margin-top:1px;"></span>
-            <span style="font-size:.74rem;color:#334155;font-weight:600;">Velocidad (línea, hrs/ticket)</span>
+            <span style="width:16px;height:2.5px;background:${VV_COLOR_VELO};flex-shrink:0;margin-top:1px;"></span>
+            <span style="font-size:.74rem;color:#334155;font-weight:600;">Velocidad (hrs/ticket)</span>
           </div>
         </div>
       </div>
-      <div style="position:relative;height:260px;">
-        <canvas id="chartVolumenVelocidadMensual"></canvas>
+
+      <div style="background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:7px;background:${VV_COLOR_VOL}1a;color:${VV_COLOR_VOL};display:flex;align-items:center;justify-content:center;">${ICONO_BARRAS}</div>
+          <span style="font-size:.78rem;font-weight:700;color:#1a1d29;">Volumen de tickets</span>
+        </div>
+        <div style="position:relative;height:200px;">
+          <canvas id="chartVolumenSoloMensual"></canvas>
+        </div>
       </div>
-      <div style="font-size:.7rem;color:#94a3b8;margin-top:8px;line-height:1.5;">
-        Eje izquierdo (morado) = tickets cerrados ese mes, los 3 tipos combinados. Eje derecho (naranja) = horas ponderadas por ticket ese mes. Cada eje tiene su propia escala — no son comparables en altura entre sí, solo en si suben o bajan mes a mes.
+
+      <div style="background:#f2f7f7;border:1px solid #dfeceb;border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+          <div style="width:26px;height:26px;border-radius:7px;background:#ffffff;color:${VV_COLOR_VELO};display:flex;align-items:center;justify-content:center;">${ICONO_RELOJ}</div>
+          <div>
+            <div style="font-size:.78rem;font-weight:700;color:#1a1d29;">Velocidad promedio</div>
+            <div style="font-size:.68rem;color:#64748b;">hrs / ticket</div>
+          </div>
+        </div>
+        <div style="position:relative;height:200px;">
+          <canvas id="chartVelocidadSoloMensual"></canvas>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
+        <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;">
+          <div style="width:22px;height:22px;border-radius:6px;background:${VV_COLOR_VOL}1a;color:${VV_COLOR_VOL};display:flex;align-items:center;justify-content:center;margin-bottom:8px;">${ICONO_BARRAS}</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#1a1d29;">${v.volTotal.toLocaleString()}</div>
+          <div style="font-size:.7rem;color:#64748b;margin-top:2px;">Volumen total</div>
+          <div style="font-size:.66rem;color:#94a3b8;">tickets</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;">
+          <div style="width:22px;height:22px;border-radius:6px;background:#7c3aed1a;color:#7c3aed;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">${ICONO_LINEA}</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#1a1d29;">${Math.round(v.volPromedioMensual).toLocaleString()}</div>
+          <div style="font-size:.7rem;color:#64748b;margin-top:2px;">Promedio mensual</div>
+          <div style="font-size:.66rem;color:#94a3b8;">tickets</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;">
+          <div style="width:22px;height:22px;border-radius:6px;background:${VV_COLOR_VELO}1a;color:${VV_COLOR_VELO};display:flex;align-items:center;justify-content:center;margin-bottom:8px;">${ICONO_RELOJ}</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#1a1d29;">${v.veloGlobal!=null?v.veloGlobal.toFixed(1):'—'}</div>
+          <div style="font-size:.7rem;color:#64748b;margin-top:2px;">Velocidad promedio global</div>
+          <div style="font-size:.66rem;color:#94a3b8;">hrs / ticket</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;">
+          <div style="width:22px;height:22px;border-radius:6px;background:#d977061a;color:#d97706;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">${ICONO_RAYO}</div>
+          <div style="font-size:1.15rem;font-weight:800;color:#1a1d29;">${v.mejorVelocidad?v.mejorVelocidad.valor.toFixed(1):'—'}</div>
+          <div style="font-size:.7rem;color:#64748b;margin-top:2px;">Mejor velocidad</div>
+          <div style="font-size:.66rem;color:#94a3b8;">${v.mejorVelocidad?v.mejorVelocidad.mesFull+' '+v.year:'—'}</div>
+        </div>
+      </div>
+
+      <div style="font-size:.7rem;color:#94a3b8;line-height:1.5;display:flex;gap:6px;">
+        <span style="flex-shrink:0;width:13px;height:13px;color:#94a3b8;">${ICONO_INFO}</span>
+        <span>Volumen = tickets cerrados por mes (Soportes+Evolutivos+Error combinados). Velocidad = horas promedio ponderadas por ticket cerrado ese mes. Ninguna de las 2 se compara contra una meta absoluta.</span>
       </div>
     </div>`;
 
-  drawComboBarLine('chartVolumenVelocidadMensual', v.mesesLbl,
-    {label:'Volumen', data:v.volMensual, color:'#7c3aed'},
-    {label:'Velocidad', data:v.veloMensual, color:'#f2793a'}
+  drawGroupedVBar('chartVolumenSoloMensual', v.mesesLbl,
+    [{label:'Volumen', data:v.volMensual, color:VV_COLOR_VOL}], {legend:'none'}
+  );
+  drawLineChart('chartVelocidadSoloMensual', v.mesesLbl,
+    {label:'Velocidad', data:v.veloMensual, color:VV_COLOR_VELO}, {decimals:1, bg:'#f2f7f7'}
   );
 }
 
