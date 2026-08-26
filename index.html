@@ -3162,15 +3162,15 @@ function abrirReporteIndividual(idx){
       <div class="ri-sub">Comparativo vs. promedio del equipo (no hay dato de periodo anterior por persona todavía)</div>
       <div class="ri-delta-row">
         ${[
-          {lbl:'Soportes', val:r.sop, p:prom.sop, color:'#16a34a'},
-          {lbl:'Evolutivos', val:r.dev, p:prom.dev, color:'#d97706'},
-          {lbl:'Error', val:r.err, p:prom.err, color:'#2563eb'},
+          {lbl:'Soportes', val:r.sop, p:prom.sop, color:'#16a34a', pctTotal:pctSop},
+          {lbl:'Evolutivos', val:r.dev, p:prom.dev, color:'#d97706', pctTotal:pctDev},
+          {lbl:'Error', val:r.err, p:prom.err, color:'#2563eb', pctTotal:r.pctErr},
         ].map(c=>{
           const d = c.val-c.p; const signo = d>=0?'+':''; const dcolor = d>=0?'#16a34a':'#dc2626';
           return `<div class="ri-delta-card" style="background:${c.color}14;">
             <div class="ri-d-lbl" style="color:${c.color};">${c.lbl}</div>
             <div class="ri-d-num" style="color:${dcolor};">${signo}${fmtRi(d)}</div>
-            <div class="ri-d-sub">vs. promedio (${fmtRi(c.p)})</div>
+            <div class="ri-d-sub">vs. promedio (${fmtRi(c.p)}) &middot; ${c.pctTotal.toFixed(1)}% del total</div>
           </div>`;
         }).join('')}
         ${(()=>{ const d=r.pctErr-prom.pctErr; const signo=d>=0?'+':''; const dcolor= d<=0?'#16a34a':'#d97706';
