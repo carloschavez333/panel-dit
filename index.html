@@ -840,6 +840,50 @@ const RESPONSABLES = [
   {nom:'Jonathan Levi Márquez García', n:8},
 ];
 const TOTAL_RESPONSABLES = RESPONSABLES.reduce((s,r)=>s+r.n,0);
+
+// Fecha de incorporación por persona (26 Ago 2026, a pedido del usuario: alguien
+// como Levi lleva poco tiempo en el equipo y sus números bajos en "Rendimiento
+// por Persona" pueden verse como que "no hace nada" sin ese contexto). Datos
+// que el usuario pasó directo en el chat (formato DD/MM/AAAA), convertidos a
+// ISO. Jonathan Levi Márquez García e Ivan Perez Felipe quedan SIN fecha
+// (`null`) porque el usuario los dejó en blanco explícitamente — el panel no
+// muestra ningún aviso de "ingreso reciente" para ellos hasta que se dé una
+// fecha real; NO se debe inventar una fecha aproximada. "Yoshio Adan Villegas
+// Guevara" venía en la lista del usuario pero NO es parte del roster de 8
+// Responsables de este panel (ver comentario arriba de `RESPONSABLES` — se
+// excluyó explícitamente en una sesión anterior) — su fecha no se guardó en
+// ningún lado; si en algún momento se reincorpora al roster, pedir su fecha
+// de nuevo en ese momento.
+const FECHA_INGRESO = {
+  'Mariano Nicolás Conte': '2026-01-01',
+  'Leonardo Lucio Perez': '2026-01-01',
+  'Gerardo Omar Villalpando Villalpando': '2026-01-01',
+  'Manuel Alejandro Domínguez Enríquez': '2026-01-01',
+  'Ivan Perez Felipe': null,
+  'Jesús Feria Ortiz': '2026-01-01',
+  'Jonathan Aristeo Lozano Hernández': '2026-01-01',
+  'Jonathan Levi Márquez García': null,
+};
+// Umbral de "ingreso reciente": por debajo de esto se muestra el aviso 🆕 en
+// tabla/podio/reporte individual, para explicar números bajos por poco tiempo
+// en el equipo — no es un juicio de desempeño, solo contexto de antigüedad.
+const MESES_INGRESO_RECIENTE = 3;
+function calcAntiguedadMeses(fechaISO){
+  if(!fechaISO) return null;
+  const f = new Date(fechaISO+'T00:00:00');
+  const hoy = new Date();
+  let meses = (hoy.getFullYear()-f.getFullYear())*12 + (hoy.getMonth()-f.getMonth());
+  if(hoy.getDate() < f.getDate()) meses--;
+  return Math.max(0, meses);
+}
+function antiguedadTexto(meses){
+  if(meses==null) return null;
+  if(meses<1) return 'este mes';
+  if(meses===1) return 'hace 1 mes';
+  if(meses<12) return `hace ${meses} meses`;
+  const anios = Math.floor(meses/12);
+  return anios===1 ? 'hace 1 año' : `hace ${anios} años`;
+}
 // Fuente: hoja "Mtto_DONE_2026". Filtro: Tipo de Incidencia en {Soporte, Asistencia
 // Técnica}. Agrupado por la columna "Mes" (calculada en el propio Sheet a partir de
 // la fecha "Resuelta"). A diferencia de RESPONSABLES, aquí SÍ se cuenta a todo el
@@ -2899,6 +2943,13 @@ function renderEquipoRendimiento(){
       // las otras 2, en el mismo estilo, para que las 3 se puedan leer juntas.
       const pctSop = r.total>0 ? (r.sop/r.total*100) : 0;
       const pctDev = r.total>0 ? (r.dev/r.total*100) : 0;
+      // Mismo aviso de ingreso reciente que la tabla de abajo (ver FECHA_INGRESO) —
+      // por si alguna vez alguien recién llegado cae en el Top 3.
+      const mesesIngresoPodio = calcAntiguedadMeses(FECHA_INGRESO[r.nom]);
+      const esRecientePodio = mesesIngresoPodio!=null && mesesIngresoPodio < MESES_INGRESO_RECIENTE;
+      const avisoIngresoPodio = esRecientePodio
+        ? `<div style="font-size:.62rem;font-weight:600;color:#fcd34d;margin-top:2px;margin-bottom:14px;">🆕 Ingresó ${antiguedadTexto(mesesIngresoPodio)}</div>`
+        : '';
       return `
       <div style="position:relative;overflow:hidden;border-radius:16px;border:1px solid ${RP_PODIO_BORDER[i]};background:${RP_PODIO_GRADIENT[i]};padding:18px 18px 14px;">
         <div style="position:absolute;inset:0;background-image:url('${RP_PODIO_TEXTURE}');background-size:220px 220px;opacity:.5;pointer-events:none;"></div>
@@ -2910,7 +2961,8 @@ function renderEquipoRendimiento(){
             <span style="font-size:.7rem;font-weight:700;letter-spacing:.6px;color:rgba(255,255,255,.65);text-transform:uppercase;">TOP ${i+1}</span>
           </div>
           <div style="font-size:2.3rem;font-weight:800;color:#ffffff;line-height:1;margin-bottom:6px;">${r.total}</div>
-          <div class="ri-podio-name" onclick="abrirReporteIndividual(${i})" style="font-size:.85rem;font-weight:600;color:rgba(255,255,255,.92);margin-bottom:16px;cursor:pointer;">${r.nom}</div>
+          <div class="ri-podio-name" onclick="abrirReporteIndividual(${i})" style="font-size:.85rem;font-weight:600;color:rgba(255,255,255,.92);margin-bottom:${esRecientePodio?'0':'16px'};cursor:pointer;">${r.nom}</div>
+          ${avisoIngresoPodio}
           <div style="display:flex;border-top:1px solid rgba(255,255,255,.14);padding-top:12px;">
             <div style="flex:1;min-width:0;text-align:center;">
               <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.sop}</div>
@@ -2945,9 +2997,17 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
+      // Aviso de ingreso reciente (26 Ago 2026): si la persona lleva menos de
+      // MESES_INGRESO_RECIENTE meses en el equipo, se avisa debajo del nombre para
+      // que sus números bajos no se lean como bajo desempeño sin ese contexto.
+      const mesesIngreso = calcAntiguedadMeses(FECHA_INGRESO[r.nom]);
+      const esReciente = mesesIngreso!=null && mesesIngreso < MESES_INGRESO_RECIENTE;
+      const avisoIngreso = esReciente
+        ? `<div style="font-size:.66rem;font-weight:600;color:#d97706;margin-top:2px;">🆕 Ingresó ${antiguedadTexto(mesesIngreso)}</div>`
+        : '';
       return `<tr class="ri-clickrow" style="${rowStyle}">
         <td style="color:${numColor};font-weight:700;">${i<3?RP_MEDALS[i]:i+1}</td>
-        <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}</td>
+        <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}${avisoIngreso}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
@@ -3034,13 +3094,22 @@ function abrirReporteIndividual(idx){
 
   const cumpleSop = r.sop >= meta.sop, cumpleDev = r.dev >= meta.dev, cumpleErr = r.err >= meta.err, cumplePct = r.pctErr <= meta.pctErr;
 
+  // Ingreso reciente (26 Ago 2026, ver FECHA_INGRESO): antigüedad se muestra
+  // siempre que haya fecha (contexto útil sin importar si es reciente o no);
+  // esReciente activa además el aviso destacado y suaviza la comparación de
+  // producción total contra el promedio, para no leer como bajo desempeño lo
+  // que en realidad es poco tiempo en el equipo.
+  const mesesIngreso = calcAntiguedadMeses(FECHA_INGRESO[r.nom]);
+  const antigTxt = antiguedadTexto(mesesIngreso);
+  const esReciente = mesesIngreso!=null && mesesIngreso < MESES_INGRESO_RECIENTE;
+
   const fortalezas = [], mejoras = [];
   if(idx===0) fortalezas.push('Es quien más producción combinada tiene en todo el equipo este año.');
   else if(idx<3) fortalezas.push(`Está en el top 3 del equipo por producción combinada (#${idx+1} de ${N}).`);
   if(cumpleSop) fortalezas.push(`Soportes por encima de la meta (${fmtRi(r.sop)} vs. meta ${fmtRi(meta.sop)}).`); else mejoras.push(`Soportes por debajo de la meta (${fmtRi(r.sop)} vs. meta ${fmtRi(meta.sop)}).`);
   if(cumpleDev) fortalezas.push(`Evolutivos por encima de la meta (${fmtRi(r.dev)} vs. meta ${fmtRi(meta.dev)}).`); else mejoras.push(`Evolutivos por debajo de la meta (${fmtRi(r.dev)} vs. meta ${fmtRi(meta.dev)}).`);
   if(cumplePct) fortalezas.push(`% Error dentro de la meta (${r.pctErr.toFixed(1)}% ≤ ${meta.pctErr.toFixed(1)}% del promedio del equipo).`); else mejoras.push(`% Error por encima del promedio del equipo (${r.pctErr.toFixed(1)}% vs. ${meta.pctErr.toFixed(1)}%) — puede reflejar más enfoque en corrección de bugs, no necesariamente menor calidad.`);
-  if(r.total < prom.total) mejoras.push(`Producción combinada por debajo del promedio del equipo (${r.total} vs. ${fmtRi(prom.total)}).`);
+  if(r.total < prom.total) mejoras.push(`Producción combinada por debajo del promedio del equipo (${r.total} vs. ${fmtRi(prom.total)})${esReciente ? ` — lleva ${antigTxt} en el equipo, así que este número todavía no es comparable 1:1 contra compañeros con más tiempo` : ''}.`);
 
   const html = `
     <button class="ri-back-link" onclick="cerrarReporteIndividual()">&larr; Volver al ranking</button>
@@ -3052,7 +3121,7 @@ function abrirReporteIndividual(idx){
         </div>
         <div>
           <div class="ri-person-name">${r.nom}</div>
-          <div class="ri-person-role">Principalmente ${principal.k} &middot; #${idx+1} de ${N} por producci&oacute;n combinada</div>
+          <div class="ri-person-role">Principalmente ${principal.k} &middot; #${idx+1} de ${N} por producci&oacute;n combinada${antigTxt ? ` &middot; Ingres&oacute; ${antigTxt}` : ''}</div>
         </div>
       </div>
       <div class="ri-top-actions">
@@ -3060,6 +3129,11 @@ function abrirReporteIndividual(idx){
         <button class="ri-export-btn" onclick="window.print()">⭳ Exportar</button>
       </div>
     </div>
+
+    ${esReciente ? `<div style="display:flex;gap:10px;align-items:flex-start;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:.82rem;color:#92400e;line-height:1.5;">
+      <span style="flex-shrink:0;">🆕</span>
+      <span>Ingres&oacute; ${antigTxt} al equipo &mdash; lleva menos de ${MESES_INGRESO_RECIENTE} meses, as&iacute; que sus n&uacute;meros todav&iacute;a no son comparables 1:1 contra compa&ntilde;eros con m&aacute;s tiempo (metas y promedios de abajo son anuales).</span>
+    </div>` : ''}
 
     <div class="ri-kpi-row">
       <div class="ri-kpi-card"><div class="ri-num" style="color:#16a34a;">${r.sop}</div><div class="ri-lbl">Soportes atendidos</div></div>
