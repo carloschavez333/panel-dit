@@ -737,17 +737,18 @@ document.addEventListener('DOMContentLoaded', function(){
 // Refrescado 25 Ago 2026 desde el Sheet en vivo (openpyxl sobre "Product Backlog
 // Soportes DEV (1hr activo)"), mismo filtro/criterio documentado arriba.
 const SOPORTES = [
-  {loc:'Quintana Roo', estados:{'EN PROGRESO':4, 'READY TO MERGE':3, 'LISTO PARA DESPLEGAR':5, 'BLOQUEADO':6, 'PRODUCT BACKLOG':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Guanajuato', estados:{'EN PROGRESO':5, 'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'PRODUCT BACKLOG':1}},
-  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':2, 'EN ESPERA DE CLIENTE EXTERNO':1, 'PRODUCT BACKLOG':1}},
-  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2, 'Reabierto':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
-  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2, 'READY TO MERGE':2, 'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':1}},
-  {loc:'Baja California', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':2, 'EN PROGRESO':1}},
+  {loc:'Quintana Roo', estados:{'EN PROGRESO':6, 'READY TO MERGE':3, 'LISTO PARA DESPLEGAR':6, 'BLOQUEADO':5, 'PRODUCT BACKLOG':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Guanajuato', estados:{'EN PROGRESO':4, 'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':3}},
+  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':2, 'READY TO MERGE':2, 'EN PROGRESO':3, 'EN ESPERA DE CLIENTE EXTERNO':1, 'PRODUCT BACKLOG':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':3}},
+  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':2, 'Reabierto':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
+  {loc:'Colima', estados:{'LISTO PARA DESPLEGAR':6, 'READY TO MERGE':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'EN PROGRESO':2}},
+  {loc:'Baja California', estados:{'Reabierto':1, 'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':2, 'EN PROGRESO':1}},
   {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'EN PROGRESO':1}},
-  {loc:'Sonora', estados:{'EN PROGRESO':1, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Sonora', estados:{'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':2}},
   {loc:'Sinaloa', estados:{'Reabierto':1}},
   {loc:'Chiapas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Cancún', estados:{'PRODUCT BACKLOG':1}},
 ];
 // `.total` derivado del detalle por Estado — nunca hardcodeado, así nunca se
 // puede desincronizar (mismo criterio ya usado para TOTAL_ACTIVOS abajo).
@@ -758,13 +759,12 @@ const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
 const APROBACION = [
   {loc:'Quintana Roo', n:9},
   {loc:'Guanajuato', n:6},
-  {loc:'Jalisco', n:4},
   {loc:'Colima', n:4},
-  {loc:'Baja California', n:3},
+  {loc:'Jalisco', n:3},
+  {loc:'Hidalgo', n:2},
   {loc:'Sonora', n:2},
-  {loc:'Zacatecas', n:2},
-  {loc:'Cancún', n:1},
-  {loc:'Hidalgo', n:1},
+  {loc:'Baja California', n:2},
+  {loc:'Zacatecas', n:1},
   {loc:'CDMX', n:1},
   {loc:'Chiapas', n:1},
 ];
@@ -784,8 +784,8 @@ const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 const RESPONSABLES = [
   {nom:'Yoshio Adán Villegas Guevara', n:112},
   {nom:'Leonardo Lucio Perez', n:94},
-  {nom:'Omar Villalpando', n:81},
-  {nom:'Manuel Alejandro Domínguez Enríquez', n:78},
+  {nom:'Omar Villalpando', n:82},
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:79},
   {nom:'Ivan Perez Felipe', n:63},
   {nom:'Jesus Feria Ortiz', n:51},
   {nom:'Jonathan Aristeo Lozano Hernandez', n:47},
@@ -811,7 +811,7 @@ const CERRADOS = [
   {loc:'2026-05 · Mayo', n:273},
   {loc:'2026-06 · Junio', n:340},
   {loc:'2026-07 · Julio', n:320},
-  {loc:'2026-08 · Agosto', n:218},
+  {loc:'2026-08 · Agosto', n:220},
 ];
 const TOTAL_CERRADOS = CERRADOS.reduce((s,r)=>s+r.n,0); // histórico completo (todos los años)
 
@@ -916,11 +916,11 @@ function renderRitmoAtencion(){
 // Refrescado 25 Ago 2026 desde el Sheet en vivo ("CC Evolutivos (1hr activo)").
 const EVOL_ACTIVOS = [
   {loc:'Quintana Roo', estados:{'BLOQUEADO':2, 'APROBACIÓN POR CLIENTE':2, 'EN PROGRESO':5, 'PRODUCT BACKLOG':3, 'Validación presupuestal':3, 'PENDIENTE DE FIRMA':8, 'Consulta Con Cliente':2, 'READY TO MERGE':1, 'LISTO PARA DESPLEGAR':1, 'EN QA':4}},
-  {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':3, 'PRODUCT BACKLOG':7, 'BLOQUEADO':4, 'EN PROGRESO':4, 'LISTO PARA DESPLEGAR':3, 'Reabierto':2, 'READY TO MERGE':1, 'APROBACIÓN POR CLIENTE':1}},
+  {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':3, 'PRODUCT BACKLOG':7, 'BLOQUEADO':4, 'EN PROGRESO':5, 'LISTO PARA DESPLEGAR':3, 'Reabierto':1, 'READY TO MERGE':1, 'EN QA':1}},
   {loc:'Sonora', estados:{'PRODUCT BACKLOG':1, 'CERTIFICADO POR QA':1, 'Validación presupuestal':1, 'EN QA':3, 'PENDIENTE DE FIRMA':7, 'Control de Version':1, 'Estimación Técnica':2, 'APROBACIÓN POR CLIENTE':1, 'BLOQUEADO':1}},
-  {loc:'Colima', estados:{'PENDIENTE DE FIRMA':4, 'Control de Version':1, 'Validación presupuestal':4, 'Consulta Con Cliente':2, 'APROBACIÓN POR CLIENTE':1, 'EN PROGRESO':1, 'CERTIFICADO POR QA':1, 'LISTO PARA DESPLEGAR':1}},
-  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
-  {loc:'Hidalgo', estados:{'Control de Version':2, 'Consulta Con Cliente':1, 'Validación presupuestal':4}},
+  {loc:'Colima', estados:{'PENDIENTE DE FIRMA':4, 'Control de Version':1, 'Validación presupuestal':4, 'Consulta Con Cliente':2, 'APROBACIÓN POR CLIENTE':1, 'READY TO MERGE':1, 'CERTIFICADO POR QA':1, 'LISTO PARA DESPLEGAR':1}},
+  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':3, 'EN QA':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'PRODUCT BACKLOG':1, 'Consulta Con Cliente':1, 'Validación presupuestal':4, 'Control de Version':1}},
   {loc:'Baja California', estados:{'BLOQUEADO':1, 'LISTO PARA DESPLEGAR':1, 'PENDIENTE DE FIRMA':2, 'Reabierto':1}},
   {loc:'Zacatecas', estados:{'LISTO PARA DESPLEGAR':1}},
   {loc:'Chiapas', estados:{'EN PROGRESO':1}},
@@ -961,13 +961,12 @@ const CERRADOS_DEV = [
   {loc:'2025-12 · Diciembre', n:3},
   {loc:'2026-01 · Enero', n:4},
   {loc:'2026-02 · Febrero', n:4},
-  {loc:'2026-03 · Marzo', n:43},
-  {loc:'2026-04 · Abril', n:12},
+  {loc:'2026-03 · Marzo', n:45},
+  {loc:'2026-04 · Abril', n:13},
   {loc:'2026-05 · Mayo', n:6},
-  {loc:'2026-06 · Junio', n:12},
-  {loc:'2026-07 · Julio', n:14},
-  {loc:'2026-08 · Agosto', n:14},
-  {loc:'Sin mes asignado', n:17},
+  {loc:'2026-06 · Junio', n:18},
+  {loc:'2026-07 · Julio', n:16},
+  {loc:'2026-08 · Agosto', n:20},
 ];
 const TOTAL_CERRADOS_DEV = CERRADOS_DEV.reduce((s,r)=>s+r.n,0); // histórico completo
 // Misma lógica que getCerradosVigentes(): el KPI "Atendidos (DONE)" de Nuevos
@@ -1013,14 +1012,14 @@ const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 // capitalización que se ve en pantalla la pone `tituloEstado()` solo para
 // mostrar, nunca se toca la clave real.
 const ERROR_ACTIVOS = [
-  {loc:'Guanajuato', estados:{'EN QA':21, 'SPRINT BACKLOG':11, 'No Bug':4, 'Reabierto':1, 'BLOQUEADO':6, 'READY TO MERGE':2}},
-  {loc:'Colima', estados:{'SPRINT BACKLOG':5, 'EN QA':7, 'READY TO MERGE':12, 'EN PROGRESO':5, 'BLOQUEADO':1, 'No Bug':8, 'Reabierto':1}},
-  {loc:'Jalisco', estados:{'SPRINT BACKLOG':1, 'EN PROGRESO':2, 'EN QA':1, 'No Bug':7, 'BLOQUEADO':1}},
-  {loc:'Hidalgo', estados:{'No Bug':7, 'EN PROGRESO':1, 'EN QA':1, 'SPRINT BACKLOG':1}},
-  {loc:'Quintana Roo', estados:{'EN QA':3, 'EN PROGRESO':1, 'No Bug':3}},
-  {loc:'Sonora', estados:{'No Bug':4, 'BLOQUEADO':1, 'SPRINT BACKLOG':2}},
-  {loc:'Baja California', estados:{'READY TO MERGE':3, 'EN PROGRESO':1, 'EN QA':1}},
+  {loc:'Guanajuato', estados:{'EN QA':22, 'SPRINT BACKLOG':11, 'Reabierto':1, 'BLOQUEADO':5, 'READY TO MERGE':2}},
+  {loc:'Colima', estados:{'EN PROGRESO':7, 'READY TO MERGE':13, 'Reabierto':4, 'SPRINT BACKLOG':1}},
+  {loc:'Sonora', estados:{'SPRINT BACKLOG':3, 'EN QA':1, 'BLOQUEADO':1}},
+  {loc:'Baja California', estados:{'EN PROGRESO':1, 'READY TO MERGE':4}},
+  {loc:'Jalisco', estados:{'EN QA':2, 'EN PROGRESO':2, 'BLOQUEADO':1}},
+  {loc:'Quintana Roo', estados:{'EN QA':3, 'EN PROGRESO':1}},
   {loc:'Chiapas', estados:{'READY TO MERGE':2, 'SPRINT BACKLOG':1}},
+  {loc:'Hidalgo', estados:{'EN PROGRESO':1, 'EN QA':1, 'SPRINT BACKLOG':1}},
 ];
 ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
@@ -1033,7 +1032,7 @@ const CERRADOS_ERR = [
   {loc:'2026-05 · Mayo', n:167},
   {loc:'2026-06 · Junio', n:89},
   {loc:'2026-07 · Julio', n:103},
-  {loc:'2026-08 · Agosto', n:60},
+  {loc:'2026-08 · Agosto', n:65},
 ];
 const TOTAL_CERRADOS_ERR = CERRADOS_ERR.reduce((s,r)=>s+r.n,0); // histórico completo
 // Misma lógica que getCerradosVigentes()/getCerradosVigentesDev(): el KPI
@@ -1050,9 +1049,9 @@ function getCerradosVigentesErr(){
 // Misma lista fija de 11 Responsables oficiales que Soportes y Evolutivos — aquí
 // contando sus tickets de tipo "Error" en Mtto_DONE_2026.
 const RESPONSABLES_ERR = [
-  {nom:'Yoshio Adán Villegas Guevara', n:88},
-  {nom:'Omar Villalpando', n:53},
-  {nom:'Manuel Alejandro Domínguez Enríquez', n:52},
+  {nom:'Yoshio Adán Villegas Guevara', n:89},
+  {nom:'Omar Villalpando', n:56},
+  {nom:'Manuel Alejandro Domínguez Enríquez', n:53},
   {nom:'Leonardo Lucio Perez', n:72},
   {nom:'Silvestre Cerrato', n:11},
   {nom:'Jonathan Aristeo Lozano Hernandez', n:97},
@@ -1095,37 +1094,29 @@ const TIEMPO_ATENCION = {
   soporte: {
     lbl: 'Soportes', color: '#0f766e',
     monthly: [
-      {mes:'Enero',n:143,mean:4.15,median:1.5},{mes:'Febrero',n:181,mean:3.41,median:1.5},
-      {mes:'Marzo',n:352,mean:3.51,median:1.5},{mes:'Abril',n:193,mean:4.68,median:1.0},
-      {mes:'Mayo',n:244,mean:2.83,median:1.0},{mes:'Junio',n:293,mean:3.71,median:1.67},
-      {mes:'Julio',n:282,mean:5.02,median:2.0},{mes:'Agosto',n:199,mean:4.10,median:1.5},
+      {mes:'Enero',n:143,mean:4.15,median:1.50},{mes:'Febrero',n:181,mean:3.41,median:1.50},{mes:'Marzo',n:352,mean:3.51,median:1.50},{mes:'Abril',n:193,mean:4.68,median:1.00},{mes:'Mayo',n:244,mean:2.83,median:1.00},{mes:'Junio',n:293,mean:3.71,median:1.67},{mes:'Julio',n:282,mean:5.02,median:2.00},{mes:'Agosto',n:201,mean:4.07,median:1.50},
     ],
-    total: {n:1887, mean:3.90, median:1.5},
-    primera: {lbl:'Enero-Abril', n:869, mean:3.86, median:1.5},
-    segunda: {lbl:'Mayo-Agosto', n:1018, mean:3.94, median:1.5},
+    total: {n:1889, mean:3.90, median:1.50},
+    primera: {lbl:'Enero-Abril', n:869, mean:3.86, median:1.50},
+    segunda: {lbl:'Mayo-Agosto', n:1020, mean:3.93, median:1.50},
   },
   evolutivo: {
     lbl: 'Evolutivos', color: '#d97706',
     monthly: [
-      {mes:'Enero',n:4,mean:16.02,median:12.75},{mes:'Febrero',n:4,mean:18.04,median:3.5},
-      {mes:'Marzo',n:38,mean:25.35,median:20.46},{mes:'Abril',n:12,mean:15.72,median:9.62},
-      {mes:'Mayo',n:5,mean:6.92,median:7.5},{mes:'Junio',n:11,mean:22.95,median:21.0},
-      {mes:'Julio',n:13,mean:15.50,median:12.17},{mes:'Agosto',n:13,mean:23.41,median:20.0},
+      {mes:'Enero',n:4,mean:16.02,median:12.75},{mes:'Febrero',n:4,mean:18.54,median:4.00},{mes:'Marzo',n:40,mean:24.65,median:20.00},{mes:'Abril',n:13,mean:16.12,median:10.25},{mes:'Mayo',n:5,mean:6.92,median:7.50},{mes:'Junio',n:17,mean:34.77,median:21.00},{mes:'Julio',n:15,mean:16.30,median:13.00},{mes:'Agosto',n:19,mean:30.93,median:25.00},
     ],
-    total: {n:100, mean:20.81, median:13.71},
-    primera: {lbl:'Enero-Abril', n:58, mean:22.21, median:14.21},
-    segunda: {lbl:'Mayo-Agosto', n:42, mean:18.88, median:13.5},
+    total: {n:117, mean:23.86, median:14.50},
+    primera: {lbl:'Enero-Abril', n:61, mean:21.86, median:13.42},
+    segunda: {lbl:'Mayo-Agosto', n:56, mean:26.03, median:14.75},
   },
   error: {
     lbl: 'Fallos de QA (Error)', color: '#1e3a5f',
     monthly: [
-      {mes:'Marzo',n:200,mean:4.57,median:2.79},{mes:'Abril',n:67,mean:2.63,median:1.42},
-      {mes:'Mayo',n:163,mean:1.35,median:0.83},{mes:'Junio',n:89,mean:2.90,median:2.17},
-      {mes:'Julio',n:103,mean:3.66,median:2.25},{mes:'Agosto',n:60,mean:3.38,median:2.75},
+      {mes:'Marzo',n:200,mean:4.57,median:2.79},{mes:'Abril',n:67,mean:2.63,median:1.42},{mes:'Mayo',n:163,mean:1.35,median:0.83},{mes:'Junio',n:89,mean:2.90,median:2.17},{mes:'Julio',n:103,mean:3.66,median:2.25},{mes:'Agosto',n:65,mean:3.32,median:2.75},
     ],
-    total: {n:682, mean:3.15, median:1.92},
+    total: {n:687, mean:3.14, median:1.92},
     primera: {lbl:'Marzo-Mayo', n:430, mean:3.05, median:1.54},
-    segunda: {lbl:'Junio-Agosto', n:252, mean:3.32, median:2.29},
+    segunda: {lbl:'Junio-Agosto', n:257, mean:3.31, median:2.33},
   },
 };
 
