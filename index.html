@@ -670,12 +670,12 @@
           <thead><tr>
             <th>#</th><th>Responsable</th><th>Fecha de ingreso</th>
             <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
-            <th>% Soportes</th>
             <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
-            <th>% Evolutivos</th>
             <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
-            <th>% Error</th>
             <th>Total</th>
+            <th>% Soportes</th>
+            <th>% Evolutivos</th>
+            <th>% Error</th>
           </tr></thead>
           <tbody id="equipo-rendimiento-tbody"></tbody>
         </table>
@@ -3025,12 +3025,12 @@ function renderEquipoRendimiento(){
         <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}</td>
         <td style="font-size:.8rem;color:#64748b;">${fechaCelda}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
-        <td>${pctSop.toFixed(0)}%</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
-        <td>${pctDev.toFixed(0)}%</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
-        <td>${r.pctErr.toFixed(1)}%</td>
         <td style="color:${numColor};font-weight:700;">${r.total}</td>
+        <td style="color:#16a34a;">${pctSop.toFixed(0)}%</td>
+        <td style="color:#d97706;">${pctDev.toFixed(0)}%</td>
+        <td style="color:#2563eb;">${r.pctErr.toFixed(1)}%</td>
       </tr>`;
     }).join('');
   }
