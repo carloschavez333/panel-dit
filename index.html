@@ -681,6 +681,16 @@ function unlockPanel(){
   const shell = document.getElementById('app-shell');
   if(gate) gate.style.display = 'none';
   if(shell) shell.style.display = 'flex';
+  // Bug corregido 26 Ago 2026: mientras #app-shell está en display:none (detrás del
+  // candado de contraseña), CUALQUIER <canvas> mide offsetWidth=0 y sus gráficas caen
+  // al tamaño de respaldo (ej. 500px) — incluida la pestaña activa por defecto
+  // (Tickets de Soportes), que nunca pasa por el re-render de showTab() porque el
+  // usuario no le dio clic. Se ve "chiquita" hasta que algo más (resize, cambiar de
+  // pestaña) fuerza un redibujado con el ancho real. Se re-ejecutan aquí, ya con el
+  // shell visible, todas las funciones de render — mismo patrón ya usado para el
+  // bug análogo de pestañas no activas (ver CLAUDE.md, "Bug estructural corregido
+  // 25 Ago 2026").
+  if(typeof renderAll === 'function') renderAll();
 }
 async function checkGatePassword(){
   const input = document.getElementById('gate-input');
@@ -2625,6 +2635,15 @@ function cerrarReporteIndividual(){
 }
 
 // ─── INIT ────────────────────────
+// Única lista de todas las funciones de render — la usan tanto el DOMContentLoaded
+// inicial como unlockPanel() (ver comentario ahí sobre el bug del candado). Si se
+// agrega una pestaña nueva con gráficas, su función de render va AQUÍ.
+function renderAll(){
+  [renderKPIs, renderResumen, renderAprobacion, renderCerrados,
+   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
+   renderKPIsErr, renderResumenErr, renderCerradosErr,
+   renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
+}
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('badge-fecha');
   if(el){
@@ -2633,10 +2652,7 @@ document.addEventListener('DOMContentLoaded', function(){
     el.textContent = d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear()
       + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   }
-  [renderKPIs, renderResumen, renderAprobacion, renderCerrados,
-   renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
-   renderKPIsErr, renderResumenErr, renderCerradosErr,
-   renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
+  renderAll();
 });
 </script>
 </body>
