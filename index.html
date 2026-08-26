@@ -301,6 +301,7 @@
     </div>
     <div class="tab" onclick="showTab('equipo',this)"><span class="tab-ico">🧑‍💼</span> Informe de desempe&ntilde;o</div>
     <div class="tab" onclick="showTab('ritmo',this)"><span class="tab-ico">&#x23F1;</span> Ritmo de Atenci&oacute;n</div>
+    <div class="tab" onclick="showTab('asignacion',this)"><span class="tab-ico">&#x1F4CC;</span> Asignaci&oacute;n Real Actual</div>
   </div>
   <div class="sidebar-foot">Actualizaci&oacute;n autom&aacute;tica cada hora</div>
 </aside>
@@ -569,6 +570,31 @@
         <strong style="color:#8b5cf6;">Actual</strong> = ritmo de cierre que el equipo ya demuestra hoy (tickets/d&iacute;a h&aacute;bil) &nbsp;&bull;&nbsp;
         <strong style="color:#d97706;">1 sem</strong> = ritmo necesario para vaciar el backlog actual en 1 semana h&aacute;bil &nbsp;&bull;&nbsp;
         <strong style="color:#0d9488;">2 sem</strong> = ritmo necesario para vaciarlo en 2 semanas h&aacute;biles
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ASIGNACIÓN REAL ACTUAL -->
+  <div id="tab-asignacion" class="tab-content">
+    <div class="info-box"><strong>Asignaci&oacute;n Real Actual</strong> muestra cu&aacute;ntos tickets ACTIVOS (no cerrados todav&iacute;a) trae cada persona ahora mismo, cruzando las 3 hojas de activos: <strong>Product Backlog Soportes DEV (1hr activo)</strong>, <strong>CC Evolutivos (1hr activo)</strong> y <strong>Error (1hr activo)</strong>, agrupadas por Persona asignada. Incluye a <strong>todas</strong> las personas con al menos un ticket activo, no solo a los 8 Responsables del roster de "Informe de desempe&ntilde;o" &mdash; el objetivo es ver la carga de trabajo real de hoy, no solo del equipo n&uacute;cleo.</div>
+    <div class="panel">
+      <h3>Carga actual del equipo</h3>
+      <div id="asignacion-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 4px;"></div>
+    </div>
+    <div class="panel" style="margin-top:22px;">
+      <h3>Tickets activos por persona</h3>
+      <div class="info-box" style="font-size:.78rem;">Ordenado por total de mayor a menor. "(Sin asignar)" son tickets activos sin responsable capturado en el Sheet.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Persona</th>
+            <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
+            <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
+            <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody id="asignacion-actual-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -990,6 +1016,40 @@ function renderRitmoAtencion(){
   );
 }
 
+// Render de "Asignación Real Actual" (26 Ago 2026) — tabla + KPIs a partir de
+// ASIGNACION_ACTUAL (ver comentario junto a esa constante). Sin canvas, así que
+// no depende de que el tab ya sea visible para medir tamaño — pero igual se
+// dispara desde showTab() y renderAll() como el resto, por consistencia.
+function renderAsignacionActual(){
+  const filas = ASIGNACION_ACTUAL; // ya viene ordenado desc por total desde el origen
+  const personasConCarga = filas.filter(r=>r.nom!=='(Sin asignar)').length;
+  const sinAsignar = filas.find(r=>r.nom==='(Sin asignar)');
+
+  const kpis = [
+    { num: TOTAL_ASIGNACION_ACTUAL.toLocaleString(), lbl:'Tickets activos combinados', sub:'Soportes + Evolutivos + Error, las 3 hojas "(1hr activo)" juntas', col:'#17a2b8' },
+    { num: personasConCarga, lbl:'Personas con carga activa', sub:'Con al menos 1 ticket activo asignado hoy, dentro o fuera del roster de 8', col:'#7c3aed' },
+    { num: sinAsignar ? sinAsignar.total : 0, lbl:'Tickets sin responsable', sub:'Activos en el Sheet sin "Persona asignada" capturada', col:'#dc2626' },
+  ];
+  const kpiEl = document.getElementById('asignacion-kpis');
+  if(kpiEl) kpiEl.innerHTML = kpis.map(k=>`
+    <div style="background:#f8fafc;border-radius:10px;padding:18px 14px;text-align:center;border:1px solid #e5e7eb;">
+      <div style="font-size:2rem;font-weight:800;color:${k.col};line-height:1;">${k.num}</div>
+      <div style="font-size:.75rem;font-weight:700;color:#334155;margin-top:8px;">${k.lbl}</div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:3px;">${k.sub}</div>
+    </div>`).join('');
+
+  const tbody = document.getElementById('asignacion-actual-tbody');
+  if(tbody) tbody.innerHTML = filas.map((r,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td style="white-space:nowrap;font-weight:600;${r.nom==='(Sin asignar)'?'color:#94a3b8;font-style:italic;font-weight:500;':'color:#1a1d29;'}">${r.nom}</td>
+      <td style="color:#16a34a;font-weight:600;">${r.sop}</td>
+      <td style="color:#d97706;font-weight:600;">${r.dev}</td>
+      <td style="color:#2563eb;font-weight:600;">${r.err}</td>
+      <td style="font-weight:700;">${r.total}</td>
+    </tr>`).join('');
+}
+
 // ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
 // Fuente: hoja "CC Evolutivos (1hr activo)". Filtro: Tipo de Incidencia en {CC
 // Evolutivo, Evolutivo Ágil}. Igual que Soportes (corregido 25 Ago 2026): cada
@@ -1105,6 +1165,83 @@ const ERROR_ACTIVOS = [
 ];
 ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
+
+// ─── ASIGNACIÓN REAL ACTUAL (26 Ago 2026) ──────────────────────────────────
+// Nuevo módulo a pedido del usuario: cuántos tickets ACTIVOS (no cerrados)
+// trae cada persona ahora mismo, cruzando las 3 hojas "(1hr activo)" (Product
+// Backlog Soportes DEV, CC Evolutivos, Error) por "Persona asignada" — a
+// diferencia de SOPORTES/EVOL_ACTIVOS/ERROR_ACTIVOS de arriba (que agrupan
+// por Localidad), este agrupa por Persona. Mismos filtros de Tipo de
+// Incidencia ya documentados arriba para cada hoja (Soporte+Problema /
+// CC Evolutivo+Evolutivo Ágil / Error).
+// A propósito NO se limita a los 8 Responsables del roster de "Informe de
+// desempeño" — el usuario confirmó explícitamente que quería a TODOS los que
+// tengan al menos un ticket activo (48 personas en el corte de hoy), porque
+// el objetivo es ver la carga real de trabajo actual, y hay gente fuera del
+// roster de 8 con carga considerable (ej. Eunice Arevalo 13 Soportes activos,
+// Pedro Jimenez 25 Evolutivos activos, Yoshio Villegas 20 de Error activos).
+// "(Sin asignar)" es su propia fila — tickets activos sin responsable en el
+// Sheet, información real, no se descarta.
+// Nombres: los 8 del roster ya conocido se homologan a su nombre completo
+// (mismo NAME_MAP ya usado para RESPONSABLES_MENSUAL); el resto se dejó tal
+// cual aparece en el Sheet, solo con Title Case si venía en MAYÚSCULAS, para
+// que se lea parejo — sin inventar ni adivinar apellidos que no están.
+// .total se deriva siempre en JS (nunca hardcodeado), mismo criterio que el
+// resto del panel.
+const ASIGNACION_ACTUAL = [
+  {nom:"Mariano Nicolás Conte", sop:2, dev:7, err:22},
+  {nom:"Villegas Guevara Yoshio Adan", sop:1, dev:5, err:20},
+  {nom:"Eunice Anais Arevalo Avalos", sop:13, dev:9, err:3},
+  {nom:"Pedro Emanuel Jimenez Oscoy", sop:0, dev:25, err:0},
+  {nom:"Leonardo Lucio Perez", sop:7, dev:7, err:4},
+  {nom:"Jonathan Aristeo Lozano Hernández", sop:4, dev:3, err:11},
+  {nom:"Gerardo Omar Villalpando Villalpando", sop:3, dev:1, err:12},
+  {nom:"Jesús Feria Ortiz", sop:4, dev:2, err:9},
+  {nom:"Carlos Eduardo Chavez Ordaz", sop:0, dev:11, err:0},
+  {nom:"Gibran Esaú Solís Valenzuela", sop:7, dev:1, err:1},
+  {nom:"Manuel Alejandro Domínguez Enríquez", sop:0, dev:3, err:6},
+  {nom:"Jonathan Levi Márquez García", sop:2, dev:3, err:3},
+  {nom:"(Sin asignar)", sop:7, dev:1, err:0},
+  {nom:"Ivan Perez Felipe", sop:4, dev:3, err:0},
+  {nom:"Zamora Rodriguez Luz Adriana", sop:4, dev:1, err:0},
+  {nom:"Silvestre Cerrato", sop:1, dev:3, err:0},
+  {nom:"Luis Antonio Hernández Martínez", sop:1, dev:3, err:0},
+  {nom:"Ricardo González Bustos", sop:0, dev:4, err:0},
+  {nom:"Jorge Octavio Paz Hernandez", sop:3, dev:0, err:0},
+  {nom:"Bruno Antonio Gonzalez Uribe", sop:3, dev:0, err:0},
+  {nom:"Estrada Lopez Sandra", sop:0, dev:3, err:0},
+  {nom:"Hugo Cesar Rivero Rodriguez", sop:2, dev:0, err:0},
+  {nom:"Juan Manuel Olguin Colin", sop:1, dev:1, err:0},
+  {nom:"César Leonardo Rodríguez Martínez", sop:2, dev:0, err:0},
+  {nom:"Víctor Hugo Hernández López", sop:2, dev:0, err:0},
+  {nom:"Rivera Cruz Zacmixtli", sop:0, dev:2, err:0},
+  {nom:"salvador.fernandez", sop:0, dev:2, err:0},
+  {nom:"Quintero Serna Juan Antonio", sop:1, dev:0, err:0},
+  {nom:"Luis Andres Lopez Estrada", sop:1, dev:0, err:0},
+  {nom:"Gras Rodrigo Gabriel", sop:1, dev:0, err:0},
+  {nom:"Jimenez Micete Ricardo", sop:1, dev:0, err:0},
+  {nom:"Miguel Angel Velasco Castañeda", sop:1, dev:0, err:0},
+  {nom:"Maqueda Policarpo Alejandra", sop:1, dev:0, err:0},
+  {nom:"Berenice Zavala Jiménez", sop:1, dev:0, err:0},
+  {nom:"Luis Antonio Jimenez Matus", sop:1, dev:0, err:0},
+  {nom:"Angel Ulises Velasquez Hernandez", sop:1, dev:0, err:0},
+  {nom:"Jesus Jonathan Ramos Nuñez", sop:1, dev:0, err:0},
+  {nom:"Alejandro Cruz Torres", sop:1, dev:0, err:0},
+  {nom:"Cesario Ramirez Torres", sop:0, dev:1, err:0},
+  {nom:"Vanessa Vianey Beltran Matos", sop:0, dev:1, err:0},
+  {nom:"Ismael Jacinto Zamorano", sop:0, dev:1, err:0},
+  {nom:"Armando Cisneros", sop:0, dev:1, err:0},
+  {nom:"Perez Vasquez Oscar Uriel", sop:0, dev:1, err:0},
+  {nom:"Eduardo Rivera Mendoza", sop:0, dev:1, err:0},
+  {nom:"Fabian Arturo Muñoz Marquez", sop:0, dev:1, err:0},
+  {nom:"Carlos Antonio Andrade Cervantes", sop:0, dev:1, err:0},
+  {nom:"Sergio Montiel Matamoros", sop:0, dev:1, err:0},
+  {nom:"Jesús Alberto Benítez Cruz", sop:0, dev:1, err:0},
+];
+
+ASIGNACION_ACTUAL.forEach(r=>{ r.total = r.sop+r.dev+r.err; });
+const TOTAL_ASIGNACION_ACTUAL = ASIGNACION_ACTUAL.reduce((s,r)=>s+r.total,0);
+
 
 // Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia == "Error", agrupado por Mes.
 const CERRADOS_ERR = [
@@ -1977,6 +2114,7 @@ function showTab(name, el){
   if(name==='resumen_err'){renderResumenErr();}
   if(name==='cerrados_err'){renderCerradosErr();}
   if(name==='ritmo'){renderRitmoAtencion();}
+  if(name==='asignacion'){renderAsignacionActual();}
   if(name==='equipo'){renderVelocidadAtencion(); renderEquipoTendencia(); renderEquipoRendimiento(); renderVolumenVelocidad();}
 }
 function toggleSubtabs(e, group){
@@ -3329,7 +3467,7 @@ function renderAll(){
   [renderKPIs, renderResumen, renderAprobacion, renderCerrados,
    renderKPIsDev, renderResumenDev, renderAprobacionDev, renderCerradosDev,
    renderKPIsErr, renderResumenErr, renderCerradosErr,
-   renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad].forEach(fn => fn());
+   renderEquipoTendencia, renderEquipoRendimiento, renderRitmoAtencion, renderVelocidadAtencion, renderVolumenVelocidad, renderAsignacionActual].forEach(fn => fn());
 }
 document.addEventListener('DOMContentLoaded', function(){
   const el = document.getElementById('badge-fecha');
