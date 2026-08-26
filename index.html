@@ -3393,30 +3393,6 @@ function abrirReporteIndividual(idx){
       </div>
     </div>
 
-    <div class="panel">
-      <h3>Detalle de actividades</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Tipo</th><th>Cantidad</th><th>% del total</th><th>vs. promedio del equipo</th></tr></thead>
-          <tbody>
-            ${cats3.map(c=>{
-              const p = c.k==='Soportes'?prom.sop:c.k==='Evolutivos'?prom.dev:prom.err;
-              const d = c.v-p; const signo=d>=0?'+':''; const dcolor=d>=0?'#16a34a':'#dc2626';
-              return `<tr>
-                <td style="color:${c.c};font-weight:700;">${c.k}</td>
-                <td>${c.v}</td>
-                <td>${r.total>0?(c.v/r.total*100).toFixed(1):'0.0'}%</td>
-                <td style="color:${dcolor};font-weight:600;">${signo}${fmtRi(d)}</td>
-              </tr>`;
-            }).join('')}
-            <tr style="background:#f7f8fa;font-weight:700;">
-              <td>Total</td><td>${r.total}</td><td>100%</td><td>${(r.total-prom.total)>=0?'+':''}${fmtRi(r.total-prom.total)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="ri-grid-2">
       <div class="panel">
         <h3>✓ Fortalezas</h3>
