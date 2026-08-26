@@ -583,7 +583,7 @@
     </div>
     <div class="panel" style="margin-top:22px;">
       <h3>Tickets activos por persona</h3>
-      <div class="info-box" style="font-size:.78rem;">Ordenado por total de mayor a menor. "(Sin asignar)" son tickets activos sin responsable capturado en el Sheet.</div>
+      <div class="info-box" style="font-size:.78rem;">El equipo <strong>Desarrollo</strong> (9 personas, resaltadas) siempre va primero, en un orden fijo. El resto de las personas va despu&eacute;s, ordenado por total de mayor a menor. "(Sin asignar)" son tickets activos sin responsable capturado en el Sheet.</div>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -1021,7 +1021,14 @@ function renderRitmoAtencion(){
 // no depende de que el tab ya sea visible para medir tamaño — pero igual se
 // dispara desde showTab() y renderAll() como el resto, por consistencia.
 function renderAsignacionActual(){
-  const filas = ASIGNACION_ACTUAL; // ya viene ordenado desc por total desde el origen
+  // Orden final: primero el equipo "Desarrollo" en el orden fijo que dio el
+  // usuario (ASIGNACION_ORDEN_FIJO), luego el resto — el resto SÍ sigue
+  // ordenado por total de mayor a menor (orden original de ASIGNACION_ACTUAL).
+  const fijos = ASIGNACION_ORDEN_FIJO.map(nom => ASIGNACION_ACTUAL.find(r=>r.nom===nom)).filter(Boolean);
+  const nombresFijos = new Set(fijos.map(r=>r.nom));
+  const resto = ASIGNACION_ACTUAL.filter(r=>!nombresFijos.has(r.nom));
+  const filas = fijos.concat(resto);
+
   const personasConCarga = filas.filter(r=>r.nom!=='(Sin asignar)').length;
   const sinAsignar = filas.find(r=>r.nom==='(Sin asignar)');
 
@@ -1039,15 +1046,18 @@ function renderAsignacionActual(){
     </div>`).join('');
 
   const tbody = document.getElementById('asignacion-actual-tbody');
-  if(tbody) tbody.innerHTML = filas.map((r,i)=>`
-    <tr>
+  if(tbody) tbody.innerHTML = filas.map((r,i)=>{
+    const esFijo = nombresFijos.has(r.nom);
+    return `
+    <tr style="${esFijo?'background:#f0f9ff;':''}">
       <td>${i+1}</td>
-      <td style="white-space:nowrap;font-weight:600;${r.nom==='(Sin asignar)'?'color:#94a3b8;font-style:italic;font-weight:500;':'color:#1a1d29;'}">${r.nom}</td>
+      <td style="white-space:nowrap;font-weight:600;${r.nom==='(Sin asignar)'?'color:#94a3b8;font-style:italic;font-weight:500;':'color:#1a1d29;'}">${r.nom}${esFijo?' <span class="pill" style="background:rgba(23,162,184,.14);color:#17a2b8;font-size:.62rem;">DESARROLLO</span>':''}</td>
       <td style="color:#16a34a;font-weight:600;">${r.sop}</td>
       <td style="color:#d97706;font-weight:600;">${r.dev}</td>
       <td style="color:#2563eb;font-weight:600;">${r.err}</td>
       <td style="font-weight:700;">${r.total}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 // ─── NUEVOS DESARROLLOS (Evolutivos) ──────────────────────────────────────────
@@ -1190,7 +1200,7 @@ const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
 // resto del panel.
 const ASIGNACION_ACTUAL = [
   {nom:"Mariano Nicolás Conte", sop:2, dev:7, err:22},
-  {nom:"Villegas Guevara Yoshio Adan", sop:1, dev:5, err:20},
+  {nom:"Yoshio Adan Villegas Guevara", sop:1, dev:5, err:20},
   {nom:"Eunice Anais Arevalo Avalos", sop:13, dev:9, err:3},
   {nom:"Pedro Emanuel Jimenez Oscoy", sop:0, dev:25, err:0},
   {nom:"Leonardo Lucio Perez", sop:7, dev:7, err:4},
@@ -1241,6 +1251,26 @@ const ASIGNACION_ACTUAL = [
 
 ASIGNACION_ACTUAL.forEach(r=>{ r.total = r.sop+r.dev+r.err; });
 const TOTAL_ASIGNACION_ACTUAL = ASIGNACION_ACTUAL.reduce((s,r)=>s+r.total,0);
+// Equipo "DESARROLLO" (26 Ago 2026, a pedido explícito del usuario): estas 9
+// personas SIEMPRE van primero en la tabla de "Asignación Real Actual",
+// exactamente en este orden — NO es el orden de mayor a menor total, es el
+// orden que dio el usuario (probablemente el orden de su lista/organigrama de
+// referencia). El resto de las personas (fuera de este grupo) va después,
+// ordenado por total de mayor a menor como ya estaba. Si se agrega o quita
+// alguien de este grupo en el futuro, hay que pedirle al usuario el orden
+// exacto — no inventar un criterio de orden nuevo (ni alfabético ni por
+// total) para este grupo en particular.
+const ASIGNACION_ORDEN_FIJO = [
+  'Mariano Nicolás Conte',
+  'Jonathan Levi Márquez García',
+  'Yoshio Adan Villegas Guevara',
+  'Gerardo Omar Villalpando Villalpando',
+  'Manuel Alejandro Domínguez Enríquez',
+  'Leonardo Lucio Perez',
+  'Jonathan Aristeo Lozano Hernández',
+  'Ivan Perez Felipe',
+  'Jesús Feria Ortiz',
+];
 
 
 // Fuente: hoja "Mtto_DONE_2026", Tipo de Incidencia == "Error", agrupado por Mes.
