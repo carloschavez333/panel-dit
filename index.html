@@ -141,6 +141,7 @@
   .panel-header-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .panel-header-icon svg{width:17px;height:17px}
   #icon-equipo-tendencia{width:48px;height:48px;border-radius:13px}
+  #icon-vv-info svg{width:13px;height:13px}
   #icon-equipo-tendencia svg{width:25px;height:25px}
   #icon-velocidad{width:48px;height:48px;border-radius:50%}
   #icon-velocidad svg{width:23px;height:23px}
@@ -596,8 +597,19 @@
       </div>
     </div>
     <div class="panel" style="border-top:4px solid #7c3aed;">
-      <h3>Panorama General &mdash; Volumen vs. Velocidad</h3>
-      <div class="info-box" style="font-size:.78rem;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos abajo) se movieron en la misma direcci&oacute;n al comparar la 1&ordf; mitad del a&ntilde;o contra la 2&ordf; &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
+      <div class="panel-title-row">
+        <div class="panel-header-icon" id="icon-vv-titulo" style="background:#ede9fe;color:#7c3aed;"></div>
+        <h3>Panorama General &mdash; Volumen vs. Velocidad</h3>
+      </div>
+      <!-- Rediseño 26 Ago 2026 (mockup del usuario): caso especial igual que el
+           info-box de "Informe de desempeño" — NO usa class="info-box" (esa clase
+           compartida sigue igual en los ~10 lugares que la usan), es un one-off con
+           estilo inline (tarjeta gris clara + círculo con ícono "i", en vez del
+           recuadro plano teal de antes). Ver CLAUDE.md para la regla completa. -->
+      <div style="display:flex;gap:10px;align-items:flex-start;background:#f8fafc;border-radius:10px;padding:12px 14px;margin:10px 0 18px;">
+        <div id="icon-vv-info" style="width:22px;height:22px;border-radius:50%;background:#e2e8f0;color:#64748b;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"></div>
+        <div style="font-size:.78rem;color:#475569;line-height:1.6;">Cruza si el volumen de tickets cerrados (Comparativo Mensual) y la velocidad de atenci&oacute;n (Velocidad de Atenci&oacute;n, ambos abajo) se movieron en la misma direcci&oacute;n al comparar la 1&ordf; mitad del a&ntilde;o contra la 2&ordf; &mdash; no es un n&uacute;mero compuesto ni un sem&aacute;foro con meta de volumen (no hay una acordada todav&iacute;a), solo compara ambas tendencias entre s&iacute;.</div>
+      </div>
       <div id="volumen-velocidad"></div>
     </div>
     <div class="panel" style="margin-top:22px;border-top:4px solid #4f46e5">
@@ -1751,6 +1763,63 @@ function drawLineChart(id, labels, series, opts){
   });
 }
 
+// Mini-gráfico de área SIN ejes/gridlines, agregado 26 Ago 2026 para las
+// tarjetas Volumen/Velocidad del rediseño de "Panorama General" (mockup: línea
+// mes a mes dentro de la tarjeta, solo con el primer y último valor rotulados,
+// no cada mes como en drawLineChart — aquí es un vistazo rápido, el detalle
+// mes a mes completo ya vive abajo en "Mes a mes" con drawGroupedVBar/drawLineChart).
+function drawMiniArea(id, data, color, fmt){
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  const W = canvas.width  = parent.offsetWidth  || 300;
+  const H = canvas.height = parent.offsetHeight || 70;
+  const cx = canvas.getContext('2d');
+  cx.clearRect(0,0,W,H);
+
+  const vals = data.map(v => v==null ? 0 : v);
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const range = (maxV - minV) || 1;
+  const padX = 4, padTop = 20, padBottom = 6;
+  const chartW = W - padX*2, chartH = H - padTop - padBottom;
+  const n = vals.length;
+  const pts = vals.map((v,i)=>({
+    x: n<2 ? padX+chartW/2 : padX + (i/(n-1))*chartW,
+    y: padTop + chartH*(1 - (v-minV)/range),
+  }));
+
+  // Área rellena con degradado del color de la tarjeta hacia transparente.
+  const grad = cx.createLinearGradient(0,padTop,0,padTop+chartH);
+  grad.addColorStop(0, color+'4d');
+  grad.addColorStop(1, color+'05');
+  cx.beginPath();
+  pts.forEach((p,i)=> i===0 ? cx.moveTo(p.x,p.y) : cx.lineTo(p.x,p.y));
+  cx.lineTo(pts[pts.length-1].x, padTop+chartH);
+  cx.lineTo(pts[0].x, padTop+chartH);
+  cx.closePath();
+  cx.fillStyle = grad; cx.fill();
+
+  // Línea.
+  cx.beginPath();
+  pts.forEach((p,i)=> i===0 ? cx.moveTo(p.x,p.y) : cx.lineTo(p.x,p.y));
+  cx.strokeStyle = color; cx.lineWidth = 2; cx.lineJoin = 'round'; cx.lineCap = 'round';
+  cx.stroke();
+
+  // Solo se rotula el primer y último punto (vistazo rápido, no cada mes).
+  [0, pts.length-1].forEach(i=>{
+    const p = pts[i];
+    cx.beginPath(); cx.arc(p.x,p.y,3.5,0,2*Math.PI);
+    cx.fillStyle = '#ffffff'; cx.fill();
+    cx.strokeStyle = color; cx.lineWidth = 2; cx.stroke();
+    const txt = fmt ? fmt(vals[i]) : vals[i];
+    cx.font = 'bold 11px Segoe UI';
+    cx.textAlign = i===0 ? 'left' : 'right';
+    cx.textBaseline = 'bottom';
+    cx.fillStyle = color;
+    cx.fillText(txt, i===0 ? p.x-2 : p.x+2, p.y-6);
+  });
+}
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function showTab(name, el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1846,6 +1915,10 @@ const ICONO_CODIGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const ICONO_ALERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
 const ICONO_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 const ICONO_RAYO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
+// Agregado 26 Ago 2026 para la caja de conclusión de "Panorama General — Volumen
+// vs. Velocidad" (rediseño con mockup: círculo + ícono de estrella a la izquierda
+// del texto "Creciendo bien / Posible saturación / etc.").
+const ICONO_ESTRELLA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
 const VELOCIDAD_ICONOS = { soporte: ICONO_AUDIFONOS, evolutivo: ICONO_CODIGO, error: ICONO_ALERTA };
 // Formatea "EN ESPERA DE CLIENTE EXTERNO" → "En Espera de Cliente Externo"
 // SOLO para mostrar — la clave real (tal cual viene del Sheet) nunca se toca,
@@ -2486,9 +2559,13 @@ function renderVolumenVelocidad(){
     return;
   }
 
+  const iconTitulo = document.getElementById('icon-vv-titulo');
+  if(iconTitulo) iconTitulo.innerHTML = ICONO_BARRAS;
+  const iconInfo = document.getElementById('icon-vv-info');
+  if(iconInfo) iconInfo.innerHTML = ICONO_INFO;
+
   const volPct = v.volPrimera>0 ? Math.abs((v.volSegunda-v.volPrimera)/v.volPrimera*100) : null;
   const veloPct = v.horasPrimera>0 ? Math.abs((v.horasSegunda-v.horasPrimera)/v.horasPrimera*100) : null;
-  const emoji = v.estado==='Creciendo bien' ? '🟢' : v.estado==='Posible saturación' ? '🟠' : v.estado==='Bajó demanda, más eficientes' ? '🔵' : '🔴';
 
   // Diferencia en número absoluto (no solo %), a pedido del usuario (26 Ago 2026):
   // "en un número ponlo abajo a cuánto corresponde ese aumento". Signo (+/-) siempre
@@ -2512,30 +2589,52 @@ function renderVolumenVelocidad(){
   const volFavorable = v.volSubio;
   const veloFavorable = v.veloMejoro;
 
-  const explicacion = {
-    'Creciendo bien': `El equipo cerró más tickets (${v.primeraLbl} → ${v.segundaLbl}) sin perder velocidad — de hecho mejoró. Es la combinación más sana de las 4: más volumen atendido y más rápido a la vez.`,
-    'Posible saturación': `El equipo cerró más tickets, pero cada uno está tomando más horas que antes. Puede ser señal de que el volumen ya está por encima de lo que se puede sostener al mismo ritmo — vale la pena vigilarlo.`,
-    'Bajó demanda, más eficientes': `Se cerraron menos tickets, pero cada uno se resolvió más rápido. Puede ser una temporada de menor demanda o una mejora real de proceso — conviene revisar cuál de las dos es.`,
-    'En declive': `Se cerraron menos tickets y cada uno está tomando más horas que antes — es la única de las 4 combinaciones donde ambas señales van en contra. Vale la pena revisar qué está pasando.`,
+  // Rediseño 26 Ago 2026 (mockup del usuario): los pares de frase en negrita
+  // usan v.color (mismo color que ya identifica el estado — verde/rojo/azul) para
+  // la cláusula de Volumen y el teal de Velocidad (#0d9488, igual que VV_COLOR_VELO
+  // en todo el resto del panel) para la cláusula de Velocidad — así el patrón
+  // funciona para los 4 estados posibles sin inventar colores nuevos por estado.
+  const explicacionHTML = {
+    'Creciendo bien': `El equipo <strong style="color:${v.color};">cerró más tickets</strong> (${v.primeraLbl} → ${v.segundaLbl}) <strong style="color:#0d9488;">sin perder velocidad</strong> — de hecho mejoró. Es la <strong>combinación más sana de las 4</strong>: más volumen atendido y más rápido a la vez.`,
+    'Posible saturación': `El equipo <strong style="color:${v.color};">cerró más tickets</strong>, pero <strong style="color:#0d9488;">cada uno está tomando más horas</strong> que antes. Puede ser señal de que el volumen ya está por encima de lo que se puede sostener al mismo ritmo — vale la pena vigilarlo.`,
+    'Bajó demanda, más eficientes': `Se <strong style="color:${v.color};">cerraron menos tickets</strong>, pero <strong style="color:#0d9488;">cada uno se resolvió más rápido</strong>. Puede ser una temporada de menor demanda o una mejora real de proceso — conviene revisar cuál de las dos es.`,
+    'En declive': `Se <strong style="color:${v.color};">cerraron menos tickets</strong> y <strong style="color:#0d9488;">cada uno está tomando más horas</strong> que antes — es la única de las 4 combinaciones donde ambas señales van en contra. Vale la pena revisar qué está pasando.`,
   }[v.estado];
 
   wrap.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-      <div style="background:${volFavorable?'#f0fdf4':'#fef2f2'};border:1px solid ${volFavorable?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Volumen</div>
-        <div style="font-size:1.3rem;font-weight:800;color:${volFavorable?'#16a34a':'#dc2626'};margin-top:4px;">${volFavorable?'▲':'▼'} ${volPct!=null?volPct.toFixed(0)+'%':'—'}</div>
+      <div style="background:#ffffff;border:1px solid #ede9fe;border-radius:14px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:30px;height:30px;border-radius:9px;background:#ede9fe;color:#7c3aed;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ICONO_BARRAS}</div>
+          <span style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Volumen</span>
+        </div>
+        <div style="font-size:1.5rem;font-weight:800;color:${volFavorable?'#16a34a':'#dc2626'};">${volFavorable?'↑':'↓'} ${volPct!=null?volPct.toFixed(0)+'%':'—'}</div>
         <div style="font-size:.86rem;font-weight:700;color:${volFavorable?'#16a34a':'#dc2626'};margin-top:2px;">${volDeltaTxt}</div>
-        <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.volPrimera.toLocaleString()} (${v.primeraLbl}) a ${v.volSegunda.toLocaleString()} (${v.segundaLbl}) tickets cerrados</div>
+        <div style="font-size:.72rem;color:#64748b;margin-top:6px;line-height:1.5;">de ${v.volPrimera.toLocaleString()} (${v.primeraLbl}) a ${v.volSegunda.toLocaleString()} (${v.segundaLbl}) tickets cerrados</div>
+        <div style="position:relative;height:70px;margin-top:12px;">
+          <canvas id="chartVolMiniVV"></canvas>
+        </div>
       </div>
-      <div style="background:${veloFavorable?'#f0fdf4':'#fef2f2'};border:1px solid ${veloFavorable?'#bbf7d0':'#fecaca'};border-radius:10px;padding:14px 16px;">
-        <div style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Velocidad</div>
-        <div style="font-size:1.3rem;font-weight:800;color:${veloFavorable?'#16a34a':'#dc2626'};margin-top:4px;">${veloFavorable?'▲':'▼'} ${veloPct!=null?veloPct.toFixed(0)+'%':'—'}</div>
+      <div style="background:#ffffff;border:1px solid #d7f0ec;border-radius:14px;padding:16px;position:relative;">
+        <span style="position:absolute;top:14px;right:14px;font-size:.64rem;font-weight:700;color:#64748b;background:#f1f5f9;border-radius:20px;padding:2px 9px;">hrs/ticket</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:30px;height:30px;border-radius:9px;background:#ccfbf1;color:#0d9488;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ICONO_RELOJ}</div>
+          <span style="font-size:.72rem;font-weight:700;letter-spacing:.4px;color:#64748b;text-transform:uppercase;">Velocidad</span>
+        </div>
+        <div style="font-size:1.5rem;font-weight:800;color:${veloFavorable?'#16a34a':'#dc2626'};">${veloFavorable?'↑':'↓'} ${veloPct!=null?veloPct.toFixed(0)+'%':'—'}</div>
         <div style="font-size:.86rem;font-weight:700;color:${veloFavorable?'#16a34a':'#dc2626'};margin-top:2px;">${veloDeltaTxt} ${veloFavorable?'(más rápido)':'(más lento)'}</div>
-        <div style="font-size:.72rem;color:#64748b;margin-top:4px;">de ${v.horasPrimera.toFixed(1)} hrs/ticket (${v.primeraLbl}) a ${v.horasSegunda.toFixed(1)} hrs/ticket (${v.segundaLbl})</div>
+        <div style="font-size:.72rem;color:#64748b;margin-top:6px;line-height:1.5;">de ${v.horasPrimera.toFixed(1)} hrs/ticket (${v.primeraLbl}) a ${v.horasSegunda.toFixed(1)} hrs/ticket (${v.segundaLbl})</div>
+        <div style="position:relative;height:70px;margin-top:12px;">
+          <canvas id="chartVeloMiniVV"></canvas>
+        </div>
       </div>
     </div>
-    <div style="font-size:.85rem;font-weight:600;color:#1a1d29;background:#f8fafc;border-left:3px solid ${v.color};border-radius:8px;padding:12px 16px;line-height:1.5;">
-      ${emoji} <strong>${v.estado}.</strong> ${explicacion}
+    <div style="display:flex;gap:12px;align-items:flex-start;background:#ffffff;border:1px solid #eceef1;border-radius:12px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.05);">
+      <div style="width:34px;height:34px;border-radius:50%;background:${v.color}1a;color:${v.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ICONO_ESTRELLA}</div>
+      <div style="font-size:.85rem;color:#1a1d29;line-height:1.65;">
+        <div style="font-weight:800;margin-bottom:2px;">${v.estado}.</div>
+        ${explicacionHTML}
+      </div>
     </div>
     <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;margin-bottom:20px;line-height:1.5;">
       Volumen = total combinado (Soportes+Evolutivos+Error) por mitad del año. Velocidad = horas ponderadas por ticket (mediana de cada tipo × su volumen real ese mes, mismo criterio que "Tendencia de Calidad"). Ninguna de las 2 se compara contra una meta absoluta — solo entre sí.
@@ -2610,6 +2709,13 @@ function renderVolumenVelocidad(){
         <span>Volumen = tickets cerrados por mes (Soportes+Evolutivos+Error combinados). Velocidad = horas promedio ponderadas por ticket cerrado ese mes. Ninguna de las 2 se compara contra una meta absoluta.</span>
       </div>
     </div>`;
+
+  // Mini-gráficos dentro de las tarjetas Volumen/Velocidad (rediseño 26 Ago 2026):
+  // usan la MISMA serie mensual (v.volMensual/v.veloMensual) que ya alimenta los
+  // gráficos grandes de "Mes a mes" de abajo — nunca se vuelve a calcular por
+  // separado, para que sea matemáticamente imposible que no cuadren entre sí.
+  drawMiniArea('chartVolMiniVV', v.volMensual, '#7c3aed', n => n.toLocaleString());
+  drawMiniArea('chartVeloMiniVV', v.veloMensual, '#0d9488', n => n.toFixed(1));
 
   drawGroupedVBar('chartVolumenSoloMensual', v.mesesLbl,
     [{label:'Volumen', data:v.volMensual, color:VV_COLOR_VOL}], {legend:'none'}
