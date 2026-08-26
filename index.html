@@ -663,7 +663,7 @@
     </div>
     <div class="panel" id="rp-ranking-view" style="margin-top:22px;">
       <h3>Rendimiento por Persona &mdash; Producci&oacute;n Combinada</h3>
-      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 8 Responsables oficiales. &quot;% Error&quot; indica qu&eacute; proporci&oacute;n de su producci&oacute;n total fue resolver tickets de tipo Error &mdash; &uacute;til para distinguir entre trabajo de soporte/desarrollo y trabajo de correcci&oacute;n de bugs. Haz clic en cualquier nombre (subrayado) para ver su reporte individual.</div>
+      <div class="info-box" style="font-size:.78rem;">Suma de tickets resueltos en las 3 categor&iacute;as (Soportes + Evolutivos + Error) para cada uno de los 8 Responsables oficiales. Haz clic en cualquier nombre (subrayado) para ver su reporte individual, donde se muestra el desglose en % de cada categor&iacute;a.</div>
       <div id="top3-podio-equipo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 22px;"></div>
       <div class="table-wrap">
         <table>
@@ -673,9 +673,6 @@
             <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
             <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
             <th>Total</th>
-            <th>% Soportes</th>
-            <th>% Evolutivos</th>
-            <th>% Error</th>
           </tr></thead>
           <tbody id="equipo-rendimiento-tbody"></tbody>
         </table>
@@ -3000,16 +2997,11 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-      // Fecha de ingreso + % de cada tipo sobre el total (26 Ago 2026, a pedido
-      // del usuario: mostrar la fecha de ingreso Y los % de Soportes/Evolutivos
-      // (igual que ya existía "% Error") directo en ESTA tabla, no solo en el
-      // podio/reporte individual como se había hecho antes. pctSop+pctDev+
-      // r.pctErr suman 100 — mismas fórmulas ya usadas en el podio, no se
-      // inventan de nuevo. El aviso 🆕 que antes vivía como texto debajo del
-      // nombre ahora vive dentro de la celda de fecha (evita duplicar el
-      // contexto en 2 lugares de la misma fila).
-      const pctSop = r.total>0 ? (r.sop/r.total*100) : 0;
-      const pctDev = r.total>0 ? (r.dev/r.total*100) : 0;
+      // Fecha de ingreso (26 Ago 2026, a pedido del usuario). Los % de
+      // Soportes/Evolutivos/Error NO van en esta tabla — se movieron al
+      // reporte individual (26 Ago 2026, a pedido del usuario: "deberian de
+      // estar en el individual"). El aviso 🆕 vive dentro de la celda de
+      // fecha (evita duplicar el contexto en 2 lugares de la misma fila).
       const mesesIngreso = calcAntiguedadMeses(FECHA_INGRESO[r.nom]);
       const esReciente = mesesIngreso!=null && mesesIngreso < MESES_INGRESO_RECIENTE;
       let fechaCelda;
@@ -3028,9 +3020,6 @@ function renderEquipoRendimiento(){
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
         <td style="color:${numColor};font-weight:700;">${r.total}</td>
-        <td style="color:#16a34a;">${pctSop.toFixed(0)}%</td>
-        <td style="color:#d97706;">${pctDev.toFixed(0)}%</td>
-        <td style="color:#2563eb;">${r.pctErr.toFixed(1)}%</td>
       </tr>`;
     }).join('');
   }
@@ -3121,6 +3110,13 @@ function abrirReporteIndividual(idx){
   const antigTxt = antiguedadTexto(mesesIngreso);
   const esReciente = mesesIngreso!=null && mesesIngreso < MESES_INGRESO_RECIENTE;
 
+  // % de Soportes/Evolutivos sobre el total (26 Ago 2026, a pedido del
+  // usuario: "quitalos mejor estos [de la tabla principal] deberian de estar
+  // en el individual" — mismas fórmulas ya usadas en tabla/podio, no se
+  // inventan de nuevo; r.pctErr ya existe y se sigue usando tal cual).
+  const pctSop = r.total>0 ? (r.sop/r.total*100) : 0;
+  const pctDev = r.total>0 ? (r.dev/r.total*100) : 0;
+
   const fortalezas = [], mejoras = [];
   if(idx===0) fortalezas.push('Es quien más producción combinada tiene en todo el equipo este año.');
   else if(idx<3) fortalezas.push(`Está en el top 3 del equipo por producción combinada (#${idx+1} de ${N}).`);
@@ -3154,8 +3150,8 @@ function abrirReporteIndividual(idx){
     </div>` : ''}
 
     <div class="ri-kpi-row">
-      <div class="ri-kpi-card"><div class="ri-num" style="color:#16a34a;">${r.sop}</div><div class="ri-lbl">Soportes atendidos</div></div>
-      <div class="ri-kpi-card"><div class="ri-num" style="color:#d97706;">${r.dev}</div><div class="ri-lbl">Evolutivos atendidos</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#16a34a;">${r.sop}</div><div style="font-size:.72rem;color:#16a34a;font-weight:700;margin-top:2px;">${pctSop.toFixed(0)}% del total</div><div class="ri-lbl">Soportes atendidos</div></div>
+      <div class="ri-kpi-card"><div class="ri-num" style="color:#d97706;">${r.dev}</div><div style="font-size:.72rem;color:#d97706;font-weight:700;margin-top:2px;">${pctDev.toFixed(0)}% del total</div><div class="ri-lbl">Evolutivos atendidos</div></div>
       <div class="ri-kpi-card"><div class="ri-num" style="color:#2563eb;">${r.err}</div><div class="ri-lbl">Errores registrados</div></div>
       <div class="ri-kpi-card"><div class="ri-num" style="color:#1a1d29;">${r.total}</div><div class="ri-lbl">Total general</div></div>
       <div class="ri-kpi-card"><div class="ri-num" style="color:#7c3aed;">${r.pctErr.toFixed(1)}%</div><div class="ri-lbl">% de Error sobre total</div></div>
