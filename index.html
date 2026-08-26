@@ -340,7 +340,7 @@
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>Distribuci&oacute;n de tickets de soportes en atenci&oacute;n por cliente</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc" style="color:#ef4444;font-size:1rem;"></strong></div>
-      <div style="position:relative;height:410px;">
+      <div style="position:relative;min-height:410px;">
         <canvas id="chartLocalidad"></canvas>
       </div>
     </div>
@@ -427,7 +427,7 @@
     <div class="panel" style="border-top:4px solid #dc2626">
       <h3>Distribuci&oacute;n de tickets evolutivos en atenci&oacute;n por cliente</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-dev" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-dev" style="color:#ef4444;font-size:1rem;"></strong></div>
-      <div style="position:relative;height:410px;">
+      <div style="position:relative;min-height:410px;">
         <canvas id="chartLocalidadDev"></canvas>
       </div>
     </div>
@@ -511,7 +511,7 @@
     <div class="panel" style="border-top:4px solid #ea580c">
       <h3>Distribuci&oacute;n de Tickets en Atenci&oacute;n por Localidad</h3>
       <div style="font-size:.78rem;color:#64748b;margin-bottom:10px;">Total localidades: <strong id="total-loc-err" style="color:#17a2b8;font-size:1rem;"></strong> &nbsp;|&nbsp; Sin localidad: <strong id="total-sinloc-err" style="color:#ef4444;font-size:1rem;"></strong></div>
-      <div style="position:relative;height:410px;">
+      <div style="position:relative;min-height:410px;">
         <canvas id="chartLocalidadErr"></canvas>
       </div>
     </div>
@@ -1387,8 +1387,22 @@ function drawLollipop(id, labels, data, colors){
   const canvas = document.getElementById(id);
   if(!canvas) return;
   const parent = canvas.parentElement;
-  canvas.width  = parent.offsetWidth  || 400;
-  canvas.height = Math.max(parent.offsetHeight||320, labels.length*34+70);
+  canvas.width  = parent.offsetWidth || 400;
+  // Corrección 26 Ago 2026: antes la altura salía de Math.max(parent.offsetHeight, ...),
+  // pero el contenedor tenía `height:410px` FIJO en CSS — cuando la lista de localidades
+  // creció (más de ~10 filas), el canvas necesitaba más alto que esos 410px fijos y se
+  // desbordaba por encima/debajo del panel (se veía "cortado" por el borde). Además,
+  // usar parent.offsetHeight como piso hacía que la altura solo pudiera crecer entre
+  // renders (nunca encogía si luego había menos localidades), porque el propio canvas
+  // ya agrandado quedaba midiéndose a sí mismo la próxima vez. Ahora la altura necesaria
+  // se calcula SOLO a partir de cuántas filas hay (independiente de cualquier medida
+  // previa) y se aplica también al contenedor (`parent.style.height`), así el panel
+  // siempre crece o se encoge exactamente a lo que la gráfica necesita — sin desborde y
+  // sin quedar más grande de lo necesario. Mismo patrón para las 3 gráficas de este tipo
+  // (Soportes/Evolutivos/Error), ya que las 3 llaman a esta misma función.
+  const neededH = Math.max(320, labels.length*34+70);
+  parent.style.height = neededH + 'px';
+  canvas.height = neededH;
   const cx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   cx.clearRect(0,0,W,H);
