@@ -1431,6 +1431,42 @@ function drawVBar(id, labels, data, colors){
   });
 }
 
+// Sombreado de las 2 mitades que se comparan en "Panorama General — Volumen
+// vs. Velocidad" (26 Ago 2026, a pedido del usuario: "identificar en la
+// gráfica con algún color cuando compara... los primeros 4 meses vs los otros
+// 4"). Recibe `xBoundary` YA calculado por el llamador (cada tipo de gráfico
+// posiciona sus columnas/puntos distinto — drawGroupedVBar reparte n celdas
+// iguales, drawLineChart pone los puntos pegados a los bordes — así que cada
+// uno calcula su propio límite exacto en vez de que esta función adivine).
+// mitadIndex (cuántas columnas/puntos de la izquierda son "1ª mitad") es
+// EXACTAMENTE el mismo número que ya usa computeVolumenVelocidad() para armar
+// primera/segunda arriba (se pasa como opts.mitadIndex desde el llamador,
+// nunca se recalcula aquí), así que la sombra es matemáticamente imposible
+// que no cuadre con la tarjeta de arriba. Solo se activa si opts.mitadIndex
+// viene definido — drawGroupedVBar() y drawLineChart() se usan en más
+// lugares del panel que NO tienen este concepto de "2 mitades", así que sin
+// esa opción no dibuja nada (no rompe ningún otro gráfico existente). Se
+// dibuja ANTES que gridlines/barras/línea, como fondo.
+function drawMitadZones(cx, padL, padT, chartW, chartH, xBoundary, lbls){
+  if(xBoundary==null) return;
+  cx.fillStyle = 'rgba(100,116,139,0.06)';
+  cx.fillRect(padL, padT, xBoundary-padL, chartH);
+  cx.fillStyle = 'rgba(124,58,237,0.07)';
+  cx.fillRect(xBoundary, padT, (padL+chartW)-xBoundary, chartH);
+  cx.save();
+  cx.setLineDash([4,3]);
+  cx.strokeStyle = '#c4b5fd'; cx.lineWidth = 1.5;
+  cx.beginPath(); cx.moveTo(xBoundary, padT); cx.lineTo(xBoundary, padT+chartH); cx.stroke();
+  cx.restore();
+  if(lbls){
+    cx.font = '9px Segoe UI'; cx.textBaseline = 'top';
+    cx.fillStyle = '#94a3b8'; cx.textAlign = 'left';
+    cx.fillText(`◀ ${lbls[0]}`, padL+4, padT+4);
+    cx.fillStyle = '#7c3aed'; cx.textAlign = 'right';
+    cx.fillText(`${lbls[1]} ▶`, padL+chartW-4, padT+4);
+  }
+}
+
 // Barras agrupadas por categoría dentro de cada mes (varias series lado a lado,
 // no apiladas) — usado para comparar Soportes/Evolutivos/Error mes a mes.
 function drawGroupedVBar(id, labels, datasets, opts){
@@ -1450,6 +1486,9 @@ function drawGroupedVBar(id, labels, datasets, opts){
   const groupGap = chartW/n;
   const barsPerGroup = datasets.length;
   const barW = Math.min(22, (groupGap*0.72)/barsPerGroup);
+  if(opts.mitadIndex!=null && opts.mitadIndex>0 && opts.mitadIndex<n){
+    drawMitadZones(cx, padL, padT, chartW, chartH, padL + chartW*(opts.mitadIndex/n), opts.mitadLabels);
+  }
   for(let g=0;g<=4;g++){
     const y = padT + chartH*(1-g/4);
     cx.strokeStyle='#e5e7eb'; cx.lineWidth=1;
@@ -1723,6 +1762,15 @@ function drawLineChart(id, labels, series, opts){
   const padL=40, padR=16, padT=26, padB=32;
   const chartW = W-padL-padR, chartH = H-padT-padB;
   const n = labels.length;
+
+  // Los puntos de esta gráfica van pegados a los bordes (i=0 en padL, i=n-1 en
+  // padL+chartW) — a diferencia de drawGroupedVBar (que reparte n celdas
+  // iguales) — así que el límite entre mitades va a la mitad EXACTA entre el
+  // último punto de la 1ª mitad y el primero de la 2ª, no a una fracción de n.
+  if(opts.mitadIndex!=null && opts.mitadIndex>0 && opts.mitadIndex<n && n>1){
+    const xBoundary = padL + ((opts.mitadIndex-0.5)/(n-1))*chartW;
+    drawMitadZones(cx, padL, padT, chartW, chartH, xBoundary, opts.mitadLabels);
+  }
 
   for(let g=0; g<=4; g++){
     const y = padT + chartH*(1-g/4);
@@ -2566,6 +2614,12 @@ function computeVolumenVelocidad(){
     year, volPrimera, volSegunda, horasPrimera, horasSegunda, volSubio, veloMejoro, estado, color,
     primeraLbl: primera.map(r=>r.mes).join('-'), segundaLbl: segunda.map(r=>r.mes).join('-'),
     mesesLbl, volMensual, veloMensual, volTotal, volPromedioMensual, veloGlobal, mejorVelocidad,
+    // mitadIndex = cuántos meses le tocan a "primera" — el mismo número que ya
+    // define el corte en `primera`/`segunda` arriba. Se expone para que el
+    // gráfico "Mes a mes" pueda sombrear exactamente las mismas 2 mitades que
+    // comparan las tarjetas de arriba, sin volver a calcular el corte por su
+    // cuenta (imposible que se desincronicen).
+    mitadIndex: primera.length,
   };
 }
 
@@ -2745,10 +2799,12 @@ function renderVolumenVelocidad(){
   drawMiniArea('chartVeloMiniVV', v.veloMensual, '#0d9488', n => n.toFixed(1));
 
   drawGroupedVBar('chartVolumenSoloMensual', v.mesesLbl,
-    [{label:'Volumen', data:v.volMensual, color:VV_COLOR_VOL}], {legend:'none'}
+    [{label:'Volumen', data:v.volMensual, color:VV_COLOR_VOL}],
+    {legend:'none', mitadIndex:v.mitadIndex, mitadLabels:['1ª mitad','2ª mitad']}
   );
   drawLineChart('chartVelocidadSoloMensual', v.mesesLbl,
-    {label:'Velocidad', data:v.veloMensual, color:VV_COLOR_VELO}, {decimals:1, bg:'#f2f7f7'}
+    {label:'Velocidad', data:v.veloMensual, color:VV_COLOR_VELO},
+    {decimals:1, bg:'#f2f7f7', mitadIndex:v.mitadIndex, mitadLabels:['1ª mitad','2ª mitad']}
   );
 }
 
