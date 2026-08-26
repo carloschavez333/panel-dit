@@ -197,7 +197,7 @@
      se le da clic a la X o se hace clic fuera de la tarjeta — así se puede hacer
      scroll o usar el botón Exportar sin que se cierre solo. */
   .ri-clickrow:hover td{background:#f7f8fa}
-  .ri-name-cell{color:#2563eb;text-decoration:underline;cursor:pointer;font-weight:600;}
+  .ri-name-cell{color:#2563eb;text-decoration:underline;cursor:pointer;font-weight:600;white-space:nowrap;}
   .ri-podio-name{color:#2563eb;text-decoration:underline;cursor:pointer;}
   .ri-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
   .ri-overlay.open{display:flex}
@@ -668,11 +668,14 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>#</th><th>Responsable</th>
+            <th>#</th><th>Responsable</th><th>Fecha de ingreso</th>
             <th><span class="pill" style="background:rgba(22,163,74,.14);color:#16a34a;">Soportes</span></th>
+            <th>% Soportes</th>
             <th><span class="pill" style="background:rgba(217,119,6,.14);color:#d97706;">Evolutivos</span></th>
+            <th>% Evolutivos</th>
             <th><span class="pill" style="background:rgba(37,99,235,.14);color:#2563eb;">Error</span></th>
-            <th>Total</th><th>% Error</th>
+            <th>% Error</th>
+            <th>Total</th>
           </tr></thead>
           <tbody id="equipo-rendimiento-tbody"></tbody>
         </table>
@@ -2997,22 +3000,37 @@ function renderEquipoRendimiento(){
     tb.innerHTML = combinado.map((r,i)=>{
       const rowStyle=i<3?'font-weight:700;':'';
       const numColor=i===0?'#eab308':i===1?'#64748b':i===2?'#c98a52':'#17a2b8';
-      // Aviso de ingreso reciente (26 Ago 2026): si la persona lleva menos de
-      // MESES_INGRESO_RECIENTE meses en el equipo, se avisa debajo del nombre para
-      // que sus números bajos no se lean como bajo desempeño sin ese contexto.
+      // Fecha de ingreso + % de cada tipo sobre el total (26 Ago 2026, a pedido
+      // del usuario: mostrar la fecha de ingreso Y los % de Soportes/Evolutivos
+      // (igual que ya existía "% Error") directo en ESTA tabla, no solo en el
+      // podio/reporte individual como se había hecho antes. pctSop+pctDev+
+      // r.pctErr suman 100 — mismas fórmulas ya usadas en el podio, no se
+      // inventan de nuevo. El aviso 🆕 que antes vivía como texto debajo del
+      // nombre ahora vive dentro de la celda de fecha (evita duplicar el
+      // contexto en 2 lugares de la misma fila).
+      const pctSop = r.total>0 ? (r.sop/r.total*100) : 0;
+      const pctDev = r.total>0 ? (r.dev/r.total*100) : 0;
       const mesesIngreso = calcAntiguedadMeses(FECHA_INGRESO[r.nom]);
       const esReciente = mesesIngreso!=null && mesesIngreso < MESES_INGRESO_RECIENTE;
-      const avisoIngreso = esReciente
-        ? `<div style="font-size:.66rem;font-weight:600;color:#d97706;margin-top:2px;">🆕 Ingresó ${antiguedadTexto(mesesIngreso)}</div>`
-        : '';
+      let fechaCelda;
+      if(FECHA_INGRESO[r.nom]){
+        const [aa,mm,dd] = FECHA_INGRESO[r.nom].split('-');
+        fechaCelda = `${dd}/${mm}/${aa}`;
+        if(esReciente) fechaCelda += ` <span style="color:#d97706;font-weight:700;">🆕 ${antiguedadTexto(mesesIngreso)}</span>`;
+      } else {
+        fechaCelda = `<span style="color:#cbd5e1;">—</span>`;
+      }
       return `<tr class="ri-clickrow" style="${rowStyle}">
         <td style="color:${numColor};font-weight:700;">${i<3?RP_MEDALS[i]:i+1}</td>
-        <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}${avisoIngreso}</td>
+        <td class="ri-name-cell" onclick="abrirReporteIndividual(${i})">${r.nom}</td>
+        <td style="font-size:.8rem;color:#64748b;">${fechaCelda}</td>
         <td style="color:#16a34a;font-weight:700;">${r.sop}</td>
+        <td>${pctSop.toFixed(0)}%</td>
         <td style="color:#d97706;font-weight:700;">${r.dev}</td>
+        <td>${pctDev.toFixed(0)}%</td>
         <td style="color:#2563eb;font-weight:700;">${r.err}</td>
-        <td style="color:${numColor};font-weight:700;">${r.total}</td>
         <td>${r.pctErr.toFixed(1)}%</td>
+        <td style="color:${numColor};font-weight:700;">${r.total}</td>
       </tr>`;
     }).join('');
   }
