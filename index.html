@@ -2651,18 +2651,72 @@ const RP_MEDALS=['🥇','🥈','🥉'];
 const RP_PODIO_COLORS=['#eab308','#64748b','#c98a52'];
 const RP_PODIO_COLORS_LIGHT=['rgba(227,172,63,.2)','#f8fafc','rgba(201,138,82,.2)'];
 
+// Rediseño 26 Ago 2026 — tarjetas "TOP 1/2/3" a un mockup de referencia del usuario
+// (tarjetas oscuras degradadas con textura de fondo, badge de listón + "TOP N",
+// número grande en blanco, y franja de 4 estadísticas al pie). Solo se rediseñaron
+// las 3 tarjetas del podio — la tabla de abajo no se tocó, sigue igual.
+const RP_PODIO_GRADIENT=[
+  'linear-gradient(135deg,#4a3a1a 0%,#1c1712 100%)',   // oro — cálido
+  'linear-gradient(135deg,#3a3f47 0%,#16181c 100%)',   // plata — frío
+  'linear-gradient(135deg,#4a2f22 0%,#1c1310 100%)',   // bronce — cálido rojizo
+];
+const RP_PODIO_BORDER=['rgba(234,179,8,.35)','rgba(148,163,184,.3)','rgba(201,138,82,.35)'];
+// Textura decorativa de líneas tipo "topográfico", muy sutil, generada inline (sin
+// depender de ningún asset externo) — mismo criterio de "cero dependencias" del
+// resto del panel.
+const RP_PODIO_TEXTURE = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><g fill="none" stroke="white" stroke-width="1" opacity="0.5"><path d="M-20 40 Q 40 0, 100 40 T 240 40"/><path d="M-20 90 Q 40 50, 100 90 T 240 90"/><path d="M-20 140 Q 40 100, 100 140 T 240 140"/><path d="M-20 190 Q 40 150, 100 190 T 240 190"/></g></svg>')}`;
+// Ícono de listón/medalla (equivalente al ícono "award" de Lucide/Feather) — mismo
+// criterio de SVG inline con stroke="currentColor" que el resto de los íconos.
+const ICONO_LISTON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>';
+
 function renderEquipoRendimiento(){
-  const { combinado } = computeRendimientoEquipo();
+  const { combinado, meta } = computeRendimientoEquipo();
 
   const podio=document.getElementById('top3-podio-equipo');
   if(podio){
-    podio.innerHTML=combinado.slice(0,3).map((r,i)=>`
-      <div style="background:${RP_PODIO_COLORS_LIGHT[i]};border:2px solid ${RP_PODIO_COLORS[i]};border-radius:14px;padding:20px 16px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">${RP_MEDALS[i]}</div>
-        <div style="font-size:2.2rem;font-weight:800;color:${RP_PODIO_COLORS[i]};line-height:1;">${r.total}</div>
-        <div class="ri-podio-name" onclick="abrirReporteIndividual(${i})" style="font-size:.82rem;font-weight:600;margin:8px 0 4px;">${r.nom}</div>
-        <div style="font-size:.75rem;color:#64748b;">Soportes ${r.sop} · Evolutivos ${r.dev} · Error ${r.err}</div>
-      </div>`).join('');
+    podio.innerHTML=combinado.slice(0,3).map((r,i)=>{
+      // Pill de % Error: mismo criterio de "meta" ya usado en el reporte individual
+      // (r.pctErr <= meta.pctErr = dentro del promedio del equipo) — no se inventa
+      // un umbral nuevo, se reutiliza la misma regla de negocio de siempre.
+      const pctOk = r.pctErr <= meta.pctErr;
+      const pillBg = pctOk ? 'rgba(59,130,246,.25)' : 'rgba(245,158,11,.28)';
+      const pillFg = pctOk ? '#93c5fd' : '#fcd34d';
+      return `
+      <div style="position:relative;overflow:hidden;border-radius:16px;border:1px solid ${RP_PODIO_BORDER[i]};background:${RP_PODIO_GRADIENT[i]};padding:18px 18px 14px;">
+        <div style="position:absolute;inset:0;background-image:url('${RP_PODIO_TEXTURE}');background-size:220px 220px;opacity:.5;pointer-events:none;"></div>
+        <div style="position:relative;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+            <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:${RP_PODIO_COLORS[i]};flex-shrink:0;">
+              <span style="width:16px;height:16px;display:block;">${ICONO_LISTON}</span>
+            </div>
+            <span style="font-size:.7rem;font-weight:700;letter-spacing:.6px;color:rgba(255,255,255,.65);text-transform:uppercase;">TOP ${i+1}</span>
+          </div>
+          <div style="font-size:2.3rem;font-weight:800;color:#ffffff;line-height:1;margin-bottom:6px;">${r.total}</div>
+          <div class="ri-podio-name" onclick="abrirReporteIndividual(${i})" style="font-size:.85rem;font-weight:600;color:rgba(255,255,255,.92);margin-bottom:16px;cursor:pointer;">${r.nom}</div>
+          <div style="display:flex;border-top:1px solid rgba(255,255,255,.14);padding-top:12px;">
+            <div style="flex:1;min-width:0;text-align:center;">
+              <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.sop}</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Soportes</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.14);"></div>
+            <div style="flex:1;min-width:0;text-align:center;">
+              <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.dev}</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Evolutivos</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.14);"></div>
+            <div style="flex:1;min-width:0;text-align:center;">
+              <div style="font-size:.95rem;font-weight:700;color:#ffffff;">${r.err}</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">Error</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.14);"></div>
+            <div style="flex:1;min-width:0;text-align:center;">
+              <div style="display:inline-block;padding:1px 8px;border-radius:20px;background:${pillBg};font-size:.8rem;font-weight:700;color:${pillFg};">${r.pctErr.toFixed(1)}%</div>
+              <div style="font-size:.56rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:0;line-height:1.2;margin-top:3px;word-break:break-word;">% Error</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   const tb=document.getElementById('equipo-rendimiento-tbody');
