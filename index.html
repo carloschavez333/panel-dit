@@ -1468,6 +1468,105 @@ function drawGroupedVBar(id, labels, datasets, opts){
   }
 }
 
+// Combo: barras (eje izquierdo) + línea (eje derecho) para 2 métricas con
+// unidades distintas en el mismo eje X (ej. tickets vs. horas/ticket) — NUNCA
+// comparten escala, cada una se dibuja contra su propio máximo, para no dar la
+// impresión visual falsa de que son directamente comparables en altura.
+// Agregado 26 Ago 2026 para "Panorama General — Volumen vs. Velocidad" mensual.
+function drawComboBarLine(id, labels, barSeries, lineSeries, opts){
+  opts = opts || {};
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width  = parent.offsetWidth  || 500;
+  canvas.height = parent.offsetHeight || 300;
+  const cx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  cx.clearRect(0,0,W,H);
+
+  const barData  = barSeries.data.map(v => v==null ? 0 : v);
+  const lineData = lineSeries.data.map(v => v==null ? 0 : v);
+  const maxBar  = Math.max(...barData, 1);
+  const maxLine = Math.max(...lineData, 1);
+  const padL=54, padR=50, padT=20, padB=40;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  const n = labels.length;
+  const groupGap = chartW/n;
+  const barW = Math.min(30, groupGap*0.5);
+
+  // Grid + eje izquierdo (Volumen) y derecho (Velocidad), cada uno con su propia
+  // escala pero compartiendo la misma línea horizontal (g/4) por simplicidad visual.
+  for(let g=0; g<=4; g++){
+    const y = padT + chartH*(1-g/4);
+    cx.strokeStyle='#eef0f3'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(padL,y); cx.lineTo(padL+chartW,y); cx.stroke();
+    cx.font='10px Segoe UI'; cx.textBaseline='middle';
+    cx.fillStyle=barSeries.color; cx.textAlign='right';
+    cx.fillText(Math.round(maxBar*g/4).toLocaleString(), padL-6, y);
+    cx.fillStyle=lineSeries.color; cx.textAlign='left';
+    cx.fillText((maxLine*g/4).toFixed(1), padL+chartW+6, y);
+  }
+
+  // Barras (Volumen, eje izquierdo) — se guarda el Y del tope de cada barra para
+  // poder evitar que la etiqueta de la línea (dibujada después) se le encime.
+  const barTopY = [];
+  labels.forEach((lbl,i)=>{
+    const v = barData[i];
+    const bh = (v/maxBar)*chartH;
+    const x = padL + groupGap*i + groupGap/2 - barW/2;
+    const y = padT + chartH - bh;
+    barTopY[i] = y;
+    cx.fillStyle = barSeries.color;
+    cx.beginPath();
+    const rad=3;
+    cx.moveTo(x+rad,y); cx.lineTo(x+barW-rad,y); cx.quadraticCurveTo(x+barW,y,x+barW,y+rad);
+    cx.lineTo(x+barW,y+bh); cx.lineTo(x,y+bh); cx.lineTo(x,y+rad);
+    cx.quadraticCurveTo(x,y,x+rad,y); cx.closePath(); cx.fill();
+    if(v>0){
+      cx.fillStyle='#1a1d29'; cx.font='bold 9px Segoe UI'; cx.textAlign='center'; cx.textBaseline='bottom';
+      cx.fillText(v.toLocaleString(), x+barW/2, y-3);
+    }
+    cx.fillStyle='#64748b'; cx.font='11px Segoe UI'; cx.textAlign='center'; cx.textBaseline='top';
+    cx.fillText(lbl, padL + groupGap*i + groupGap/2, padT+chartH+8);
+  });
+
+  // Línea (Velocidad, eje derecho)
+  const pts = labels.map((_,i)=>({
+    x: padL + groupGap*i + groupGap/2,
+    y: padT + chartH*(1 - lineData[i]/maxLine),
+    raw: lineSeries.data[i],
+  }));
+  cx.beginPath(); cx.strokeStyle=lineSeries.color; cx.lineWidth=2.5;
+  pts.forEach((p,i)=> i===0 ? cx.moveTo(p.x,p.y) : cx.lineTo(p.x,p.y));
+  cx.stroke();
+  pts.forEach((p,i)=>{
+    cx.beginPath(); cx.arc(p.x,p.y,4,0,2*Math.PI);
+    cx.fillStyle='#ffffff'; cx.fill();
+    cx.strokeStyle=lineSeries.color; cx.lineWidth=2; cx.stroke();
+    if(p.raw!=null){
+      const txt = p.raw.toFixed(1);
+      let tx, ty;
+      // Si el punto queda muy cerca del tope de su barra ese mes, la etiqueta de
+      // arriba se encimaría con la de la barra — en ese caso se dibuja a un lado
+      // del punto en vez de encima.
+      if(Math.abs(p.y - barTopY[i]) < 16){
+        cx.textAlign = p.x > padL+chartW/2 ? 'right' : 'left';
+        cx.textBaseline = 'middle';
+        tx = p.x + (p.x > padL+chartW/2 ? -9 : 9); ty = p.y;
+      } else {
+        cx.textAlign = 'center'; cx.textBaseline = 'bottom';
+        tx = p.x; ty = p.y-8;
+      }
+      cx.font='bold 9px Segoe UI';
+      // Halo blanco detrás del texto para que se lea aunque quede sobre la
+      // propia línea, una barra morada o una línea de la cuadrícula.
+      cx.lineWidth=3; cx.strokeStyle='#ffffff'; cx.lineJoin='round';
+      cx.strokeText(txt, tx, ty);
+      cx.fillStyle=lineSeries.color; cx.fillText(txt, tx, ty);
+    }
+  });
+}
+
 function drawStackedHBar(id, labels, datasets){
   const canvas = document.getElementById(id);
   if(!canvas) return;
@@ -2266,9 +2365,20 @@ function computeVolumenVelocidad(){
   else if(!volSubio && veloMejoro){ estado = 'Bajó demanda, más eficientes'; color = '#2563eb'; }
   else { estado = 'En declive'; color = '#dc2626'; }
 
+  // Series mes a mes (agregado 26 Ago 2026, a pedido del usuario: "cómo podrías
+  // demostrar esto en un gráfico de mes a mes... para ir viendo cómo subió eso").
+  // Reutiliza EXACTAMENTE las mismas funciones sumaVol()/horasPonderadas() de
+  // arriba, solo que llamadas mes por mes en vez de por mitad de año — así es
+  // matemáticamente imposible que la gráfica mensual no cuadre con las tarjetas
+  // de arriba (misma fuente, mismo cálculo, distinto agrupamiento).
+  const mesesLbl = rows.map(r=>r.mes);
+  const volMensual = rows.map(r => sumaVol([r]));
+  const veloMensual = rows.map(r => horasPonderadas([r]));
+
   return {
     year, volPrimera, volSegunda, horasPrimera, horasSegunda, volSubio, veloMejoro, estado, color,
     primeraLbl: primera.map(r=>r.mes).join('-'), segundaLbl: segunda.map(r=>r.mes).join('-'),
+    mesesLbl, volMensual, veloMensual,
   };
 }
 
@@ -2308,13 +2418,40 @@ function renderVolumenVelocidad(){
     <div style="font-size:.85rem;font-weight:600;color:#1a1d29;background:#f8fafc;border-left:3px solid ${v.color};border-radius:8px;padding:12px 16px;line-height:1.5;">
       ${emoji} <strong>${v.estado}.</strong> ${explicacion}
     </div>
-    <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;line-height:1.5;">
+    <div style="font-size:.7rem;color:#94a3b8;margin-top:10px;margin-bottom:20px;line-height:1.5;">
       Volumen = total combinado (Soportes+Evolutivos+Error) por mitad del año. Velocidad = horas ponderadas por ticket (mediana de cada tipo × su volumen real ese mes, mismo criterio que "Tendencia de Calidad"). Ninguna de las 2 se compara contra una meta absoluta — solo entre sí.
+    </div>
+    <div style="border-top:1px solid #eceef1;padding-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+        <div style="font-size:.82rem;font-weight:700;color:#1a1d29;">Mes a mes — ${v.mesesLbl[0]} a ${v.mesesLbl[v.mesesLbl.length-1]} ${v.year}</div>
+        <div style="display:flex;gap:16px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;flex-shrink:0;"></span>
+            <span style="font-size:.74rem;color:#334155;font-weight:600;">Volumen (barras, tickets)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:16px;height:2.5px;background:#f2793a;flex-shrink:0;margin-top:1px;"></span>
+            <span style="font-size:.74rem;color:#334155;font-weight:600;">Velocidad (línea, hrs/ticket)</span>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative;height:260px;">
+        <canvas id="chartVolumenVelocidadMensual"></canvas>
+      </div>
+      <div style="font-size:.7rem;color:#94a3b8;margin-top:8px;line-height:1.5;">
+        Eje izquierdo (morado) = tickets cerrados ese mes, los 3 tipos combinados. Eje derecho (naranja) = horas ponderadas por ticket ese mes. Cada eje tiene su propia escala — no son comparables en altura entre sí, solo en si suben o bajan mes a mes.
+      </div>
     </div>`;
+
+  drawComboBarLine('chartVolumenVelocidadMensual', v.mesesLbl,
+    {label:'Volumen', data:v.volMensual, color:'#7c3aed'},
+    {label:'Velocidad', data:v.veloMensual, color:'#f2793a'}
+  );
 }
 
 // Cruza RESPONSABLES + RESPONSABLES_DEV + RESPONSABLES_ERR (las mismas 3 listas ya
-// usadas en cada módulo por separado — mismos 11 nombres en las 3) para dar una
+// usadas en cada módulo por separado — mismos 9 nombres en las 3, ver ajuste de
+// roster del 26 Ago 2026) para dar una
 // producción combinada por persona. No hardcodea ningún total ni nombre: todo se
 // deriva de los arrays existentes, para que nunca se desincronice si esos números
 // cambian. Única fuente de verdad — consumida por renderEquipoRendimiento() (tabla
