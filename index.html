@@ -276,7 +276,7 @@
     </div>
   </div>
   <div class="tabs">
-    <div class="tab" onclick="showTab('asignacion',this)"><span class="tab-ico">&#x1F4CC;</span> Asignaci&oacute;n Real Actual</div>
+    <div class="tab active" onclick="showTab('asignacion',this)"><span class="tab-ico">&#x1F4CC;</span> Asignaci&oacute;n Real Actual</div>
     <div class="tab" onclick="showTab('resumen',this)" style="padding-right:9px">
       <span class="tab-ico">&#x1F527;</span><span style="white-space:nowrap">Tickets de Soportes</span>
       <span class="tab-caret" id="caret-soportes" onclick="toggleSubtabs(event,'soportes')"></span>
@@ -312,7 +312,7 @@
 <div class="container">
 
   <!-- TAB: TICKETS ACTIVOS (RESUMEN) -->
-  <div id="tab-resumen" class="tab-content active">
+  <div id="tab-resumen" class="tab-content">
   <div class="kpi-grid">
     <div class="kpi kpi-cerrados kpi-linkable" onclick="kpiGoTo('cerrados')" role="button" tabindex="0" title="Ver detalle de Atendidos (DONE)">
       <div class="kpi-icon"></div>
@@ -575,7 +575,7 @@
   </div>
 
   <!-- TAB: ASIGNACIÓN REAL ACTUAL -->
-  <div id="tab-asignacion" class="tab-content">
+  <div id="tab-asignacion" class="tab-content active">
     <div class="info-box"><strong>Asignaci&oacute;n Real Actual</strong> muestra cu&aacute;ntos tickets ACTIVOS (no cerrados todav&iacute;a) trae cada persona ahora mismo, cruzando las 3 hojas de activos: <strong>Product Backlog Soportes DEV (1hr activo)</strong>, <strong>CC Evolutivos (1hr activo)</strong> y <strong>Error (1hr activo)</strong>, agrupadas por Persona asignada. Incluye a <strong>todas</strong> las personas con al menos un ticket activo, no solo a los 8 Responsables del roster de "Informe de desempe&ntilde;o" &mdash; el objetivo es ver la carga de trabajo real de hoy, no solo del equipo n&uacute;cleo. <strong>No cuenta</strong> tickets en Estado "EN QA" ni "LISTO PARA DESPLEGAR" &mdash; ya pasaron por la parte que le toca a la persona, no son carga pendiente suya.</div>
     <div class="panel">
       <h3>Carga actual del equipo</h3>
