@@ -800,13 +800,13 @@ document.addEventListener('DOMContentLoaded', function(){
 // Soportes DEV (1hr activo)"), mismo filtro/criterio documentado arriba.
 const SOPORTES = [
   {loc:'Quintana Roo', estados:{'LISTO PARA DESPLEGAR':10, 'READY TO MERGE':1, 'BLOQUEADO':3, 'Reabierto':1, 'EN PROGRESO':8, 'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'PRODUCT BACKLOG':1}},
-  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':4, 'READY TO MERGE':3, 'EN PROGRESO':3, 'PRODUCT BACKLOG':2}},
+  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':4, 'READY TO MERGE':3, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1}},
   {loc:'Baja California', estados:{'BLOQUEADO':2, 'EN PROGRESO':1}},
   {loc:'Jalisco', estados:{'READY TO MERGE':3, 'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':1, 'EN PROGRESO':2, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':1}},
   {loc:'Sinaloa', estados:{'Reabierto':1}},
   {loc:'Seguritech', estados:{'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':6}},
-  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':3, 'EN PROGRESO':1}},
-  {loc:'Sonora', estados:{'EN PROGRESO':2, 'READY TO MERGE':1}},
+  {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':2, 'EN PROGRESO':1}},
+  {loc:'Sonora', estados:{'EN PROGRESO':2, 'READY TO MERGE':1, 'PRODUCT BACKLOG':1}},
   {loc:'Zacatecas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':1}},
 ];
@@ -821,6 +821,7 @@ const APROBACION = [
   {loc:'Quintana Roo', n:9},
   {loc:'Guanajuato', n:5},
   {loc:'Baja California', n:2},
+  {loc:'Hidalgo', n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
 // IMPORTANTE: "Top Responsables" NO es "las personas con más tickets" — es una
@@ -1324,7 +1325,7 @@ const ASIGNACION_ACTUAL = [
   {nom:'Jesús Feria Ortiz', sop:3, dev:4, err:2},
   {nom:'Manuel Alejandro Domínguez Enríquez', sop:1, dev:7, err:1},
   {nom:'Pedro Emanuel Jimenez Oscoy', sop:0, dev:8, err:0},
-  {nom:'Gerardo Omar Villalpando Villalpando', sop:2, dev:1, err:4},
+  {nom:'Gerardo Omar Villalpando Villalpando', sop:3, dev:1, err:4},
   {nom:'Jonathan Aristeo Lozano Hernández', sop:2, dev:1, err:4},
   {nom:'Gibran Esaú Solís Valenzuela', sop:4, dev:1, err:1},
   {nom:'Zamora Rodriguez Luz Adriana', sop:3, dev:1, err:0},
@@ -1334,7 +1335,7 @@ const ASIGNACION_ACTUAL = [
   {nom:'Leonardo Lucio Perez', sop:1, dev:2, err:0},
   {nom:'Luis Antonio Hernández Martínez', sop:2, dev:1, err:0},
   {nom:'Jorge Octavio Paz Hernandez', sop:3, dev:0, err:0},
-  {nom:'Ramírez Mendoza Pablo Iván', sop:3, dev:0, err:0},
+  {nom:'Ramírez Mendoza Pablo Iván', sop:2, dev:0, err:0},
   {nom:'Alejandro Cruz Torres', sop:3, dev:0, err:0},
   {nom:'Sergio Montiel Matamoros', sop:0, dev:3, err:0},
   {nom:'Juan Manuel Olguin Colin', sop:1, dev:1, err:0},
