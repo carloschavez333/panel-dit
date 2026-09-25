@@ -799,14 +799,14 @@ document.addEventListener('DOMContentLoaded', function(){
 // Refrescado 25 Ago 2026 desde el Sheet en vivo (openpyxl sobre "Product Backlog
 // Soportes DEV (1hr activo)"), mismo filtro/criterio documentado arriba.
 const SOPORTES = [
-  {loc:'Quintana Roo', estados:{'LISTO PARA DESPLEGAR':11, 'READY TO MERGE':1, 'BLOQUEADO':4, 'EN PROGRESO':7, 'BACKLOG DE DESARROLLO CENTRALIZADO':5, 'PRODUCT BACKLOG':1}},
-  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':3, 'READY TO MERGE':3, 'EN PROGRESO':4, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Baja California', estados:{'BLOQUEADO':2, 'EN PROGRESO':1}},
-  {loc:'Sinaloa', estados:{'Reabierto':1, 'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
-  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'PRODUCT BACKLOG':2, 'Reabierto':1, 'EN PROGRESO':2}},
-  {loc:'Seguritech', estados:{'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':4}},
+  {loc:'Quintana Roo', estados:{'LISTO PARA DESPLEGAR':11, 'READY TO MERGE':1, 'BLOQUEADO':4, 'EN PROGRESO':7, 'BACKLOG DE DESARROLLO CENTRALIZADO':6, 'PRODUCT BACKLOG':1}},
+  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':3, 'READY TO MERGE':3, 'EN PROGRESO':5, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'Jalisco', estados:{'LISTO PARA DESPLEGAR':1, 'BLOQUEADO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':2, 'Reabierto':1, 'EN PROGRESO':3, 'PRODUCT BACKLOG':3}},
   {loc:'Hidalgo', estados:{'LISTO PARA DESPLEGAR':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1, 'PRODUCT BACKLOG':5, 'BLOQUEADO':1, 'EN PROGRESO':1}},
+  {loc:'Seguritech', estados:{'EN PROGRESO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':4}},
+  {loc:'Sinaloa', estados:{'Reabierto':1, 'EN PROGRESO':2, 'PRODUCT BACKLOG':1}},
   {loc:'Sonora', estados:{'EN PROGRESO':3, 'READY TO MERGE':1}},
+  {loc:'Baja California', estados:{'BLOQUEADO':2, 'EN PROGRESO':1}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':1}},
 ];
 // `.total` derivado del detalle por Estado — nunca hardcodeado, así nunca se
@@ -816,9 +816,9 @@ SOPORTES.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); }
 // la tabla sean matemáticamente imposibles de desincronizar entre sí.
 const TOTAL_ACTIVOS = SOPORTES.reduce((s,r)=>s+r.total,0);
 const APROBACION = [
-  {loc:'Guanajuato', n:8},
+  {loc:'Guanajuato', n:10},
   {loc:'Quintana Roo', n:7},
-  {loc:'Jalisco', n:3},
+  {loc:'Jalisco', n:1},
   {loc:'Baja California', n:1},
 ];
 const TOTAL_APROBACION = APROBACION.reduce((s,r)=>s+r.n,0);
@@ -1153,15 +1153,15 @@ function filtrarAsignacionPersona(){
 // razonamiento completo). `.total` se deriva abajo, nunca se hardcodea.
 // Refrescado 25 Ago 2026 desde el Sheet en vivo ("CC Evolutivos (1hr activo)").
 const EVOL_ACTIVOS = [
-  {loc:'Sonora', estados:{'PRODUCT BACKLOG':1, 'CERTIFICADO POR QA':1, 'Control de Version':1, 'LISTO PARA DESPLEGAR':3, 'PENDIENTE DE FIRMA':8, 'Consulta Con Cliente':1, 'EN QA':1, 'APROBACIÓN POR CLIENTE':1, 'BLOQUEADO':1, 'READY TO MERGE':1}},
-  {loc:'Quintana Roo', estados:{'APROBACIÓN POR CLIENTE':2, 'LISTO PARA DESPLEGAR':7, 'READY TO MERGE':4, 'EN QA':1, 'EN PROGRESO':4, 'BLOQUEADO':1, 'PRODUCT BACKLOG':1}},
-  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':2, 'Reabierto':1, 'LISTO PARA DESPLEGAR':1}},
-  {loc:'Hidalgo', estados:{'Control de Version':1}},
   {loc:'Jalisco', estados:{'PENDIENTE DE FIRMA':4, 'EN PROGRESO':3, 'BLOQUEADO':2, 'EN QA':4, 'APROBACIÓN POR CLIENTE':1, 'LISTO PARA DESPLEGAR':6, 'PRODUCT BACKLOG':3}},
-  {loc:'Zacatecas', estados:{'LISTO PARA DESPLEGAR':1}},
-  {loc:'Chiapas', estados:{'EN PROGRESO':1}},
+  {loc:'Quintana Roo', estados:{'APROBACIÓN POR CLIENTE':2, 'LISTO PARA DESPLEGAR':7, 'READY TO MERGE':4, 'EN QA':1, 'EN PROGRESO':4, 'BLOQUEADO':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Sonora', estados:{'PRODUCT BACKLOG':1, 'CERTIFICADO POR QA':1, 'Control de Version':1, 'LISTO PARA DESPLEGAR':3, 'PENDIENTE DE FIRMA':8, 'Consulta Con Cliente':1, 'EN QA':1, 'APROBACIÓN POR CLIENTE':1, 'BLOQUEADO':1, 'READY TO MERGE':1}},
+  {loc:'Guanajuato', estados:{'PENDIENTE DE FIRMA':2, 'EN PROGRESO':2, 'Reabierto':1, 'LISTO PARA DESPLEGAR':1}},
   {loc:'Baja California', estados:{'PENDIENTE DE FIRMA':1, 'LISTO PARA DESPLEGAR':1}},
   {loc:'Colima', estados:{'READY TO MERGE':1, 'LISTO PARA DESPLEGAR':1}},
+  {loc:'Hidalgo', estados:{'Control de Version':1}},
+  {loc:'Zacatecas', estados:{'LISTO PARA DESPLEGAR':1}},
+  {loc:'Chiapas', estados:{'EN PROGRESO':1}},
 ];
 EVOL_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
 const TOTAL_ACTIVOS_DEV = EVOL_ACTIVOS.reduce((s,r)=>s+r.total,0);
@@ -1225,8 +1225,8 @@ function getCerradosVigentesDev(){
 // Asistencia Técnica.
 const RESPONSABLES_DEV = [
   {nom:'Manuel Alejandro Domínguez Enríquez', n:13},
-  {nom:'Leonardo Lucio Perez', n:12},
   {nom:'Gerardo Omar Villalpando Villalpando', n:12},
+  {nom:'Leonardo Lucio Perez', n:12},
   {nom:'Ivan Perez Felipe', n:11},
   {nom:'Jesús Feria Ortiz', n:9},
   {nom:'Jonathan Aristeo Lozano Hernández', n:7},
@@ -1249,12 +1249,12 @@ const TOTAL_RESPONSABLES_DEV = RESPONSABLES_DEV.reduce((s,r)=>s+r.n,0);
 // capitalización que se ve en pantalla la pone `tituloEstado()` solo para
 // mostrar, nunca se toca la clave real.
 const ERROR_ACTIVOS = [
+  {loc:'Guanajuato', estados:{'SPRINT BACKLOG':18, 'READY TO MERGE':10, 'EN QA':1, 'BLOQUEADO':7, 'Reabierto':6, 'EN PROGRESO':1}},
+  {loc:'Colima', estados:{'Reabierto':1, 'READY TO MERGE':7}},
   {loc:'Jalisco', estados:{'SPRINT BACKLOG':2, 'EN QA':2, 'BLOQUEADO':1}},
   {loc:'Sonora', estados:{'READY TO MERGE':2, 'SPRINT BACKLOG':2}},
   {loc:'Quintana Roo', estados:{'SPRINT BACKLOG':1, 'EN PROGRESO':2}},
-  {loc:'Guanajuato', estados:{'SPRINT BACKLOG':18, 'READY TO MERGE':10, 'EN QA':1, 'BLOQUEADO':7, 'Reabierto':6, 'EN PROGRESO':1}},
   {loc:'Chiapas', estados:{'READY TO MERGE':1, 'Reabierto':1}},
-  {loc:'Colima', estados:{'Reabierto':1, 'READY TO MERGE':7}},
   {loc:'Hidalgo', estados:{'EN QA':1, 'SPRINT BACKLOG':1}},
 ];
 ERROR_ACTIVOS.forEach(r=>{ r.total = Object.values(r.estados).reduce((a,b)=>a+b,0); });
@@ -1317,27 +1317,27 @@ const TOTAL_ACTIVOS_ERR = ERROR_ACTIVOS.reduce((s,r)=>s+r.total,0);
 // a 48 (ver CLAUDE.md para el detalle de altas/bajas).
 const ASIGNACION_ACTUAL = [
   {nom:'Mariano Nicolás Conte', sop:0, dev:2, err:28},
-  {nom:'Jonathan Levi Márquez García', sop:1, dev:2, err:1},
   {nom:'Yoshio Adan Villegas Guevara', sop:0, dev:3, err:18},
-  {nom:'Gerardo Omar Villalpando Villalpando', sop:3, dev:1, err:2},
-  {nom:'Manuel Alejandro Domínguez Enríquez', sop:1, dev:4, err:2},
-  {nom:'Leonardo Lucio Perez', sop:1, dev:2, err:1},
-  {nom:'Jonathan Aristeo Lozano Hernández', sop:1, dev:1, err:4},
-  {nom:'Ivan Perez Felipe', sop:1, dev:1, err:0},
-  {nom:'Jesús Feria Ortiz', sop:0, dev:3, err:2},
-  {nom:'Eunice Anais Arevalo Avalos', sop:8, dev:5, err:3},
+  {nom:'Eunice Anais Arevalo Avalos', sop:7, dev:5, err:3},
+  {nom:'(Sin asignar)', sop:8, dev:0, err:1},
   {nom:'Pedro Emanuel Jimenez Oscoy', sop:0, dev:9, err:0},
-  {nom:'(Sin asignar)', sop:7, dev:0, err:1},
+  {nom:'Manuel Alejandro Domínguez Enríquez', sop:2, dev:4, err:2},
   {nom:'Gibran Esaú Solís Valenzuela', sop:4, dev:1, err:1},
+  {nom:'Gerardo Omar Villalpando Villalpando', sop:3, dev:1, err:2},
+  {nom:'Jonathan Aristeo Lozano Hernández', sop:1, dev:1, err:4},
+  {nom:'Leonardo Lucio Perez', sop:2, dev:2, err:1},
   {nom:'Bruno Antonio Gonzalez Uribe', sop:5, dev:0, err:0},
+  {nom:'Jorge Octavio Paz Hernandez', sop:5, dev:0, err:0},
   {nom:'Jesus Jonathan Ramos Nuñez', sop:5, dev:0, err:0},
+  {nom:'Jesús Feria Ortiz', sop:0, dev:3, err:2},
   {nom:'Juan Manuel Olguin Colin', sop:4, dev:0, err:0},
-  {nom:'Jorge Octavio Paz Hernandez', sop:4, dev:0, err:0},
+  {nom:'Jonathan Levi Márquez García', sop:1, dev:2, err:1},
   {nom:'Ricardo González Bustos', sop:0, dev:4, err:0},
   {nom:'Zamora Rodriguez Luz Adriana', sop:2, dev:1, err:0},
   {nom:'Luis Antonio Hernández Martínez', sop:2, dev:1, err:0},
   {nom:'Ramírez Mendoza Pablo Iván', sop:2, dev:0, err:0},
   {nom:'César Leonardo Rodríguez Martínez', sop:2, dev:0, err:0},
+  {nom:'Ivan Perez Felipe', sop:1, dev:1, err:0},
   {nom:'Angel Ulises Velasquez Hernandez', sop:2, dev:0, err:0},
   {nom:'Berenice Zavala Jiménez', sop:1, dev:1, err:0},
   {nom:'Fabian Arturo Muñoz Marquez', sop:0, dev:2, err:0},
@@ -1348,6 +1348,7 @@ const ASIGNACION_ACTUAL = [
   {nom:'Alejandro Cruz Torres', sop:1, dev:0, err:0},
   {nom:'Luis Antonio Jimenez Matus', sop:1, dev:0, err:0},
   {nom:'Marisol Hernandez Hernandez', sop:1, dev:0, err:0},
+  {nom:'Edgar Elias Cuero De La Cruz', sop:1, dev:0, err:0},
   {nom:'Armando Cisneros', sop:0, dev:1, err:0},
   {nom:'Perez Vasquez Oscar Uriel', sop:0, dev:1, err:0},
   {nom:'Estrada Lopez Sandra', sop:0, dev:1, err:0},
@@ -1491,12 +1492,12 @@ const TIEMPO_ATENCION = {
       {mes:'Enero',n:143,mean:4.15,median:1.5},
       {mes:'Febrero',n:181,mean:3.41,median:1.5},
       {mes:'Marzo',n:352,mean:3.51,median:1.5},
-      {mes:'Abril',n:193,mean:4.79,median:1},
-      {mes:'Mayo',n:245,mean:2.97,median:1},
+      {mes:'Abril',n:193,mean:4.79,median:1.0},
+      {mes:'Mayo',n:245,mean:2.97,median:1.0},
       {mes:'Junio',n:293,mean:3.71,median:1.67},
-      {mes:'Julio',n:284,mean:5.04,median:2},
+      {mes:'Julio',n:284,mean:5.04,median:2.0},
       {mes:'Agosto',n:250,mean:5.02,median:1.5},
-      {mes:'Septiembre',n:138,mean:2.41,median:1.5},
+      {mes:'Septiembre',n:138,mean:2.41,median:1.5}
     ],
     total: {n:2181, mean:3.92, median:1.5},
     primera: {lbl:'Enero-Marzo', n:778, mean:3.59, median:1.5},
@@ -1510,11 +1511,11 @@ const TIEMPO_ATENCION = {
       {mes:'Febrero',n:4,mean:19.54,median:4.5},
       {mes:'Marzo',n:41,mean:24.3,median:19.92},
       {mes:'Abril',n:13,mean:16.46,median:10.25},
-      {mes:'Mayo',n:5,mean:7.62,median:9},
-      {mes:'Junio',n:17,mean:34.95,median:22},
-      {mes:'Julio',n:15,mean:16.63,median:13},
-      {mes:'Agosto',n:21,mean:29.77,median:25},
-      {mes:'Septiembre',n:8,mean:26.8,median:13.45},
+      {mes:'Mayo',n:5,mean:7.62,median:9.0},
+      {mes:'Junio',n:17,mean:34.95,median:22.0},
+      {mes:'Julio',n:15,mean:16.63,median:13.0},
+      {mes:'Agosto',n:21,mean:29.77,median:25.0},
+      {mes:'Septiembre',n:8,mean:26.8,median:13.45}
     ],
     total: {n:130, mean:24.16, median:14.25},
     primera: {lbl:'Diciembre-Abril', n:64, mean:22.17, median:13.17},
@@ -1530,7 +1531,7 @@ const TIEMPO_ATENCION = {
       {mes:'Junio',n:88,mean:2.89,median:2.17},
       {mes:'Julio',n:103,mean:3.66,median:2.25},
       {mes:'Agosto',n:107,mean:3.63,median:2.75},
-      {mes:'Septiembre',n:28,mean:7.07,median:4.83},
+      {mes:'Septiembre',n:28,mean:7.07,median:4.83}
     ],
     total: {n:764, mean:3.34, median:2.17},
     primera: {lbl:'Noviembre-Mayo', n:438, mean:3.05, median:1.58},
