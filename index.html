@@ -801,16 +801,15 @@ document.addEventListener('DOMContentLoaded', function(){
 const SOPORTES = [
   {loc:'Quintana Roo', estados:{'READY TO MERGE':4, 'LISTO PARA DESPLEGAR':8, 'Reabierto':1, 'BLOQUEADO':3, 'PRODUCT BACKLOG':4, 'EN ESPERA DE CLIENTE EXTERNO':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
   {loc:'Sinaloa', estados:{'Reabierto':2, 'EN PROGRESO':7, 'PRODUCT BACKLOG':6}},
-  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':4, 'EN PROGRESO':3, 'PRODUCT BACKLOG':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Jalisco', estados:{'BLOQUEADO':2, 'LISTO PARA DESPLEGAR':3, 'EN PROGRESO':1, 'READY TO MERGE':1, 'PRODUCT BACKLOG':1}},
+  {loc:'Guanajuato', estados:{'LISTO PARA DESPLEGAR':2, 'BLOQUEADO':3, 'EN PROGRESO':3, 'PRODUCT BACKLOG':3, 'BACKLOG DE DESARROLLO CENTRALIZADO':2}},
+  {loc:'Jalisco', estados:{'BLOQUEADO':2, 'LISTO PARA DESPLEGAR':3, 'EN PROGRESO':1, 'READY TO MERGE':1, 'PRODUCT BACKLOG':1, 'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
   {loc:'Hidalgo', estados:{'PRODUCT BACKLOG':5, 'READY TO MERGE':2}},
-  {loc:'Baja California', estados:{'BLOQUEADO':2, 'EN PROGRESO':2, 'PRODUCT BACKLOG':2}},
+  {loc:'Baja California', estados:{'BLOQUEADO':2, 'EN PROGRESO':2, 'PRODUCT BACKLOG':4}},
   {loc:'Seguritech', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':3, 'EN PROGRESO':1, 'BLOQUEADO':1}},
   {loc:'Sonora', estados:{'EN PROGRESO':2, 'BLOQUEADO':2}},
   {loc:'Chihuahua', estados:{'EN PROGRESO':1}},
   {loc:'Zacatecas', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'CDMX', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
-  {loc:'Coahuila', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':1}},
+  {loc:'CDMX', estados:{'BACKLOG DE DESARROLLO CENTRALIZADO':2}},
 ];
 // `.total` derivado del detalle por Estado — nunca hardcodeado, así nunca se
 // puede desincronizar (mismo criterio ya usado para TOTAL_ACTIVOS abajo).
@@ -823,8 +822,8 @@ const APROBACION = [
   {loc:'Jalisco', n:5},
   {loc:'Quintana Roo', n:4},
   {loc:'Baja California', n:4},
+  {loc:'Hidalgo', n:3},
   {loc:'Sonora', n:2},
-  {loc:'Hidalgo', n:2},
   {loc:'CDMX', n:1},
   {loc:'Sinaloa', n:1},
 ];
@@ -1332,19 +1331,18 @@ const ASIGNACION_ACTUAL = [
   {nom:'Miguel Angel Velasco Castañeda', sop:8, dev:0, err:0, total:8},
   {nom:'Luis Antonio Hernández Martínez', sop:5, dev:2, err:0, total:7},
   {nom:'Gerardo Omar Villalpando Villalpando', sop:2, dev:2, err:3, total:7},
+  {nom:'(Sin asignar)', sop:5, dev:0, err:1, total:6},
   {nom:'Gibran Esaú Solís Valenzuela', sop:4, dev:1, err:0, total:5},
+  {nom:'Angel Ulises Velasquez Hernandez', sop:5, dev:0, err:0, total:5},
   {nom:'Jonathan Levi Márquez García', sop:1, dev:2, err:2, total:5},
   {nom:'Jonathan Aristeo Lozano Hernández', sop:1, dev:0, err:4, total:5},
   {nom:'Zamora Rodriguez Luz Adriana', sop:2, dev:2, err:0, total:4},
   {nom:'Leonardo Lucio Perez', sop:2, dev:2, err:0, total:4},
   {nom:'Jesús Feria Ortiz', sop:1, dev:3, err:0, total:4},
   {nom:'Ramírez Mendoza Pablo Iván', sop:4, dev:0, err:0, total:4},
-  {nom:'Angel Ulises Velasquez Hernandez', sop:4, dev:0, err:0, total:4},
   {nom:'Manuel Alejandro Domínguez Enríquez', sop:1, dev:2, err:1, total:4},
   {nom:'Ricardo González Bustos', sop:0, dev:4, err:0, total:4},
-  {nom:'(Sin asignar)', sop:2, dev:0, err:1, total:3},
   {nom:'Juan Manuel Olguin Colin', sop:3, dev:0, err:0, total:3},
-  {nom:'Gras Rodrigo Gabriel', sop:1, dev:1, err:0, total:2},
   {nom:'Estif Fabian Arenas Pamplona', sop:2, dev:0, err:0, total:2},
   {nom:'Maria Brenda Alvarado Robles', sop:2, dev:0, err:0, total:2},
   {nom:'Allen Ponce Vazquez', sop:2, dev:0, err:0, total:2},
@@ -1360,6 +1358,7 @@ const ASIGNACION_ACTUAL = [
   {nom:'Perez Vasquez Oscar Uriel', sop:0, dev:1, err:0, total:1},
   {nom:'salvador.fernandez', sop:0, dev:1, err:0, total:1},
   {nom:'Melisa Andrada', sop:0, dev:1, err:0, total:1},
+  {nom:'Gras Rodrigo Gabriel', sop:0, dev:1, err:0, total:1},
 ];
 
 ASIGNACION_ACTUAL.forEach(r=>{ r.total = r.sop+r.dev+r.err; });
